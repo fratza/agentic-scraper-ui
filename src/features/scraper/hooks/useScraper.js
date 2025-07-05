@@ -108,6 +108,26 @@ const useScraper = () => {
             // Use the raw data directly from the backend
             // This preserves the original structure sent by the server
             console.log("Setting raw preview data:", parsedData);
+            
+            // Debug the structure of the data
+            console.log("Preview data structure:", {
+              hasData: !!parsedData,
+              hasSample: parsedData && !!parsedData.sample,
+              sampleType: parsedData && parsedData.sample ? typeof parsedData.sample : 'none',
+              isArray: parsedData && parsedData.sample ? Array.isArray(parsedData.sample) : false,
+              keys: parsedData ? Object.keys(parsedData) : [],
+            });
+            
+            // If the data doesn't have a sample property but is an array or object,
+            // we need to add it to make the table display work
+            if (parsedData && !parsedData.sample && typeof parsedData === 'object') {
+              console.log("Adding sample property to preview data");
+              parsedData = {
+                ...parsedData,
+                sample: Array.isArray(parsedData) ? parsedData : [parsedData]
+              };
+            }
+            
             setPreviewData(parsedData);
             setLoading(false);
 
