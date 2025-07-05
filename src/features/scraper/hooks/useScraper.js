@@ -204,127 +204,130 @@ const useScraper = () => {
   /**
    * Start the scraping process using SSE for status updates
    */
-  const startScraping = useCallback(async (resume_link) => {
-    if (!previewData) return;
-    
-    // Check if resume_link exists, if not, set error and return
-    if (!resume_link) {
-      setError("Session expired. Please try again.");
-      return;
-    }
+  const startScraping = useCallback(
+    async (resume_link) => {
+      if (!previewData) return;
 
-    setScraping(true);
-    setProgress(0);
-    setError(null);
-    
-    // Log the resume_link that will be sent to n8n
-    console.log("Triggering n8n workflow with resume_link:", resume_link);
-
-    // Close any existing event source
-    if (scrapingEventSourceRef.current) {
-      apiService.closeEventSource(scrapingEventSourceRef.current);
-      scrapingEventSourceRef.current = null;
-    }
-
-    try {
-      // If we don't have a jobId yet, submit a new scrape request
-      let currentJobId = jobId;
-      if (!currentJobId) {
-        const response = await apiService.submitScrapeRequest({
-          url: previewData.url,
-          scrapeTarget: previewData.target,
-          resume_link: resume_link || null, // Pass resume_link if provided
-        });
-        currentJobId = response.jobId;
-        setJobId(currentJobId);
+      // Check if resume_link exists, if not, set error and return
+      if (!resume_link) {
+        setError("Session expired. Please try again.");
+        return;
       }
 
-      // Set up SSE for scraping progress
-      const eventSource = apiService.createScrapingEventSource(currentJobId);
-      scrapingEventSourceRef.current = eventSource;
+      setScraping(true);
+      setProgress(0);
+      setError(null);
 
-      // Handle connection open
-      eventSource.onopen = () => {
-        console.log("Scraping SSE connection established");
-      };
+      // Log the resume_link that will be sent to n8n
+      console.log("Triggering n8n workflow with resume_link:", resume_link);
 
-      // Handle connect event
-      eventSource.addEventListener("connect", (event) => {
-        console.log("Scraping SSE connection established with event:", event);
-      });
-
-      // Handle message events (contains progress or completion data)
-      eventSource.addEventListener("message", (event) => {
-        try {
-          const parsedData = JSON.parse(event.data);
-          console.log("Received scraping message data:", parsedData);
-
-          // Check if this is a progress update
-          if (
-            parsedData.type === "progress" ||
-            parsedData.progress !== undefined
-          ) {
-            setProgress(parsedData.progress || 0);
-          }
-          // Check if this is a completion message
-          else if (parsedData.type === "completed" || parsedData.data) {
-            setScrapedData(parsedData.data || []);
-            setScraping(false);
-            setProgress(100);
-
-            // Close the connection since scraping is complete
-            apiService.closeEventSource(eventSource);
-            scrapingEventSourceRef.current = null;
-          }
-        } catch (err) {
-          console.error("Error parsing message data:", err);
-        }
-      });
-
-      // Handle errors
-      eventSource.addEventListener("error", (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          setError("Scraping failed: " + (data.error || "Unknown error"));
-        } catch (err) {
-          setError("Scraping failed with an unknown error");
-          console.error("Error parsing error data:", err);
-        }
-        setScraping(false);
-
-        // Close the connection on error
-        apiService.closeEventSource(eventSource);
+      // Close any existing event source
+      if (scrapingEventSourceRef.current) {
+        apiService.closeEventSource(scrapingEventSourceRef.current);
         scrapingEventSourceRef.current = null;
-      });
+      }
 
-      // Handle general errors
-      eventSource.onerror = () => {
-        console.error("Scraping SSE connection error");
-        setError("Lost connection to the server");
-        setScraping(false);
+      try {
+        // If we don't have a jobId yet, submit a new scrape request
+        let currentJobId = jobId;
+        if (!currentJobId) {
+          const response = await apiService.submitScrapeRequest({
+            url: previewData.url,
+            scrapeTarget: previewData.target,
+            resume_link: resume_link || null, // Pass resume_link if provided
+          });
+          currentJobId = response.jobId;
+          setJobId(currentJobId);
+        }
 
-        // Close the connection
-        apiService.closeEventSource(eventSource);
-        scrapingEventSourceRef.current = null;
-      };
+        // Set up SSE for scraping progress
+        const eventSource = apiService.createScrapingEventSource(currentJobId);
+        scrapingEventSourceRef.current = eventSource;
 
-      // Safety timeout
-      setTimeout(() => {
-        if (scrapingEventSourceRef.current === eventSource) {
-          setError("Scraping timed out. Please try again.");
+        // Handle connection open
+        eventSource.onopen = () => {
+          console.log("Scraping SSE connection established");
+        };
+
+        // Handle connect event
+        eventSource.addEventListener("connect", (event) => {
+          console.log("Scraping SSE connection established with event:", event);
+        });
+
+        // Handle message events (contains progress or completion data)
+        eventSource.addEventListener("message", (event) => {
+          try {
+            const parsedData = JSON.parse(event.data);
+            console.log("Received scraping message data:", parsedData);
+
+            // Check if this is a progress update
+            if (
+              parsedData.type === "progress" ||
+              parsedData.progress !== undefined
+            ) {
+              setProgress(parsedData.progress || 0);
+            }
+            // Check if this is a completion message
+            else if (parsedData.type === "completed" || parsedData.data) {
+              setScrapedData(parsedData.data || []);
+              setScraping(false);
+              setProgress(100);
+
+              // Close the connection since scraping is complete
+              apiService.closeEventSource(eventSource);
+              scrapingEventSourceRef.current = null;
+            }
+          } catch (err) {
+            console.error("Error parsing message data:", err);
+          }
+        });
+
+        // Handle errors
+        eventSource.addEventListener("error", (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            setError("Scraping failed: " + (data.error || "Unknown error"));
+          } catch (err) {
+            setError("Scraping failed with an unknown error");
+            console.error("Error parsing error data:", err);
+          }
+          setScraping(false);
+
+          // Close the connection on error
+          apiService.closeEventSource(eventSource);
+          scrapingEventSourceRef.current = null;
+        });
+
+        // Handle general errors
+        eventSource.onerror = () => {
+          console.error("Scraping SSE connection error");
+          setError("Lost connection to the server");
           setScraping(false);
 
           // Close the connection
           apiService.closeEventSource(eventSource);
           scrapingEventSourceRef.current = null;
-        }
-      }, config.ui.progressTimeout);
-    } catch (err) {
-      console.error("Error starting scrape:", err);
-      setError("Failed to start scraping. Please try again.");
-      setScraping(false);
-    }
-  }, [previewData, jobId]);
+        };
+
+        // Safety timeout
+        setTimeout(() => {
+          if (scrapingEventSourceRef.current === eventSource) {
+            setError("Scraping timed out. Please try again.");
+            setScraping(false);
+
+            // Close the connection
+            apiService.closeEventSource(eventSource);
+            scrapingEventSourceRef.current = null;
+          }
+        }, config.ui.progressTimeout);
+      } catch (err) {
+        console.error("Error starting scrape:", err);
+        setError("Failed to start scraping. Please try again.");
+        setScraping(false);
+      }
+    },
+    [previewData, jobId]
+  );
 
   // Removed pollScrapeStatus as it's replaced by SSE
 

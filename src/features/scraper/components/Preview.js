@@ -1,8 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
-import './Preview.css';
-import DataTable from './DataTable';
+import React, { useState, useEffect, useRef } from "react";
+import "./Preview.css";
+import DataTable from "./DataTable";
 
-const Preview = ({ previewData, onScrape, scraping, progress, scrapedData, error }) => {
+const Preview = ({
+  previewData,
+  onScrape,
+  scraping,
+  progress,
+  scrapedData,
+  error,
+}) => {
   const [copied, setCopied] = useState(false);
   const previewRef = useRef(null);
 
@@ -10,14 +17,18 @@ const Preview = ({ previewData, onScrape, scraping, progress, scrapedData, error
   // Modal will be centered on screen
 
   const handleCopyJson = () => {
-    const dataToCopy = previewData && previewData.sample ? previewData.sample : previewData;
+    const dataToCopy =
+      previewData && previewData.sample ? previewData.sample : previewData;
     const jsonText = JSON.stringify(dataToCopy, null, 2);
-    navigator.clipboard.writeText(jsonText).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }).catch(err => {
-      console.error('Failed to copy: ', err);
-    });
+    navigator.clipboard
+      .writeText(jsonText)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
+      });
   };
 
   return (
@@ -26,19 +37,24 @@ const Preview = ({ previewData, onScrape, scraping, progress, scrapedData, error
         <>
           <div className="preview-header">
             <h2>Preview</h2>
-            <button 
-              className={`btn-icon ${copied ? 'success' : ''}`} 
-              onClick={handleCopyJson} 
+            <button
+              className={`btn-icon ${copied ? "success" : ""}`}
+              onClick={handleCopyJson}
               title="Copy JSON"
             >
-              {copied ? <i className="fas fa-check"></i> : <i className="fas fa-copy"></i>}
+              {copied ? (
+                <i className="fas fa-check"></i>
+              ) : (
+                <i className="fas fa-copy"></i>
+              )}
             </button>
           </div>
           <div className="preview-content">
             {previewData && previewData.sample ? (
               Array.isArray(previewData.sample) ? (
                 <DataTable data={previewData.sample} title="Preview Data" />
-              ) : typeof previewData.sample === 'object' && previewData.sample !== null ? (
+              ) : typeof previewData.sample === "object" &&
+                previewData.sample !== null ? (
                 <DataTable data={[previewData.sample]} title="Preview Data" />
               ) : (
                 <pre id="json-preview">
@@ -52,11 +68,14 @@ const Preview = ({ previewData, onScrape, scraping, progress, scrapedData, error
             )}
           </div>
           <div className="preview-actions">
-            <button 
-              className="btn-scrape" 
+            <button
+              className="btn-scrape"
               onClick={() => {
                 // Extract resume_link from previewData if it exists
-                const resume_link = previewData && previewData.resume_link ? previewData.resume_link : null;
+                const resume_link =
+                  previewData && previewData.resume_link
+                    ? previewData.resume_link
+                    : null;
                 onScrape(resume_link);
               }}
             >
@@ -73,14 +92,14 @@ const Preview = ({ previewData, onScrape, scraping, progress, scrapedData, error
             <span id="progress-percentage">{progress}%</span>
           </div>
           <div className="progress-bar">
-            <div 
-              className="progress-fill" 
+            <div
+              className="progress-fill"
               style={{ width: `${progress}%` }}
             ></div>
           </div>
         </div>
       )}
-      
+
       {error && (
         <div className="error-container">
           <div className="error-message">
@@ -93,9 +112,7 @@ const Preview = ({ previewData, onScrape, scraping, progress, scrapedData, error
         </div>
       )}
 
-      {scrapedData && (
-        <DataTable data={scrapedData} />
-      )}
+      {scrapedData && <DataTable data={scrapedData} />}
     </div>
   );
 };
