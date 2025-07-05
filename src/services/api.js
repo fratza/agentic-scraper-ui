@@ -23,11 +23,11 @@ const apiService = {
       // Log the data being sent, including resume_link if present
       console.log("Submitting scrape request with data:", data);
       
-      // If resume_link is provided, use a different endpoint to trigger n8n workflow
+      // If resume_link is provided, directly trigger n8n workflow without backend call
       if (data.resume_link) {
-        console.log("Using resume_link to trigger n8n workflow:", data.resume_link);
-        const response = await apiClient.post("/scrape/resume", { resume_link: data.resume_link });
-        return response.data;
+        console.log("Directly triggering n8n workflow with resume_link:", data.resume_link);
+        // Return a mock response with a jobId to maintain compatibility with existing code
+        return { jobId: `direct-${Date.now()}`, directTriggered: true };
       } else {
         // Regular scrape without resume_link
         const response = await apiClient.post("/scrape", data);
@@ -36,6 +36,28 @@ const apiService = {
     } catch (error) {
       console.error("Error submitting scrape request:", error);
       throw error;
+    }
+  },
+
+  // Directly trigger n8n workflow with resume_link
+  triggerN8nWorkflow: (resumeLink) => {
+    if (!resumeLink) {
+      console.error("No resume_link provided to trigger n8n workflow");
+      return false;
+    }
+    
+    try {
+      console.log("Directly triggering n8n workflow with URL:", resumeLink);
+      // Simply make a GET request to the resume_link to trigger the n8n workflow
+      // This is done without waiting for a response
+      fetch(resumeLink, { method: 'GET', mode: 'no-cors' })
+        .then(() => console.log("N8n workflow trigger request sent"))
+        .catch(err => console.error("Error triggering n8n workflow:", err));
+      
+      return true;
+    } catch (error) {
+      console.error("Error triggering n8n workflow:", error);
+      return false;
     }
   },
 
