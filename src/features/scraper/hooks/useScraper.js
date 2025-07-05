@@ -204,12 +204,21 @@ const useScraper = () => {
   /**
    * Start the scraping process using SSE for status updates
    */
-  const startScraping = useCallback(async () => {
+  const startScraping = useCallback(async (resume_link) => {
     if (!previewData) return;
+    
+    // Check if resume_link exists, if not, set error and return
+    if (!resume_link) {
+      setError("Session expired. Please try again.");
+      return;
+    }
 
     setScraping(true);
     setProgress(0);
     setError(null);
+    
+    // Log the resume_link that will be sent to n8n
+    console.log("Triggering n8n workflow with resume_link:", resume_link);
 
     // Close any existing event source
     if (scrapingEventSourceRef.current) {
@@ -224,6 +233,7 @@ const useScraper = () => {
         const response = await apiService.submitScrapeRequest({
           url: previewData.url,
           scrapeTarget: previewData.target,
+          resume_link: resume_link || null, // Pass resume_link if provided
         });
         currentJobId = response.jobId;
         setJobId(currentJobId);

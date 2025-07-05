@@ -10,7 +10,8 @@ const Preview = ({ previewData, onScrape, scraping, progress, scrapedData, error
   // Modal will be centered on screen
 
   const handleCopyJson = () => {
-    const jsonText = JSON.stringify(previewData, null, 2);
+    const dataToCopy = previewData && previewData.sample ? previewData.sample : previewData;
+    const jsonText = JSON.stringify(dataToCopy, null, 2);
     navigator.clipboard.writeText(jsonText).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -34,10 +35,16 @@ const Preview = ({ previewData, onScrape, scraping, progress, scrapedData, error
             </button>
           </div>
           <div className="preview-content">
-            {Array.isArray(previewData) ? (
-              <DataTable data={previewData} title="Preview Data" />
-            ) : typeof previewData === 'object' && previewData !== null ? (
-              <DataTable data={[previewData]} title="Preview Data" />
+            {previewData && previewData.sample ? (
+              Array.isArray(previewData.sample) ? (
+                <DataTable data={previewData.sample} title="Preview Data" />
+              ) : typeof previewData.sample === 'object' && previewData.sample !== null ? (
+                <DataTable data={[previewData.sample]} title="Preview Data" />
+              ) : (
+                <pre id="json-preview">
+                  {JSON.stringify(previewData.sample, null, 2)}
+                </pre>
+              )
             ) : (
               <pre id="json-preview">
                 {JSON.stringify(previewData, null, 2)}
@@ -45,7 +52,14 @@ const Preview = ({ previewData, onScrape, scraping, progress, scrapedData, error
             )}
           </div>
           <div className="preview-actions">
-            <button className="btn-scrape" onClick={onScrape}>
+            <button 
+              className="btn-scrape" 
+              onClick={() => {
+                // Extract resume_link from previewData if it exists
+                const resume_link = previewData && previewData.resume_link ? previewData.resume_link : null;
+                onScrape(resume_link);
+              }}
+            >
               <span>Scrape</span>
             </button>
           </div>

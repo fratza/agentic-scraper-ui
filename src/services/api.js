@@ -20,8 +20,19 @@ const apiService = {
   // Submit a scraping request
   submitScrapeRequest: async (data) => {
     try {
-      const response = await apiClient.post("/scrape", data);
-      return response.data;
+      // Log the data being sent, including resume_link if present
+      console.log("Submitting scrape request with data:", data);
+      
+      // If resume_link is provided, use a different endpoint to trigger n8n workflow
+      if (data.resume_link) {
+        console.log("Using resume_link to trigger n8n workflow:", data.resume_link);
+        const response = await apiClient.post("/scrape/resume", { resume_link: data.resume_link });
+        return response.data;
+      } else {
+        // Regular scrape without resume_link
+        const response = await apiClient.post("/scrape", data);
+        return response.data;
+      }
     } catch (error) {
       console.error("Error submitting scrape request:", error);
       throw error;
