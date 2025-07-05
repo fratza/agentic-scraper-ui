@@ -45,6 +45,17 @@ const apiService = {
       console.error('Error getting scrape results:', error);
       throw error;
     }
+  },
+  
+  // Get sample preview data
+  getSamplePreview: async () => {
+    try {
+      const response = await apiClient.get('/preview/sample_data');
+      return response.data;
+    } catch (error) {
+      console.error('Error getting preview sample data:', error);
+      throw error;
+    }
   }
 };
 

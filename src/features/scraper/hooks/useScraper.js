@@ -15,25 +15,49 @@ const useScraper = () => {
   const [error, setError] = useState(null);
 
   /**
-   * Handle form submission and create preview data
+   * Handle form submission and fetch preview data from the backend
    */
-  const handleFormSubmit = useCallback((formData) => {
-    // Create preview data
-    const previewData = {
-      url: formData.url,
-      target: formData.scrapeTarget,
-      timestamp: new Date().toISOString(),
-      status: 'ready'
-    };
-    
-    // Store the jobId if it exists in the response
-    if (formData.jobId) {
-      setJobId(formData.jobId);
-    }
-    
-    setPreviewData(previewData);
-    setScrapedData(null);
+  const handleFormSubmit = useCallback(async (formData) => {
+    setLoading(true);
     setError(null);
+    
+    try {
+      // Fetch preview data from the backend
+      const data = await apiService.getSamplePreview();
+      
+      // Enrich the data with form information
+      const enrichedData = {
+        ...data,
+        url: formData.url,
+        target: formData.scrapeTarget,
+        timestamp: new Date().toISOString(),
+        status: 'ready'
+      };
+      
+      // Store the jobId if it exists in the response
+      if (formData.jobId) {
+        setJobId(formData.jobId);
+      }
+      
+      setPreviewData(enrichedData);
+      setScrapedData(null);
+    } catch (err) {
+      console.error('Error fetching preview data:', err);
+      
+      // Fallback to creating local preview data if API fails
+      const fallbackPreviewData = {
+        url: formData.url,
+        target: formData.scrapeTarget,
+        timestamp: new Date().toISOString(),
+        status: 'ready',
+        note: 'Using fallback preview data due to API error'
+      };
+      
+      setPreviewData(fallbackPreviewData);
+      setError('Could not fetch preview data from server. Using fallback data.');
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   /**
