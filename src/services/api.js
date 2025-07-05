@@ -83,6 +83,7 @@ const apiService = {
     
     // Create and return the EventSource
     const eventSourceUrl = `${SSE_URL}?${params.toString()}`;
+    console.log('Connecting to SSE endpoint:', eventSourceUrl);
     return new EventSource(eventSourceUrl);
   },
   

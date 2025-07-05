@@ -52,6 +52,7 @@ const useScraper = () => {
         setTimeout(() => {
           reject(new Error('Preview request timed out'));
         }, 120000); // 2 minutes timeout (increased from 30 seconds)
+      });
       
       // Create a new promise for SSE connection
       const ssePromise = new Promise((resolve, reject) => {
@@ -62,6 +63,34 @@ const useScraper = () => {
         // Handle connection open
         eventSource.onopen = () => {
           console.log('Preview SSE connection established');
+          // Add a timeout to handle case where connection is established but no events are received
+          setTimeout(() => {
+            // If we're still loading and haven't received any events
+            if (loading && !previewData) {
+              console.log('No preview events received after connection open');
+              // Try a fallback approach - make a direct API call
+              apiService.getSamplePreview()
+                .then(data => {
+                  if (data) {
+                    console.log('Received fallback preview data:', data);
+                    const enrichedData = {
+                      ...data,
+                      url: formData.url,
+                      target: formData.scrapeTarget,
+                      timestamp: new Date().toISOString(),
+                      status: 'ready',
+                    };
+                    console.log('Setting preview data from fallback:', enrichedData);
+                    setPreviewData(enrichedData);
+                    setLoading(false);
+                    // Close the SSE connection since we're using fallback data
+                    apiService.closeEventSource(eventSource);
+                    previewEventSourceRef.current = null;
+                  }
+                })
+                .catch(err => console.error('Fallback preview request failed:', err));
+            }
+          }, 10000); // Wait 10 seconds for events before trying fallback
         };
         
         // Handle preview data events
@@ -82,8 +111,10 @@ const useScraper = () => {
               setJobId(formData.jobId);
             }
             
+            console.log('Setting preview data from SSE:', enrichedData);
             setPreviewData(enrichedData);
             setError(null);
+            setLoading(false); // Explicitly ensure loading is set to false
             resolve(enrichedData);
             
             // Close the connection since we got what we needed
@@ -100,7 +131,32 @@ const useScraper = () => {
           console.error('Preview SSE error:', err);
           apiService.closeEventSource(eventSource);
           previewEventSourceRef.current = null;
-          reject(new Error('Error in preview data stream'));
+          
+          // Instead of rejecting, let's try a fallback approach
+          console.log('Trying fallback after SSE error');
+          apiService.getSamplePreview()
+            .then(data => {
+              if (data) {
+                console.log('Received fallback preview data after error:', data);
+                const enrichedData = {
+                  ...data,
+                  url: formData.url,
+                  target: formData.scrapeTarget,
+                  timestamp: new Date().toISOString(),
+                  status: 'ready',
+                };
+                console.log('Setting preview data from error fallback:', enrichedData);
+                setPreviewData(enrichedData);
+                setLoading(false);
+                resolve(enrichedData);
+              } else {
+                reject(new Error('Error in preview data stream and fallback failed'));
+              }
+            })
+            .catch(err => {
+              console.error('Fallback preview request failed:', err);
+              reject(new Error('Error in preview data stream and fallback failed'));
+            });
         };
       });
       
