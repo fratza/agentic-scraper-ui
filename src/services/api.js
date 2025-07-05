@@ -12,6 +12,9 @@ const apiClient = axios.create({
   },
 });
 
+// SSE endpoint URL
+const SSE_URL = `${API_URL.replace('/api', '')}/api/preview/events`;
+
 // API service functions
 const apiService = {
   // Submit a scraping request
@@ -47,7 +50,7 @@ const apiService = {
     }
   },
 
-  // Get sample preview data
+  // Get sample preview data - Legacy method, kept for reference
   getSamplePreview: async (signal) => {
     try {
       // Make the API call with a minimum display time for loading state
@@ -68,6 +71,33 @@ const apiService = {
 
       console.error("Error getting preview sample data:", error);
       throw error;
+    }
+  },
+  
+  // Create an SSE connection for preview data
+  createPreviewEventSource: (formData) => {
+    // Create query string from form data
+    const params = new URLSearchParams();
+    if (formData.url) params.append('url', formData.url);
+    if (formData.scrapeTarget) params.append('target', formData.scrapeTarget);
+    
+    // Create and return the EventSource
+    const eventSourceUrl = `${SSE_URL}?${params.toString()}`;
+    return new EventSource(eventSourceUrl);
+  },
+  
+  // Create an SSE connection for scraping progress
+  createScrapingEventSource: (jobId) => {
+    // Using the same SSE endpoint with a jobId parameter
+    const params = new URLSearchParams();
+    params.append('jobId', jobId);
+    const eventSourceUrl = `${SSE_URL}?${params.toString()}`;
+    return new EventSource(eventSourceUrl);
+  },
+  // Close an SSE connection
+  closeEventSource: (eventSource) => {
+    if (eventSource && eventSource.readyState !== EventSource.CLOSED) {
+      eventSource.close();
     }
   },
 };
