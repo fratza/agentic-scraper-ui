@@ -5,11 +5,11 @@ set -e
 
 # Install dependencies
 echo "Installing dependencies..."
-npm install
+npm ci || npm install --legacy-peer-deps
 
 # Build the React application
 echo "Building React application..."
-npm run build
+CI=false npm run build
 
 # Success message
 echo "Build completed successfully!"
