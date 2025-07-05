@@ -50,8 +50,13 @@ const apiService = {
   // Get sample preview data
   getSamplePreview: async () => {
     try {
-      const response = await apiClient.get('/preview/sample_data');
-      return response.data;
+      // Using a timeout to ensure we show loading state for at least 1 second
+      // This makes the loading state more noticeable to users
+      const response = await Promise.all([
+        apiClient.get('/preview/sample_data'),
+        new Promise(resolve => setTimeout(resolve, 1000))
+      ]);
+      return response[0].data;
     } catch (error) {
       console.error('Error getting preview sample data:', error);
       throw error;

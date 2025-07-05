@@ -4,11 +4,14 @@ import ScraperForm from '../features/scraper/components/ScraperForm';
 import Preview from '../features/scraper/components/Preview';
 import useScraper from '../features/scraper/hooks/useScraper';
 import Modal from '../components/Modal';
+import Loader from '../components/Loader';
+import '../styles/preview-loading.css';
 
 const ScraperPage = () => {
   const [pageLoading, setPageLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const {
+    loading,
     previewData,
     scrapedData,
     scraping,
@@ -40,7 +43,14 @@ const ScraperPage = () => {
             onClose={() => setIsModalOpen(false)}
             title="Preview Results"
           >
-            {previewData && (
+            {loading ? (
+              <div className="preview-loading-container">
+                <div className="preview-loading-spinner">
+                  <i className="fas fa-spinner fa-spin"></i>
+                </div>
+                <p>Loading preview data from source...</p>
+              </div>
+            ) : previewData ? (
               <Preview 
                 previewData={previewData}
                 onScrape={startScraping}
@@ -49,7 +59,14 @@ const ScraperPage = () => {
                 scrapedData={scrapedData}
                 error={error}
               />
-            )}
+            ) : error ? (
+              <div className="preview-error-container">
+                <div className="preview-error-icon">
+                  <i className="fas fa-exclamation-circle"></i>
+                </div>
+                <p>{error}</p>
+              </div>
+            ) : null}
           </Modal>
         </div>
       </section>
