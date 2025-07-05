@@ -63,6 +63,28 @@
   color: var(--text-color);
 }
 
+.modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modal-close-button {
+  padding: 8px 16px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.modal-close-button:hover {
+  background-color: var(--primary-hover);
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

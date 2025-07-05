@@ -250,10 +250,38 @@ const useScraper = () => {
     async (resume_link) => {
       if (!previewData) return;
 
-      // Check if resume_link exists, if not, set error and return
-      if (!resume_link) {
-        setError("Session expired. Please try again.");
-        return;
+      // Store the resume_link in a ref to persist it between renders
+      if (resume_link) {
+        // Store the resume_link in localStorage with a timestamp
+        try {
+          localStorage.setItem('resume_link', resume_link);
+          localStorage.setItem('resume_link_timestamp', Date.now());
+          console.log("Stored resume_link in localStorage:", resume_link);
+        } catch (err) {
+          console.error("Failed to store resume_link in localStorage:", err);
+        }
+      } else {
+        // Try to retrieve from localStorage if not provided
+        try {
+          const storedLink = localStorage.getItem('resume_link');
+          const timestamp = localStorage.getItem('resume_link_timestamp');
+          
+          // Check if the link is still valid (less than 30 minutes old)
+          const isValid = timestamp && (Date.now() - parseInt(timestamp) < 30 * 60 * 1000);
+          
+          if (storedLink && isValid) {
+            resume_link = storedLink;
+            console.log("Retrieved resume_link from localStorage:", resume_link);
+          } else {
+            setError("Session expired. Please try again. You may need to refresh the page to get a new session.");
+            setScraping(false); // Reset scraping state
+            return;
+          }
+        } catch (err) {
+          console.error("Failed to retrieve resume_link from localStorage:", err);
+          setError("Session expired. Please try again.");
+          return;
+        }
       }
 
       setScraping(true);

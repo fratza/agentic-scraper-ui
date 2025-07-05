@@ -19,8 +19,8 @@ const Modal = ({ isOpen, onClose, children, title }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
+    <div className="modal-overlay">
+      <div className="modal-content">
         <div className="modal-header">
           {title && <h2>{title}</h2>}
           <button className="modal-close-btn" onClick={onClose}>
@@ -29,6 +29,11 @@ const Modal = ({ isOpen, onClose, children, title }) => {
         </div>
         <div className="modal-body">
           {children}
+        </div>
+        <div className="modal-footer">
+          <button className="modal-close-button" onClick={onClose}>
+            Close
+          </button>
         </div>
       </div>
     </div>

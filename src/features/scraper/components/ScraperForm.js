@@ -7,9 +7,16 @@ const ScraperForm = ({ onSubmit }) => {
   const [url, setUrl] = useState("");
   const [scrapeTarget, setScrapeTarget] = useState("");
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Prevent multiple submissions
+    if (isSubmitting) return;
+    
+    // Set submitting state to true
+    setIsSubmitting(true);
 
     // Validate form
     const newErrors = {};
@@ -27,6 +34,7 @@ const ScraperForm = ({ onSubmit }) => {
     // If there are errors, update state and return
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      setIsSubmitting(false);
       return;
     }
 
@@ -43,6 +51,7 @@ const ScraperForm = ({ onSubmit }) => {
 
       // Pass the response to parent component
       onSubmit({ url, scrapeTarget, jobId: response.jobId });
+      // Note: We don't reset isSubmitting here because the form will be replaced by preview
     } catch (error) {
       console.error("Error submitting scrape request:", error);
       // Handle API errors
@@ -51,6 +60,8 @@ const ScraperForm = ({ onSubmit }) => {
           error.response?.data?.message ||
           "Failed to connect to the server. Please try again.",
       });
+      // Reset submitting state on error
+      setIsSubmitting(false);
     }
   };
 
@@ -86,8 +97,12 @@ const ScraperForm = ({ onSubmit }) => {
         </div>
 
         <div className="form-actions">
-          <button type="submit" className="btn-submit">
-            <span>Submit</span>
+          <button 
+            type="submit" 
+            className="btn-submit" 
+            disabled={isSubmitting}
+          >
+            <span>{isSubmitting ? 'Submitting...' : 'Submit'}</span>
           </button>
         </div>
       </form>

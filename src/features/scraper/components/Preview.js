@@ -11,6 +11,8 @@ const Preview = ({
   error,
 }) => {
   const [copied, setCopied] = useState(false);
+  const [isScraping, setIsScraping] = useState(false);
+  const [sessionError, setSessionError] = useState(false);
   const previewRef = useRef(null);
 
   // No need to scroll to preview when in modal
@@ -70,16 +72,19 @@ const Preview = ({
           <div className="preview-actions">
             <button
               className="btn-scrape"
+              disabled={isScraping}
               onClick={() => {
                 // Extract resume_link from previewData if it exists
                 const resume_link =
                   previewData && previewData.resume_link
                     ? previewData.resume_link
                     : null;
+                setIsScraping(true);
+                setSessionError(false);
                 onScrape(resume_link);
               }}
             >
-              <span>Scrape</span>
+              <span>{isScraping ? 'Scraping...' : 'Scrape'}</span>
             </button>
           </div>
         </>
