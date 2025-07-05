@@ -48,9 +48,20 @@ const apiService = {
     
     try {
       console.log("Directly triggering n8n workflow with URL:", resumeLink);
-      // Simply make a GET request to the resume_link to trigger the n8n workflow
+      // Make a POST request to the resume_link to trigger the n8n workflow
       // This is done without waiting for a response
-      fetch(resumeLink, { method: 'GET', mode: 'no-cors' })
+      fetch(resumeLink, { 
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        // You can add a body if needed by the n8n workflow
+        body: JSON.stringify({
+          source: 'direct-trigger',
+          timestamp: Date.now()
+        })
+      })
         .then(() => console.log("N8n workflow trigger request sent"))
         .catch(err => console.error("Error triggering n8n workflow:", err));
       
