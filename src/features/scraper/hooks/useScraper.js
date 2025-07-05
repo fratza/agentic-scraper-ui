@@ -18,13 +18,30 @@ const useScraper = () => {
    * Handle form submission and fetch preview data from the backend
    */
   const handleFormSubmit = useCallback(async (formData) => {
+    // Reset states
     setLoading(true);
     setError(null);
+    setPreviewData(null); // Clear any previous preview data
+    setScrapedData(null);
+    
+    // Create a controller for potential request cancellation
+    const controller = new AbortController();
+    const signal = controller.signal;
     
     try {
-      // Fetch preview data from the backend
-      const data = await apiService.getSamplePreview();
+      // Fetch preview data from the backend with a timeout
+      const fetchPromise = apiService.getSamplePreview(signal);
       
+      // Set a timeout for the API call (30 seconds)
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+      }, 30000);
+      
+      // Wait for the data
+      const data = await fetchPromise;
+      clearTimeout(timeoutId);
+      
+      // If we got here, we have data from the backend
       // Enrich the data with form information
       const enrichedData = {
         ...data,
@@ -39,22 +56,28 @@ const useScraper = () => {
         setJobId(formData.jobId);
       }
       
+      // Update state with the data from backend
       setPreviewData(enrichedData);
-      setScrapedData(null);
+      setError(null); // Clear any previous errors
     } catch (err) {
       console.error('Error fetching preview data:', err);
       
-      // Fallback to creating local preview data if API fails
-      const fallbackPreviewData = {
-        url: formData.url,
-        target: formData.scrapeTarget,
-        timestamp: new Date().toISOString(),
-        status: 'ready',
-        note: 'Using fallback preview data due to API error'
-      };
-      
-      setPreviewData(fallbackPreviewData);
-      setError('Could not fetch preview data from server. Using fallback data.');
+      // Check if this was a timeout or abort
+      if (err.name === 'AbortError') {
+        setError('Request timed out. The backend is taking too long to respond.');
+      } else {
+        // Fallback to creating local preview data if API fails
+        const fallbackPreviewData = {
+          url: formData.url,
+          target: formData.scrapeTarget,
+          timestamp: new Date().toISOString(),
+          status: 'ready',
+          note: 'Using fallback preview data due to API error'
+        };
+        
+        setPreviewData(fallbackPreviewData);
+        setError('Could not fetch preview data from server. Using fallback data.');
+      }
     } finally {
       setLoading(false);
     }
