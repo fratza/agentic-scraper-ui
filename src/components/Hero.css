@@ -1,0 +1,35 @@
+/* Hero Section */
+.hero {
+  padding: 12rem 0 6rem;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  letter-spacing: -1px;
+}
+
+.hero h1 span {
+  font-weight: 300;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  color: var(--text-light);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .hero {
+    padding: 10rem 0 4rem;
+  }
+  
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+}

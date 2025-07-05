@@ -1,0 +1,22 @@
+/* App Styles */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+/* Scraper Section */
+.scraper-section {
+  padding: 5rem 0;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .scraper-section {
+    padding: 3rem 0;
+  }
+}
