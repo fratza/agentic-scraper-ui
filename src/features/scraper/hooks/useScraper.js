@@ -51,8 +51,7 @@ const useScraper = () => {
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => {
           reject(new Error('Preview request timed out'));
-        }, 30000); // 30 seconds timeout
-      });
+        }, 120000); // 2 minutes timeout (increased from 30 seconds)
       
       // Create a new promise for SSE connection
       const ssePromise = new Promise((resolve, reject) => {
@@ -105,14 +104,26 @@ const useScraper = () => {
         };
       });
       
-      // Race between SSE and timeout
-      await Promise.race([ssePromise, timeoutPromise]);
+      // Set up a status update for long-running requests
+      const statusUpdateInterval = setInterval(() => {
+        console.log('Still waiting for preview data...');
+        // You could update UI here to show waiting time or a more detailed status
+      }, 10000); // Update every 10 seconds
+      
+      try {
+        // Race between SSE and timeout
+        await Promise.race([ssePromise, timeoutPromise]);
+      } finally {
+        // Clear the status update interval
+        clearInterval(statusUpdateInterval);
+      }
       
     } catch (err) {
       console.error('Error fetching preview data:', err);
       
       if (err.message === 'Preview request timed out') {
-        setError('Request timed out. The backend is taking too long to respond.');
+        // Instead of showing error, we could continue waiting or show a more friendly message
+        setError('The backend is still processing. You can continue waiting or try again later.');
       } else {
         // Fallback to creating local preview data if API fails
         const fallbackPreviewData = {
