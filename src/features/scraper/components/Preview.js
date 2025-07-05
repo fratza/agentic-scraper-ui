@@ -34,9 +34,15 @@ const Preview = ({ previewData, onScrape, scraping, progress, scrapedData, error
             </button>
           </div>
           <div className="preview-content">
-            <pre id="json-preview">
-              {JSON.stringify(previewData, null, 2)}
-            </pre>
+            {Array.isArray(previewData) ? (
+              <DataTable data={previewData} title="Preview Data" />
+            ) : typeof previewData === 'object' && previewData !== null ? (
+              <DataTable data={[previewData]} title="Preview Data" />
+            ) : (
+              <pre id="json-preview">
+                {JSON.stringify(previewData, null, 2)}
+              </pre>
+            )}
           </div>
           <div className="preview-actions">
             <button className="btn-scrape" onClick={onScrape}>

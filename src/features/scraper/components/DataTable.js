@@ -1,7 +1,7 @@
 import React from 'react';
 import './DataTable.css';
 
-const DataTable = ({ data }) => {
+const DataTable = ({ data, title = "Scraped Data" }) => {
   if (!data || !Array.isArray(data) || data.length === 0) {
     return null;
   }
@@ -39,7 +39,7 @@ const DataTable = ({ data }) => {
 
   return (
     <div className="data-table-container fade-in">
-      <h3>Scraped Data</h3>
+      <h3>{title}</h3>
       <div className="table-responsive">
         <table className="data-table">
           <thead>
