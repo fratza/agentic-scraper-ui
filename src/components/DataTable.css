@@ -5,6 +5,13 @@
   border-top: 1px solid var(--border-color);
 }
 
+/* Remove top spacing when used in preview */
+.preview-content .data-table-container {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
 .data-table-container h3 {
   font-size: 1.3rem;
   margin-bottom: 1.5rem;
