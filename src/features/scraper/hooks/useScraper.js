@@ -102,39 +102,61 @@ const useScraper = () => {
         // Handle message events (contains the actual preview data)
         eventSource.addEventListener("preview", (event) => {
           try {
+            console.log("Raw SSE event data:", event.data);
             const parsedData = JSON.parse(event.data);
-            console.log("Received SSE message data:", parsedData);
+            console.log("Parsed SSE message data:", parsedData);
 
-            // Use the raw data directly from the backend
-            // This preserves the original structure sent by the server
-            console.log("Setting raw preview data:", parsedData);
-            
+            // Extract the actual data from the structure
+            // The SSE data structure is: { timestamp: "...", data: { ... } }
+            let previewData = parsedData;
+
+            // Check if the data is nested inside a data property
+            if (parsedData && parsedData.data) {
+              console.log("Data is nested inside data property");
+              previewData = parsedData.data;
+            }
+
+            console.log("Extracted preview data:", previewData);
+
             // Debug the structure of the data
             console.log("Preview data structure:", {
-              hasData: !!parsedData,
-              hasSample: parsedData && !!parsedData.sample,
-              sampleType: parsedData && parsedData.sample ? typeof parsedData.sample : 'none',
-              isArray: parsedData && parsedData.sample ? Array.isArray(parsedData.sample) : false,
-              keys: parsedData ? Object.keys(parsedData) : [],
+              hasData: !!previewData,
+              hasSample: previewData && !!previewData.sample,
+              sampleType:
+                previewData && previewData.sample
+                  ? typeof previewData.sample
+                  : "none",
+              isArray:
+                previewData && previewData.sample
+                  ? Array.isArray(previewData.sample)
+                  : false,
+              hasResumeLink: previewData && !!previewData.resume_link,
+              keys: previewData ? Object.keys(previewData) : [],
             });
-            
+
             // If the data doesn't have a sample property but is an array or object,
             // we need to add it to make the table display work
-            if (parsedData && !parsedData.sample && typeof parsedData === 'object') {
+            if (
+              previewData &&
+              !previewData.sample &&
+              typeof previewData === "object"
+            ) {
               console.log("Adding sample property to preview data");
-              parsedData = {
-                ...parsedData,
-                sample: Array.isArray(parsedData) ? parsedData : [parsedData]
+              previewData = {
+                ...previewData,
+                sample: Array.isArray(previewData)
+                  ? previewData
+                  : [previewData],
               };
             }
-            
-            setPreviewData(parsedData);
+
+            setPreviewData(previewData);
             setLoading(false);
 
             // Close the SSE connection since we have the data
             apiService.closeEventSource(eventSource);
             previewEventSourceRef.current = null;
-            resolve(parsedData);
+            resolve(previewData);
           } catch (err) {
             console.error("Error parsing preview data:", err);
             reject(err);
