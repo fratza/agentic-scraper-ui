@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './ScraperForm.css';
-import apiService from '../services/api';
+import apiService from '../../../services/api';
 import { isValidUrl } from '../../../lib/utils';
 
 const ScraperForm = ({ onSubmit }) => {
