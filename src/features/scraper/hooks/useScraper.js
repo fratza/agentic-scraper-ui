@@ -17,7 +17,7 @@ const useScraper = () => {
   // Refs for event sources
   const previewEventSourceRef = useRef(null);
   const scrapingEventSourceRef = useRef(null);
-  
+
   // Cleanup event sources on unmount
   useEffect(() => {
     return () => {
@@ -39,7 +39,7 @@ const useScraper = () => {
     setError(null);
     setPreviewData(null); // Clear any previous preview data
     setScrapedData(null);
-    
+
     // Close any existing event source
     if (previewEventSourceRef.current) {
       apiService.closeEventSource(previewEventSourceRef.current);
@@ -50,122 +50,122 @@ const useScraper = () => {
       // Set up timeout for preview data
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => {
-          reject(new Error('Preview request timed out'));
+          reject(new Error("Preview request timed out"));
         }, 120000); // 2 minutes timeout (increased from 30 seconds)
       });
-      
+
       // Create a new promise for SSE connection
       const ssePromise = new Promise((resolve, reject) => {
         // Create SSE connection
         const eventSource = apiService.createPreviewEventSource(formData);
         previewEventSourceRef.current = eventSource;
-        
+
         // Handle connection open
         eventSource.onopen = () => {
-          console.log('Preview SSE connection established');
+          console.log("Preview SSE connection established");
           // Add a timeout to handle case where connection is established but no events are received
           setTimeout(() => {
             // If we're still loading and haven't received any events
             if (loading && !previewData) {
-              console.log('No preview events received after connection open');
+              console.log("No preview events received after connection open");
               // Try a fallback approach - make a direct API call
-              apiService.getSamplePreview()
-                .then(data => {
+              apiService
+                .getSamplePreview()
+                .then((data) => {
                   if (data) {
-                    console.log('Received fallback preview data:', data);
-                    const enrichedData = {
-                      ...data,
-                      url: formData.url,
-                      target: formData.scrapeTarget,
-                      timestamp: new Date().toISOString(),
-                      status: 'ready',
-                    };
-                    console.log('Setting preview data from fallback:', enrichedData);
-                    setPreviewData(enrichedData);
+                    console.log("Received fallback preview data:", data);
+                    // Use raw data directly without enrichment
+                    console.log(
+                      "Setting raw preview data from fallback:",
+                      data
+                    );
+                    setPreviewData(data);
                     setLoading(false);
                     // Close the SSE connection since we're using fallback data
                     apiService.closeEventSource(eventSource);
                     previewEventSourceRef.current = null;
                   }
                 })
-                .catch(err => console.error('Fallback preview request failed:', err));
+                .catch((err) =>
+                  console.error("Fallback preview request failed:", err)
+                );
             }
           }, 10000); // Wait 10 seconds for events before trying fallback
         };
-        
-        // Handle preview data events
-        eventSource.addEventListener('preview', (event) => {
+
+        // Handle connect event
+        eventSource.addEventListener("connect", (event) => {
+          console.log("SSE connection established with event:", event);
+          // This just confirms the connection, we still need to wait for data
+        });
+
+        // Handle message events (contains the actual preview data)
+        eventSource.addEventListener("preview", (event) => {
           try {
-            const data = JSON.parse(event.data);
-            
-            // Enrich the data with form information
-            const enrichedData = {
-              ...data,
-              url: formData.url,
-              target: formData.scrapeTarget,
-              timestamp: new Date().toISOString(),
-              status: 'ready',
-            };
-            
-            if (formData.jobId) {
-              setJobId(formData.jobId);
-            }
-            
-            console.log('Setting preview data from SSE:', enrichedData);
-            setPreviewData(enrichedData);
-            setError(null);
-            setLoading(false); // Explicitly ensure loading is set to false
-            resolve(enrichedData);
-            
-            // Close the connection since we got what we needed
+            const parsedData = JSON.parse(event.data);
+            console.log("Received SSE message data:", parsedData);
+
+            // Use the raw data directly from the backend
+            // This preserves the original structure sent by the server
+            console.log("Setting raw preview data:", parsedData);
+            setPreviewData(parsedData);
+            setLoading(false);
+
+            // Close the SSE connection since we have the data
             apiService.closeEventSource(eventSource);
             previewEventSourceRef.current = null;
+            resolve(parsedData);
           } catch (err) {
-            console.error('Error parsing preview data:', err);
+            console.error("Error parsing preview data:", err);
             reject(err);
           }
         });
-        
+
         // Handle errors
         eventSource.onerror = (err) => {
-          console.error('Preview SSE error:', err);
+          console.error("Preview SSE error:", err);
           apiService.closeEventSource(eventSource);
           previewEventSourceRef.current = null;
-          
+
           // Instead of rejecting, let's try a fallback approach
-          console.log('Trying fallback after SSE error');
-          apiService.getSamplePreview()
-            .then(data => {
+          console.log("Trying fallback after SSE error");
+          apiService
+            .getSamplePreview()
+            .then((data) => {
               if (data) {
-                console.log('Received fallback preview data after error:', data);
-                const enrichedData = {
-                  ...data,
-                  url: formData.url,
-                  target: formData.scrapeTarget,
-                  timestamp: new Date().toISOString(),
-                  status: 'ready',
-                };
-                console.log('Setting preview data from error fallback:', enrichedData);
-                setPreviewData(enrichedData);
+                console.log(
+                  "Received fallback preview data after error:",
+                  data
+                );
+                // Use raw data directly without enrichment
+                console.log(
+                  "Setting raw preview data from error fallback:",
+                  data
+                );
+                setPreviewData(data);
                 setLoading(false);
-                resolve(enrichedData);
+                resolve(data);
               } else {
-                reject(new Error('Error in preview data stream and fallback failed'));
+                reject(
+                  new Error("Error in preview data stream and fallback failed")
+                );
               }
             })
-            .catch(err => {
-              console.error('Fallback preview request failed:', err);
-              reject(new Error('Error in preview data stream and fallback failed'));
+            .catch((err) => {
+              console.error("Fallback preview request failed:", err);
+              reject(
+                new Error("Error in preview data stream and fallback failed")
+              );
             });
         };
       });
-      
+
       // Set up a status update for long-running requests
       const statusUpdateInterval = setInterval(() => {
-        console.log('Still waiting for preview data...');
+        console.log("Still waiting for preview data...");
         // You could update UI here to show waiting time or a more detailed status
       }, 10000); // Update every 10 seconds
-      
+
       try {
         // Race between SSE and timeout
         await Promise.race([ssePromise, timeoutPromise]);
@@ -173,25 +173,28 @@ const useScraper = () => {
         // Clear the status update interval
         clearInterval(statusUpdateInterval);
       }
-      
     } catch (err) {
-      console.error('Error fetching preview data:', err);
-      
-      if (err.message === 'Preview request timed out') {
+      console.error("Error fetching preview data:", err);
+
+      if (err.message === "Preview request timed out") {
         // Instead of showing error, we could continue waiting or show a more friendly message
-        setError('The backend is still processing. You can continue waiting or try again later.');
+        setError(
+          "The backend is still processing. You can continue waiting or try again later."
+        );
       } else {
-        // Fallback to creating local preview data if API fails
+        // Fallback to creating minimal data structure if API fails
         const fallbackPreviewData = {
-          url: formData.url,
-          target: formData.scrapeTarget,
+          data: {
+            message: "No data available",
+            error: "API connection failed",
+          },
           timestamp: new Date().toISOString(),
-          status: 'ready',
-          note: 'Using fallback preview data due to API error',
         };
-        
+
         setPreviewData(fallbackPreviewData);
-        setError('Could not fetch preview data from server. Using fallback data.');
+        setError(
+          "Could not fetch preview data from server. Using fallback data."
+        );
       }
     } finally {
       setLoading(false);
@@ -207,7 +210,7 @@ const useScraper = () => {
     setScraping(true);
     setProgress(0);
     setError(null);
-    
+
     // Close any existing event source
     if (scrapingEventSourceRef.current) {
       apiService.closeEventSource(scrapingEventSourceRef.current);
@@ -229,80 +232,86 @@ const useScraper = () => {
       // Set up SSE for scraping progress
       const eventSource = apiService.createScrapingEventSource(currentJobId);
       scrapingEventSourceRef.current = eventSource;
-      
+
       // Handle connection open
       eventSource.onopen = () => {
-        console.log('Scraping SSE connection established');
+        console.log("Scraping SSE connection established");
       };
-      
-      // Handle progress updates
-      eventSource.addEventListener('progress', (event) => {
+
+      // Handle connect event
+      eventSource.addEventListener("connect", (event) => {
+        console.log("Scraping SSE connection established with event:", event);
+      });
+
+      // Handle message events (contains progress or completion data)
+      eventSource.addEventListener("message", (event) => {
         try {
-          const data = JSON.parse(event.data);
-          setProgress(data.progress || 0);
+          const parsedData = JSON.parse(event.data);
+          console.log("Received scraping message data:", parsedData);
+
+          // Check if this is a progress update
+          if (
+            parsedData.type === "progress" ||
+            parsedData.progress !== undefined
+          ) {
+            setProgress(parsedData.progress || 0);
+          }
+          // Check if this is a completion message
+          else if (parsedData.type === "completed" || parsedData.data) {
+            setScrapedData(parsedData.data || []);
+            setScraping(false);
+            setProgress(100);
+
+            // Close the connection since scraping is complete
+            apiService.closeEventSource(eventSource);
+            scrapingEventSourceRef.current = null;
+          }
         } catch (err) {
-          console.error('Error parsing progress data:', err);
+          console.error("Error parsing message data:", err);
         }
       });
-      
-      // Handle completion
-      eventSource.addEventListener('completed', (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          setScrapedData(data.data || []);
-          setScraping(false);
-          setProgress(100);
-          
-          // Close the connection since scraping is complete
-          apiService.closeEventSource(eventSource);
-          scrapingEventSourceRef.current = null;
-        } catch (err) {
-          console.error('Error parsing completion data:', err);
-        }
-      });
-      
+
       // Handle errors
-      eventSource.addEventListener('error', (event) => {
+      eventSource.addEventListener("error", (event) => {
         try {
           const data = JSON.parse(event.data);
-          setError('Scraping failed: ' + (data.error || 'Unknown error'));
+          setError("Scraping failed: " + (data.error || "Unknown error"));
         } catch (err) {
-          setError('Scraping failed with an unknown error');
-          console.error('Error parsing error data:', err);
+          setError("Scraping failed with an unknown error");
+          console.error("Error parsing error data:", err);
         }
         setScraping(false);
-        
+
         // Close the connection on error
         apiService.closeEventSource(eventSource);
         scrapingEventSourceRef.current = null;
       });
-      
+
       // Handle general errors
       eventSource.onerror = () => {
-        console.error('Scraping SSE connection error');
-        setError('Lost connection to the server');
+        console.error("Scraping SSE connection error");
+        setError("Lost connection to the server");
         setScraping(false);
-        
+
         // Close the connection
         apiService.closeEventSource(eventSource);
         scrapingEventSourceRef.current = null;
       };
-      
+
       // Safety timeout
       setTimeout(() => {
         if (scrapingEventSourceRef.current === eventSource) {
-          setError('Scraping timed out. Please try again.');
+          setError("Scraping timed out. Please try again.");
           setScraping(false);
-          
+
           // Close the connection
           apiService.closeEventSource(eventSource);
           scrapingEventSourceRef.current = null;
         }
       }, config.ui.progressTimeout);
-      
     } catch (err) {
-      console.error('Error starting scrape:', err);
-      setError('Failed to start scraping. Please try again.');
+      console.error("Error starting scrape:", err);
+      setError("Failed to start scraping. Please try again.");
       setScraping(false);
     }
   }, [previewData, jobId]);
@@ -320,12 +329,12 @@ const useScraper = () => {
       apiService.closeEventSource(previewEventSourceRef.current);
       previewEventSourceRef.current = null;
     }
-    
+
     if (scrapingEventSourceRef.current) {
       apiService.closeEventSource(scrapingEventSourceRef.current);
       scrapingEventSourceRef.current = null;
     }
-    
+
     // Reset all state
     setPreviewData(null);
     setScrapedData(null);
