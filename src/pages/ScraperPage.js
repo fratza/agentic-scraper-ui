@@ -63,26 +63,10 @@ const ScraperPage = () => {
           )}
 
           {/* Show loading results message */}
-          {showLoadingResults && !scrapedData && (
+          {(showLoadingResults || scraping) && !scrapedData && (
             <div className="loading-results-container">
               <div className="loading-spinner"></div>
               <h3>Loading results...</h3>
-            </div>
-          )}
-
-          {/* Show scraping progress */}
-          {scraping && (
-            <div className="progress-container">
-              <div className="progress-label">
-                <span>Scraping in progress</span>
-                <span id="progress-percentage">{progress}%</span>
-              </div>
-              <div className="progress-bar">
-                <div
-                  className="progress-fill"
-                  style={{ width: `${progress}%` }}
-                ></div>
-              </div>
             </div>
           )}
 
