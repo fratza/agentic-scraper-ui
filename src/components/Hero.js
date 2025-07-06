@@ -1,11 +1,11 @@
-import React from 'react';
-import './Hero.css';
+import React from "react";
+import "./Hero.css";
 
 const Hero = () => {
   return (
     <section className="hero" id="home">
       <div className="container">
-        <h1>From Idea to Data<br /><span>Powered by AI</span></h1>
+        <h1>From Idea to Data</h1>
         <p>Speak your intent, get structured results.</p>
       </div>
     </section>

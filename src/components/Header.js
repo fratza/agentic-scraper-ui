@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import './Header.css';
+import React, { useState, useEffect } from "react";
+import "./Header.css";
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -9,21 +9,29 @@ const Header = () => {
       setScrolled(window.scrollY > 50);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
   return (
-    <header className={scrolled ? 'scrolled' : ''}>
+    <header className={scrolled ? "scrolled" : ""}>
       <div className="container">
-        <div className="logo"><span>Web</span>Scraper</div>
+        <div className="logo">
+          <span>Neuro</span>Scrape
+        </div>
         <nav>
           <ul>
-            <li className="active"><a href="#home">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li className="active">
+              <a href="#home">Home</a>
+            </li>
+            <li>
+              <a href="#about">About</a>
+            </li>
+            <li>
+              <a href="#contact">Contact</a>
+            </li>
           </ul>
         </nav>
       </div>
