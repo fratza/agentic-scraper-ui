@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./ScrapedDataTable.css";
 
 const ScrapedDataTable = ({ scrapedData }) => {
@@ -21,8 +21,8 @@ const ScrapedDataTable = ({ scrapedData }) => {
     return null;
   }
 
-  // Get keys from the first data item
-  const keys = Object.keys(dataArray[0]);
+  // Get keys from the first data item, excluding UUID
+  const keys = Object.keys(dataArray[0]).filter(key => key.toLowerCase() !== 'uuid');
 
   // Format column header from camelCase or snake_case
   const formatColumnHeader = (key) => {
@@ -35,7 +35,7 @@ const ScrapedDataTable = ({ scrapedData }) => {
   };
 
   // Format cell value based on type
-  const formatCellValue = (value) => {
+  const formatCellValue = (key, value) => {
     if (typeof value === "boolean") {
       return (
         <i
@@ -47,9 +47,39 @@ const ScrapedDataTable = ({ scrapedData }) => {
       return "-";
     } else if (typeof value === "object") {
       return JSON.stringify(value);
+    } else if (typeof value === "string" && 
+              (key.toLowerCase().includes('image') || 
+               key.toLowerCase().includes('img') || 
+               key.toLowerCase().includes('photo') || 
+               value.match(/\.(jpeg|jpg|gif|png|webp)$/) || 
+               value.startsWith('http') && value.includes('/image'))) {
+      return <ImageWithToggle url={value} />;
     } else {
       return value;
     }
+  };
+  
+  // Component to handle image URLs with show more/less toggle
+  const ImageWithToggle = ({ url }) => {
+    const [expanded, setExpanded] = useState(false);
+    
+    if (!url) return "-";
+    
+    const displayUrl = expanded ? url : url.substring(0, 50) + (url.length > 50 ? '...' : '');
+    
+    return (
+      <div className="image-url-container">
+        <span className="image-url">{displayUrl}</span>
+        {url.length > 50 && (
+          <button 
+            className="toggle-btn" 
+            onClick={() => setExpanded(!expanded)}
+          >
+            {expanded ? 'Show less' : 'Show more'}
+          </button>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -68,7 +98,9 @@ const ScrapedDataTable = ({ scrapedData }) => {
             {dataArray.map((item, index) => (
               <tr key={index}>
                 {keys.map((key) => (
-                  <td key={`${index}-${key}`}>{formatCellValue(item[key])}</td>
+                  <td key={`${index}-${key}`} className={key.toLowerCase().includes('description') ? 'description-cell' : ''}>
+                    {formatCellValue(key, item[key])}
+                  </td>
                 ))}
               </tr>
             ))}
