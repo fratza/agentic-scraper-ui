@@ -395,16 +395,31 @@ const useScraper = () => {
               }
               // Check if this is a completion message
               else if (parsedData.type === "completed" || parsedData.data) {
-                setScrapedData(parsedData.data || []);
-                setScraping(false);
+                // Don't close the connection yet, wait for scrapedData event
                 setProgress(100);
-
-                // Close the connection since scraping is complete
-                apiService.closeEventSource(eventSource);
-                scrapingEventSourceRef.current = null;
               }
             } catch (err) {
               console.error("Error parsing message data:", err);
+            }
+          });
+          
+          // Handle scrapedData events (contains the final scraped data)
+          eventSource.addEventListener("scrapedData", (event) => {
+            try {
+              console.log("Raw scrapedData event:", event.data);
+              const parsedData = JSON.parse(event.data);
+              console.log("Received scrapedData:", parsedData);
+              
+              // Set the scraped data and update UI state
+              setScrapedData(parsedData.data || parsedData);
+              setScraping(false);
+              setProgress(100);
+              
+              // Close the connection since we've received the final data
+              apiService.closeEventSource(eventSource);
+              scrapingEventSourceRef.current = null;
+            } catch (err) {
+              console.error("Error parsing scrapedData:", err);
             }
           });
 
@@ -435,17 +450,17 @@ const useScraper = () => {
             scrapingEventSourceRef.current = null;
           };
 
-          // Safety timeout
+          // Safety timeout - extended to account for waiting for scrapedData event
           setTimeout(() => {
             if (scrapingEventSourceRef.current === eventSource) {
-              setError("Scraping timed out. Please try again.");
+              setError("Scraping and data processing timed out. Please try again.");
               setScraping(false);
 
               // Close the connection
               apiService.closeEventSource(eventSource);
               scrapingEventSourceRef.current = null;
             }
-          }, config.ui.progressTimeout);
+          }, config.ui.progressTimeout * 2); // Double the timeout to allow for scrapedData event
         } catch (err) {
           console.error("Error starting scrape:", err);
           setError("Failed to start scraping. Please try again.");
