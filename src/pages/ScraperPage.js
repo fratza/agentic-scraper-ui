@@ -7,6 +7,7 @@ import useScraper from "../features/scraper/hooks/useScraper";
 import Modal from "../components/Modal";
 import Loader from "../components/Loader";
 import "../styles/preview-loading.css";
+import "../styles/loading-results.css";
 
 const ScraperPage = () => {
   const [pageLoading, setPageLoading] = useState(true);
@@ -65,8 +66,26 @@ const ScraperPage = () => {
           {/* Show loading results message */}
           {(showLoadingResults || scraping) && !scrapedData && (
             <div className="loading-results-container">
-              <div className="loading-spinner"></div>
-              <h3>Loading results...</h3>
+              <div className="loading-spinner-container">
+                <div className="loading-spinner"></div>
+                <div className="loading-spinner-inner"></div>
+              </div>
+              <h3>Processing Your Request</h3>
+              <p className="loading-message">Scraping data from the source and analyzing results...</p>
+              
+              <div className="loading-progress">
+                <div 
+                  className="loading-progress-bar" 
+                  style={{ width: `${progress || 10}%` }}
+                ></div>
+              </div>
+              
+              <div className="loading-status">
+                {progress < 30 && "Initializing scraper..."}
+                {progress >= 30 && progress < 60 && "Extracting data..."}
+                {progress >= 60 && progress < 90 && "Processing results..."}
+                {progress >= 90 && "Finalizing..."}
+              </div>
             </div>
           )}
 
