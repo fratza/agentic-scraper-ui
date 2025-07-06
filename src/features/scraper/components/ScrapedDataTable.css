@@ -2,22 +2,23 @@
 .scraped-data-table-container {
   margin-top: 20px;
   width: 100%;
-  background-color: #fff;
+  background-color: var(--card-background);
+  color: var(--text-color);
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow);
   padding: 20px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: var(--transition);
 }
 
 .scraped-data-table-container:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-hover);
 }
 
 .scraped-data-table-container h3 {
   margin-top: 0;
   margin-bottom: 15px;
-  color: #333;
+  color: var(--text-color);
   font-size: 1.2rem;
 }
 
@@ -34,23 +35,23 @@
 }
 
 .scraped-data-table th {
-  background-color: #f8f9fa;
-  color: #495057;
+  background-color: #2d2d2d;
+  color: var(--text-light);
   text-align: left;
   padding: 12px 15px;
-  border-bottom: 2px solid #dee2e6;
+  border-bottom: 2px solid var(--border-color);
   font-weight: 600;
   transition: background-color 0.3s ease;
 }
 
 .scraped-data-table th:hover {
-  background-color: #e9ecef;
+  background-color: #3d3d3d;
 }
 
 .scraped-data-table td {
   padding: 10px 15px;
-  border-bottom: 1px solid #e9ecef;
-  color: #212529;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-color);
   word-break: break-word;
   vertical-align: top;
   max-width: 300px;
@@ -58,7 +59,7 @@
 }
 
 .scraped-data-table tbody tr:hover {
-  background-color: #f1f3f5;
+  background-color: #1f1f1f;
 }
 
 .scraped-data-table tbody tr:last-child td {
@@ -81,19 +82,19 @@
 
 .toggle-btn {
   align-self: flex-start;
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
+  background-color: #2d2d2d;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   padding: 2px 8px;
   font-size: 0.8rem;
   cursor: pointer;
-  color: #555;
+  color: var(--text-light);
   transition: all 0.2s;
 }
 
 .toggle-btn:hover {
-  background-color: #e0e0e0;
-  color: #333;
+  background-color: #3d3d3d;
+  color: var(--text-color);
 }
 
 /* Animation */

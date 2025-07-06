@@ -1,19 +1,19 @@
 /* Base Styles */
 :root {
-  --primary-color: #6c63ff;
-  --secondary-color: #4f46e5;
-  --accent-color: #818cf8;
-  --background-color: #f4f4f9;
-  --card-background: #ffffff;
-  --text-color: #333;
-  --text-light: #555;
-  --border-color: #e0e0e0;
-  --border-hover: #d0d0d0;
-  --shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+  --primary-color: #bb86fc;
+  --secondary-color: #3700b3;
+  --accent-color: #03dac6;
+  --background-color: #121212;
+  --card-background: #1e1e1e;
+  --text-color: #ffffff;
+  --text-light: #b0b0b0;
+  --border-color: #2d2d2d;
+  --border-hover: #3d3d3d;
+  --shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
   --transition: all 0.3s ease;
-  --button-hover: #4f46e5;
-  --input-background: #f0f0f0;
-  --json-background: #f9f9f9;
+  --button-hover: #3700b3;
+  --input-background: #2d2d2d;
+  --json-background: #252525;
 }
 
 * {
@@ -30,6 +30,12 @@ body {
   transition: var(--transition);
   min-height: 100vh;
   overflow-x: hidden;
+  background-image: linear-gradient(
+      rgba(255, 255, 255, 0.05) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
 .container {
@@ -50,6 +56,20 @@ p {
   margin-bottom: 1rem;
 }
 
+button, .btn {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover, .btn:hover {
+  background-color: var(--button-hover);
+}
+
 /* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); }
@@ -61,12 +81,23 @@ p {
   to { opacity: 0; transform: translateY(-20px); }
 }
 
+@keyframes dataFlow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
 .fade-in {
   animation: fadeIn 0.8s ease forwards;
 }
 
 .fade-out {
   animation: fadeOut 0.5s ease forwards;
+}
+
+.data-flow {
+  animation: dataFlow 4s linear infinite;
+  background: linear-gradient(90deg, var(--accent-color), var(--secondary-color));
+  background-size: 200% 100%;
 }
 
 /* Success & Error States */
