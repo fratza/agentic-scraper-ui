@@ -103,7 +103,7 @@ const ScraperPage = () => {
           )}
 
           {/* Show scraped data table */}
-          {scrapedData && <ScrapedDataTable scrapedData={scrapedData} />}
+          {scrapedData && <ScrapedDataTable scrapedData={scrapedData} onBackToMain={resetScraper} />}
 
           {/* Modal for preview */}
           <Modal

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import "./ScrapedDataTable.css";
+import { motion } from "framer-motion";
 
-const ScrapedDataTable = ({ scrapedData }) => {
+const ScrapedDataTable = ({ scrapedData, onBackToMain }) => {
   // Return null if no data is available
   if (!scrapedData || !scrapedData.data) {
     return null;
@@ -83,7 +84,12 @@ const ScrapedDataTable = ({ scrapedData }) => {
   };
 
   return (
-    <div className="scraped-data-table-container fade-in">
+    <motion.div 
+      className="scraped-data-table-container fade-in"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <h3>Scraped Data Results</h3>
       <div className="table-responsive">
         <table className="scraped-data-table">
@@ -107,7 +113,12 @@ const ScrapedDataTable = ({ scrapedData }) => {
           </tbody>
         </table>
       </div>
-    </div>
+      <div className="back-button-container">
+        <button className="back-to-main-btn" onClick={onBackToMain}>
+          <i className="fas fa-arrow-left"></i> Back to Main Page
+        </button>
+      </div>
+    </motion.div>
   );
 };
 
