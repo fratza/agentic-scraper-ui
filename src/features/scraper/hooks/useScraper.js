@@ -262,6 +262,29 @@ const useScraper = () => {
         scrapingEventSourceRef.current = null;
       }
 
+      // Extract run_id from preview data if available
+      let runId = null;
+      try {
+        // Check different possible locations for run_id
+        if (previewData.data && previewData.data.run_id) {
+          runId = previewData.data.run_id;
+        } else if (previewData.run_id) {
+          runId = previewData.run_id;
+        } else if (
+          previewData.sample &&
+          previewData.sample[0] &&
+          previewData.sample[0].run_id
+        ) {
+          runId = previewData.sample[0].run_id;
+        }
+
+        if (runId) {
+          console.log("Found run_id in preview data:", runId);
+        }
+      } catch (err) {
+        console.error("Error extracting run_id from preview data:", err);
+      }
+
       // If resume_link is provided, directly trigger the n8n workflow
       if (resume_link) {
         console.log(
@@ -289,7 +312,8 @@ const useScraper = () => {
           // Set up SSE for scraped data
           try {
             const eventSource = apiService.createScrapingEventSource(
-              `direct-${Date.now()}`
+              `direct-${Date.now()}`,
+              runId
             );
             scrapingEventSourceRef.current = eventSource;
 
@@ -379,7 +403,8 @@ const useScraper = () => {
               // Set up SSE for scraped data
               try {
                 const eventSource = apiService.createScrapingEventSource(
-                  `stored-${Date.now()}`
+                  `stored-${Date.now()}`,
+                  runId
                 );
                 scrapingEventSourceRef.current = eventSource;
 
