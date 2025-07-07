@@ -40,6 +40,16 @@ const ScraperPage = () => {
     startScraping(resumeLink); // Start the scraping process
   };
 
+  // Handle modal close - reset form stack and close SSE connection if not scraping
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+
+    // Only reset if we're not actively scraping data
+    if (!scraping && !scrapedData) {
+      resetScraper(); // This will close SSE connections
+    }
+  };
+
   // Reset loading results when scraping is complete or there's an error
   useEffect(() => {
     if (scrapedData || error) {
@@ -71,15 +81,17 @@ const ScraperPage = () => {
                 <div className="loading-spinner-inner"></div>
               </div>
               <h3>Processing Your Request</h3>
-              <p className="loading-message">Scraping data from the source and analyzing results...</p>
-              
+              <p className="loading-message">
+                Scraping data from the source and analyzing results...
+              </p>
+
               <div className="loading-progress">
-                <div 
-                  className="loading-progress-bar" 
+                <div
+                  className="loading-progress-bar"
                   style={{ width: `${progress || 10}%` }}
                 ></div>
               </div>
-              
+
               <div className="loading-status">
                 {progress < 30 && "Initializing scraper..."}
                 {progress >= 30 && progress < 60 && "Extracting data..."}
@@ -103,12 +115,17 @@ const ScraperPage = () => {
           )}
 
           {/* Show scraped data table */}
-          {scrapedData && <ScrapedDataTable scrapedData={scrapedData} onBackToMain={resetScraper} />}
+          {scrapedData && (
+            <ScrapedDataTable
+              scrapedData={scrapedData}
+              onBackToMain={resetScraper}
+            />
+          )}
 
           {/* Modal for preview */}
           <Modal
             isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
+            onClose={handleModalClose}
             title="Preview Results"
           >
             {loading ? (
@@ -126,7 +143,7 @@ const ScraperPage = () => {
                 progress={progress}
                 scrapedData={scrapedData}
                 error={error}
-                onClose={() => setIsModalOpen(false)}
+                onClose={handleModalClose}
               />
             ) : error ? (
               <div className="preview-error-container">

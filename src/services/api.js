@@ -171,6 +171,33 @@ const apiService = {
       eventSource.close();
     }
   },
+
+  // Handle approve or cancel action for scraping
+  handleScrapeAction: async (resumeLink, action) => {
+    try {
+      console.log(`Sending ${action} action for resume link:`, resumeLink);
+
+      const response = await fetch(API_URL + "/proceed-scrape", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: action, // 'approve' or 'cancel'
+          resume_link: resumeLink,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to ${action} scrape: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log(`${action} action response:`, data);
+      return data;
+    } catch (error) {
+      console.error(`Error in ${action} action:`, error);
+      throw error;
+    }
+  },
 };
 
 export default apiService;
