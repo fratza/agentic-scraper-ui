@@ -1,4 +1,4 @@
-/* Enhanced Table Styles */
+/* Enhanced PrimeReact DataTable Styles */
 .scraped-data-table-container {
   margin-top: 20px;
   width: 100%;
@@ -15,13 +15,12 @@
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
 }
 
-.table-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
+/* PrimeReact DataTable wrapper */
+.prime-datatable-wrapper {
+  margin-bottom: 20px;
 }
 
+/* Header styles for DataTable */
 .scraped-data-table-container h3 {
   margin: 0;
   color: var(--text-color);
@@ -29,100 +28,127 @@
   font-weight: 700;
 }
 
-.back-button-container {
+/* Action buttons container */
+.action-buttons {
   display: flex;
   justify-content: center;
   gap: 15px;
   margin-top: 20px;
 }
 
-.back-to-main-btn {
+/* Custom styling for PrimeReact buttons */
+.p-button.p-button-danger {
   background-color: #ff6f61; /* Vibrant accent color */
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 24px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  border-color: #ff6f61;
 }
 
-.back-to-main-btn:hover {
+.p-button.p-button-danger:hover {
   background-color: #ff8a75;
-  transform: translateY(-4px);
+  border-color: #ff8a75;
+  transform: translateY(-2px);
 }
 
-.download-csv-btn {
+.p-button.p-button-success {
   background-color: #4CAF50; /* Green color for download */
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 24px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  border-color: #4CAF50;
 }
 
-.download-csv-btn:hover {
+.p-button.p-button-success:hover {
   background-color: #66BB6A;
-  transform: translateY(-4px);
+  border-color: #66BB6A;
+  transform: translateY(-2px);
 }
 
-.table-responsive {
-  overflow-x: auto;
-  max-width: 100%;
-}
-
-.scraped-data-table {
+/* Search input styling */
+.p-input-icon-left {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 10px;
-  font-size: 0.9rem;
-  table-layout: fixed;
+  max-width: 300px;
 }
 
-.scraped-data-table th {
+.p-input-icon-left i {
+  color: var(--text-light);
+}
+
+.p-inputtext {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.p-inputtext:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 1px var(--primary-color-light);
+}
+
+/* Custom styling for PrimeReact DataTable */
+.p-datatable {
+  font-family: inherit;
+}
+
+.p-datatable .p-datatable-header {
+  background: transparent;
+  border: none;
+  padding: 0.75rem 1rem;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
   background-color: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(5px);
   border-radius: 8px;
   text-align: left;
   padding: 12px 15px;
   font-weight: 600;
+  color: var(--text-color);
   transition: background-color 0.3s ease;
+  border: none;
+  margin: 0 4px;
 }
 
-.scraped-data-table th:hover {
-  background-color: #3d3d3d;
+.p-datatable .p-datatable-thead > tr > th:hover {
+  background-color: rgba(255, 255, 255, 0.9);
 }
 
-.scraped-data-table td {
+.p-datatable .p-datatable-tbody > tr > td {
   background-color: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(5px);
   border-radius: 8px;
   padding: 10px 15px;
-  border-bottom: 1px solid var(--border-color);
   color: var(--text-color);
   word-break: break-word;
   vertical-align: top;
-  max-width: 300px;
   transition: background-color 0.3s ease;
+  border: none;
+  margin: 4px;
 }
 
-.scraped-data-table tbody tr:hover {
-  background-color: #1f1f1f;
+.p-datatable .p-datatable-tbody > tr:hover > td {
+  background-color: rgba(255, 255, 255, 0.9);
 }
 
-.scraped-data-table tbody tr:last-child td {
-  border-bottom: none;
+.p-datatable .p-paginator {
+  background: transparent;
+  border: none;
 }
 
-.description-cell {
+.p-datatable .p-paginator .p-paginator-current,
+.p-datatable .p-paginator .p-paginator-first,
+.p-datatable .p-paginator .p-paginator-last,
+.p-datatable .p-paginator .p-paginator-next,
+.p-datatable .p-paginator .p-paginator-page,
+.p-datatable .p-paginator .p-paginator-prev {
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.p-datatable .p-paginator .p-paginator-page.p-highlight {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+/* Description column styling */
+.description-column {
   max-width: 400px;
 }
 

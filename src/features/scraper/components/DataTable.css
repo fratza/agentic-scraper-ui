@@ -1,4 +1,4 @@
-/* Data Table Styles */
+/* PrimeReact Data Table Styles */
 .data-table-container {
   margin-top: 2rem;
   padding-top: 2rem;
@@ -7,53 +7,130 @@
 
 .data-table-container h3 {
   font-size: 1.3rem;
-  margin-bottom: 1.5rem;
   font-weight: 500;
+  color: var(--text-color);
 }
 
-.table-responsive {
-  overflow-x: auto;
+/* PrimeReact DataTable wrapper */
+.prime-datatable-wrapper {
+  margin-bottom: 1rem;
+}
+
+/* Custom styling for PrimeReact DataTable */
+.p-datatable {
+  font-family: inherit;
+}
+
+.p-datatable .p-datatable-header {
+  background: transparent;
+  border: none;
+  padding: 0.75rem 1rem;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  background-color: var(--json-background);
+  color: var(--text-color);
+  border-radius: 8px;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+  border: none;
+  margin: 0 2px;
+}
+
+.p-datatable .p-datatable-thead > tr > th:hover {
+  background-color: var(--hover-color);
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+  background-color: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(5px);
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  color: var(--text-color);
+  word-break: break-word;
+  vertical-align: top;
+  transition: background-color 0.3s ease;
+  border: none;
+  margin: 2px;
+}
+
+.p-datatable .p-datatable-tbody > tr:hover > td {
+  background-color: var(--hover-color);
+}
+
+.p-datatable .p-paginator {
+  background: transparent;
+  border: none;
+}
+
+.p-datatable .p-paginator .p-paginator-current,
+.p-datatable .p-paginator .p-paginator-first,
+.p-datatable .p-paginator .p-paginator-last,
+.p-datatable .p-paginator .p-paginator-next,
+.p-datatable .p-paginator .p-paginator-page,
+.p-datatable .p-paginator .p-paginator-prev {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.p-datatable .p-paginator .p-paginator-page.p-highlight {
+  background-color: var(--primary-color, #6366f1);
+  color: #fff;
+}
+
+/* Search input styling */
+.p-input-icon-left {
+  width: 100%;
+  max-width: 250px;
+}
+
+.p-input-icon-left i {
+  color: var(--text-light, #a0aec0);
+}
+
+.p-inputtext {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.p-inputtext:focus {
+  border-color: var(--primary-color, #6366f1);
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.25);
+}
+
+/* Custom scrollbar for the table */
+.p-datatable .p-datatable-wrapper {
   scrollbar-width: thin;
   scrollbar-color: var(--accent-color) var(--json-background);
 }
 
-.table-responsive::-webkit-scrollbar {
+.p-datatable .p-datatable-wrapper::-webkit-scrollbar {
+  width: 8px;
   height: 8px;
 }
 
-.table-responsive::-webkit-scrollbar-track {
+.p-datatable .p-datatable-wrapper::-webkit-scrollbar-track {
   background: var(--json-background);
 }
 
-.table-responsive::-webkit-scrollbar-thumb {
+.p-datatable .p-datatable-wrapper::-webkit-scrollbar-thumb {
   background-color: var(--accent-color);
   border-radius: 20px;
   border: 2px solid var(--json-background);
 }
 
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  border-spacing: 0;
-  color: var(--text-color);
-  background-color: var(--background-color);
+/* Fade-in animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.data-table th,
-.data-table td {
-  padding: 1rem;
-  text-align: left;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.data-table th {
-  background-color: var(--json-background);
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.8rem;
-  letter-spacing: 1px;
-}
-
-.data-table tbody tr:hover {
-  background-color: rgba(108, 99, 255, 0.05);
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
 }

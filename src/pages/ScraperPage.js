@@ -40,12 +40,13 @@ const ScraperPage = () => {
     startScraping(resumeLink); // Start the scraping process
   };
 
-  // Handle modal close - reset form stack and close SSE connection if not scraping
+  // Handle modal close - reset form stack and close SSE connection
   const handleModalClose = () => {
     setIsModalOpen(false);
 
-    // Only reset if we're not actively scraping data
-    if (!scraping && !scrapedData) {
+    // Always reset when modal is closed during preview loading
+    // Only avoid resetting if we're actively scraping or have scraped data
+    if (loading || (!scraping && !scrapedData)) {
       resetScraper(); // This will close SSE connections
     }
   };
