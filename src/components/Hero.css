@@ -10,6 +10,7 @@
   line-height: 1.2;
   margin-bottom: 1.5rem;
   letter-spacing: -1px;
+  color: #ffffff;
 }
 
 .hero h1 span {
@@ -18,7 +19,7 @@
 
 .hero p {
   font-size: 1.2rem;
-  color: var(--text-light);
+  color: #ffffff;
   max-width: 600px;
   margin: 0 auto;
 }

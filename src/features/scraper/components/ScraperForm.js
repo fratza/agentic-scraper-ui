@@ -47,13 +47,13 @@ const ScraperForm = ({ onSubmit }) => {
     try {
       // Send data to backend API
       const response = await apiService.submitScrapeRequest(formData);
-      console.log("Scrape request submitted successfully:", response);
+      // Scrape request submitted successfully
 
       // Pass the response to parent component
       onSubmit({ url, scrapeTarget, jobId: response.jobId });
       // Note: We don't reset isSubmitting here because the form will be replaced by preview
     } catch (error) {
-      console.error("Error submitting scrape request:", error);
+      // Handle submission error silently
       // Handle API errors
       setErrors({
         api:

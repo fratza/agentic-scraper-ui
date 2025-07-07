@@ -24,6 +24,7 @@ label {
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 1px;
+  color: #ffffff;
 }
 
 input[type="url"],
@@ -34,9 +35,9 @@ textarea {
   border: 1px solid var(--border-color);
   border-radius: 4px;
   font-size: 1rem;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   background-color: var(--input-background);
-  color: var(--text-color);
+  color: #ffffff;
   transition: var(--transition);
   min-height: 50px;
   resize: vertical;

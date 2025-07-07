@@ -63,8 +63,8 @@ const Preview = ({
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       })
-      .catch((err) => {
-        console.error("Failed to copy: ", err);
+      .catch(() => {
+        // Silently handle clipboard errors
       });
   };
 
@@ -117,7 +117,7 @@ const Preview = ({
                       : null;
 
                   if (!resume_link) {
-                    console.error("No resume_link available for cancel action");
+                    // No resume_link available to cancel
                     return;
                   }
 
@@ -136,7 +136,7 @@ const Preview = ({
                     onClose();
                   }
                 } catch (error) {
-                  console.error("Error cancelling scrape:", error);
+                  // Handle cancel error silently
                   setSessionError(true);
                 } finally {
                   setActionInProgress(false);
@@ -157,9 +157,7 @@ const Preview = ({
                       : null;
 
                   if (!resume_link) {
-                    console.error(
-                      "No resume_link available for approve action"
-                    );
+                    // No resume_link available for approve action
                     return;
                   }
 
@@ -173,7 +171,7 @@ const Preview = ({
                   // Start the scraping process in the UI
                   onScrape(resume_link);
                 } catch (error) {
-                  console.error("Error approving scrape:", error);
+                  // Handle approval error silently
                   setSessionError(true);
                   setIsScraping(false);
                   setActionInProgress(false);
