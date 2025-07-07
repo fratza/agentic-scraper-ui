@@ -36,6 +36,7 @@
   border-collapse: collapse;
   border-spacing: 0;
   color: var(--text-color);
+  background-color: var(--background-color);
 }
 
 .data-table th,

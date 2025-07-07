@@ -15,9 +15,15 @@
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
 }
 
-.scraped-data-table-container h3 {
-  margin-top: 0;
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 15px;
+}
+
+.scraped-data-table-container h3 {
+  margin: 0;
   color: var(--text-color);
   font-size: 1.5rem;
   font-weight: 700;
@@ -26,6 +32,7 @@
 .back-button-container {
   display: flex;
   justify-content: center;
+  gap: 15px;
   margin-top: 20px;
 }
 
@@ -45,6 +52,25 @@
 
 .back-to-main-btn:hover {
   background-color: #ff8a75;
+  transform: translateY(-4px);
+}
+
+.download-csv-btn {
+  background-color: #4CAF50; /* Green color for download */
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.download-csv-btn:hover {
+  background-color: #66BB6A;
   transform: translateY(-4px);
 }
 

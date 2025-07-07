@@ -23,14 +23,11 @@ const Header = () => {
         </div>
         <nav>
           <ul>
-            <li className="active">
-              <a href="#home">Home</a>
+            <li>
+              <a href="#login">Login</a>
             </li>
             <li>
-              <a href="#about">About</a>
-            </li>
-            <li>
-              <a href="#contact">Contact</a>
+              <a href="#signup">Signup</a>
             </li>
           </ul>
         </nav>

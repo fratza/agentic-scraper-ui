@@ -35,6 +35,46 @@ const ScrapedDataTable = ({ scrapedData, onBackToMain }) => {
       .join(" ");
   };
 
+  // Function to download data as CSV
+  const downloadCSV = () => {
+    // Get keys from the first data item, excluding UUID
+    const csvKeys = Object.keys(dataArray[0]).filter(key => key.toLowerCase() !== 'uuid');
+    
+    // Create CSV header row
+    const header = csvKeys.map(key => formatColumnHeader(key)).join(',');
+    
+    // Create CSV rows from data
+    const rows = dataArray.map(item => {
+      return csvKeys.map(key => {
+        const value = item[key];
+        // Format the value for CSV (handle strings with commas, quotes, etc.)
+        if (value === null || value === undefined) {
+          return '';
+        } else if (typeof value === 'object') {
+          return `"${JSON.stringify(value).replace(/"/g, '""')}"`;
+        } else if (typeof value === 'string') {
+          return `"${value.replace(/"/g, '""')}"`;
+        } else {
+          return value;
+        }
+      }).join(',');
+    }).join('\n');
+    
+    // Combine header and rows
+    const csv = `${header}\n${rows}`;
+    
+    // Create a blob and download link
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'scraped_data.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // Format cell value based on type
   const formatCellValue = (key, value) => {
     if (typeof value === "boolean") {
@@ -90,7 +130,12 @@ const ScrapedDataTable = ({ scrapedData, onBackToMain }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h3>Scraped Data Results</h3>
+      <div className="table-header">
+        <h3>Scraped Data Results</h3>
+        <button className="download-csv-btn" onClick={downloadCSV}>
+          <i className="fas fa-download"></i> Download CSV
+        </button>
+      </div>
       <div className="table-responsive">
         <table className="scraped-data-table">
           <thead>
