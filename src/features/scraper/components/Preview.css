@@ -47,12 +47,10 @@
   color: white;
 }
 
-.preview-content {
+/* Table styling within preview container */
+.preview-container .data-table-container {
   margin-bottom: 2rem;
-  padding: 1.5rem;
-  background-color: var(--json-background);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
+  padding: 0;
   overflow: hidden;
 }
 

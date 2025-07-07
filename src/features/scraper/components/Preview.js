@@ -73,7 +73,7 @@ const Preview = ({
       {!scraping && !scrapedData && (
         <>
           <div className="preview-header">
-            <h2>Preview</h2>
+            <h2>Preview Scrape Data</h2>
             <button
               className={`btn-icon ${copied ? "success" : ""}`}
               onClick={handleCopyJson}
@@ -86,24 +86,22 @@ const Preview = ({
               )}
             </button>
           </div>
-          <div className="preview-content">
-            {previewData && previewData.sample ? (
-              Array.isArray(previewData.sample) ? (
-                <DataTable data={filterInitiatedAt(previewData.sample)} title="Preview Data" />
-              ) : typeof previewData.sample === "object" &&
-                previewData.sample !== null ? (
-                <DataTable data={[filterInitiatedAt(previewData.sample)]} title="Preview Data" />
-              ) : (
-                <pre id="json-preview">
-                  {JSON.stringify(filterInitiatedAt(previewData.sample), null, 2)}
-                </pre>
-              )
+          {previewData && previewData.sample ? (
+            Array.isArray(previewData.sample) ? (
+              <DataTable data={filterInitiatedAt(previewData.sample)} />
+            ) : typeof previewData.sample === "object" &&
+              previewData.sample !== null ? (
+              <DataTable data={[filterInitiatedAt(previewData.sample)]} />
             ) : (
               <pre id="json-preview">
-                {JSON.stringify(filterInitiatedAt(previewData), null, 2)}
+                {JSON.stringify(filterInitiatedAt(previewData.sample), null, 2)}
               </pre>
-            )}
-          </div>
+            )
+          ) : (
+            <pre id="json-preview">
+              {JSON.stringify(filterInitiatedAt(previewData), null, 2)}
+            </pre>
+          )}
           <div className="preview-actions">
             <button
               className="btn-cancel"
@@ -217,7 +215,79 @@ const Preview = ({
         </div>
       )}
 
-      {scrapedData && <DataTable data={scrapedData} />}
+      {scrapedData && (
+        <>
+          <div className="preview-header">
+            <h2>Scraped Data Results</h2>
+            <button
+              className="btn-icon"
+              onClick={() => {
+                // Download CSV functionality
+                const keys = Object.keys(scrapedData[0] || {}).filter(key => 
+                  key.toLowerCase() !== 'uuid' && key !== 'id');
+                
+                // Create CSV header row
+                const header = keys.map(key => {
+                  return key
+                    .replace(/([A-Z])/g, " $1")
+                    .replace(/_/g, " ")
+                    .split(" ")
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                    .join(" ");
+                }).join(',');
+                
+                // Create CSV rows from data
+                const rows = scrapedData.map(item => {
+                  return keys.map(key => {
+                    const value = item[key];
+                    if (value === null || value === undefined) {
+                      return '';
+                    } else if (typeof value === 'object') {
+                      return `"${JSON.stringify(value).replace(/"/g, '""')}"`;  
+                    } else if (typeof value === 'string') {
+                      return `"${value.replace(/"/g, '""')}"`;  
+                    } else {
+                      return value;
+                    }
+                  }).join(',');
+                }).join('\n');
+                
+                // Combine header and rows
+                const csv = `${header}\n${rows}`;
+                
+                // Create download link
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'scraped_data.csv');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              }}
+              title="Download CSV"
+            >
+              <i className="fas fa-download"></i>
+            </button>
+          </div>
+          <DataTable data={scrapedData} />
+          <div className="preview-actions">
+            <button
+              className="btn-cancel"
+              onClick={() => {
+                if (resetScraper) {
+                  resetScraper();
+                }
+                if (onClose) {
+                  onClose();
+                }
+              }}
+            >
+              <span>Back to Main Page</span>
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
