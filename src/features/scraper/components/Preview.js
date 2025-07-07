@@ -21,9 +21,40 @@ const Preview = ({
   // No need to scroll to preview when in modal
   // Modal will be centered on screen
 
+  // Filter out initiated_at field from preview data
+  const filterInitiatedAt = (data) => {
+    if (!data) return data;
+    
+    if (Array.isArray(data)) {
+      return data.map(item => {
+        if (item && typeof item === 'object') {
+          const { initiated_at, ...rest } = item;
+          return rest;
+        }
+        return item;
+      });
+    } else if (data && typeof data === 'object') {
+      const { initiated_at, ...rest } = data;
+      return rest;
+    }
+    
+    return data;
+  };
+  
+  // Get filtered preview data
+  const getFilteredPreviewData = () => {
+    if (previewData && previewData.sample) {
+      return {
+        ...previewData,
+        sample: filterInitiatedAt(previewData.sample)
+      };
+    }
+    return filterInitiatedAt(previewData);
+  };
+  
   const handleCopyJson = () => {
     const dataToCopy =
-      previewData && previewData.sample ? previewData.sample : previewData;
+      previewData && previewData.sample ? filterInitiatedAt(previewData.sample) : filterInitiatedAt(previewData);
     const jsonText = JSON.stringify(dataToCopy, null, 2);
     navigator.clipboard
       .writeText(jsonText)
@@ -57,18 +88,18 @@ const Preview = ({
           <div className="preview-content">
             {previewData && previewData.sample ? (
               Array.isArray(previewData.sample) ? (
-                <DataTable data={previewData.sample} title="Preview Data" />
+                <DataTable data={filterInitiatedAt(previewData.sample)} title="Preview Data" />
               ) : typeof previewData.sample === "object" &&
                 previewData.sample !== null ? (
-                <DataTable data={[previewData.sample]} title="Preview Data" />
+                <DataTable data={[filterInitiatedAt(previewData.sample)]} title="Preview Data" />
               ) : (
                 <pre id="json-preview">
-                  {JSON.stringify(previewData.sample, null, 2)}
+                  {JSON.stringify(filterInitiatedAt(previewData.sample), null, 2)}
                 </pre>
               )
             ) : (
               <pre id="json-preview">
-                {JSON.stringify(previewData, null, 2)}
+                {JSON.stringify(filterInitiatedAt(previewData), null, 2)}
               </pre>
             )}
           </div>

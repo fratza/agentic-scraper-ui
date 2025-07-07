@@ -84,11 +84,13 @@ pre::-webkit-scrollbar-thumb {
 }
 
 .preview-actions {
-  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
   margin-bottom: 2rem;
 }
 
-.btn-scrape {
+.btn-scrape, .btn-cancel {
   display: inline-block;
   padding: 1rem 2.5rem;
   background-color: var(--primary-color);
@@ -103,13 +105,19 @@ pre::-webkit-scrollbar-thumb {
   transition: var(--transition);
 }
 
-.btn-scrape:hover {
+.btn-scrape:hover, .btn-cancel:hover {
   background-color: var(--button-hover);
   transform: translateY(-2px);
 }
 
-.btn-scrape:active {
+.btn-scrape:active, .btn-cancel:active {
   transform: translateY(0);
+}
+
+.btn-scrape:disabled, .btn-cancel:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* Progress Bar Styles */
