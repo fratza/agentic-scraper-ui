@@ -144,6 +144,7 @@ const ScraperPage = () => {
                 scrapedData={scrapedData}
                 error={error}
                 onClose={handleModalClose}
+                resetScraper={resetScraper}
               />
             ) : error ? (
               <div className="preview-error-container">

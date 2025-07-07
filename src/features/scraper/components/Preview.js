@@ -11,6 +11,7 @@ const Preview = ({
   scrapedData,
   error,
   onClose,
+  resetScraper,
 }) => {
   const [copied, setCopied] = useState(false);
   const [isScraping, setIsScraping] = useState(false);
@@ -125,6 +126,11 @@ const Preview = ({
                   // Send cancel action to backend
                   await apiService.handleScrapeAction(resume_link, "cancel");
 
+                  // Reset scraper state and close SSE connections
+                  if (resetScraper) {
+                    resetScraper();
+                  }
+                  
                   // Close the modal after cancellation
                   if (onClose) {
                     onClose();
