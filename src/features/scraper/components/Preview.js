@@ -22,20 +22,20 @@ const Preview = ({
   // No need to scroll to preview when in modal
   // Modal will be centered on screen
 
-  // Filter out initiated_at field from preview data
-  const filterInitiatedAt = (data) => {
+  // Filter out unwanted fields (uuid, initiated_at) from preview data
+  const filterUnwantedFields = (data) => {
     if (!data) return data;
     
     if (Array.isArray(data)) {
       return data.map(item => {
         if (item && typeof item === 'object') {
-          const { initiated_at, ...rest } = item;
+          const { initiated_at, uuid, ...rest } = item;
           return rest;
         }
         return item;
       });
     } else if (data && typeof data === 'object') {
-      const { initiated_at, ...rest } = data;
+      const { initiated_at, uuid, ...rest } = data;
       return rest;
     }
     
@@ -47,15 +47,15 @@ const Preview = ({
     if (previewData && previewData.sample) {
       return {
         ...previewData,
-        sample: filterInitiatedAt(previewData.sample)
+        sample: filterUnwantedFields(previewData.sample)
       };
     }
-    return filterInitiatedAt(previewData);
+    return filterUnwantedFields(previewData);
   };
   
   const handleCopyJson = () => {
     const dataToCopy =
-      previewData && previewData.sample ? filterInitiatedAt(previewData.sample) : filterInitiatedAt(previewData);
+      previewData && previewData.sample ? filterUnwantedFields(previewData.sample) : filterUnwantedFields(previewData);
     const jsonText = JSON.stringify(dataToCopy, null, 2);
     navigator.clipboard
       .writeText(jsonText)
@@ -73,7 +73,7 @@ const Preview = ({
       {!scraping && !scrapedData && (
         <>
           <div className="preview-header">
-            <h2>Preview Scrape Data</h2>
+            <h2>Data to be extracted</h2>
             <button
               className={`btn-icon ${copied ? "success" : ""}`}
               onClick={handleCopyJson}
@@ -86,20 +86,33 @@ const Preview = ({
               )}
             </button>
           </div>
+          {previewData && previewData.url && (
+            <div className="preview-url-container">
+              <span className="url-label">URL: </span>
+              <a 
+                href={previewData.url} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="preview-url-link"
+              >
+                {previewData.url}
+              </a>
+            </div>
+          )}
           {previewData && previewData.sample ? (
             Array.isArray(previewData.sample) ? (
-              <DataTable data={filterInitiatedAt(previewData.sample)} />
+              <DataTable data={filterUnwantedFields(previewData.sample)} />
             ) : typeof previewData.sample === "object" &&
               previewData.sample !== null ? (
-              <DataTable data={[filterInitiatedAt(previewData.sample)]} />
+              <DataTable data={[filterUnwantedFields(previewData.sample)]} />
             ) : (
               <pre id="json-preview">
-                {JSON.stringify(filterInitiatedAt(previewData.sample), null, 2)}
+                {JSON.stringify(filterUnwantedFields(previewData.sample), null, 2)}
               </pre>
             )
           ) : (
             <pre id="json-preview">
-              {JSON.stringify(filterInitiatedAt(previewData), null, 2)}
+              {JSON.stringify(filterUnwantedFields(previewData), null, 2)}
             </pre>
           )}
           <div className="preview-actions">
