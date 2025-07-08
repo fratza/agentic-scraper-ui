@@ -280,20 +280,12 @@ const useScraper = () => {
         // Handle extractedData events (previously scrapedData)
         eventSource.addEventListener("scrapedData", (event) => {
           try {
-
             const parsedData = JSON.parse(event.data);
 
-
-            // Always display parsedData.data.extractedData in the Data Results Table
-            if (
-              parsedData &&
-              parsedData.data &&
-              parsedData.data.extractedData
-            ) {
-
-              setScrapedData(parsedData.data.extractedData); // Setting scrapedData for backward compatibility
+            console.log("THIS IS PARSED DATA", parsedData);
+            if (parsedData.data.extractedData) {
+              setScrapedData(parsedData.data.extractedData);
             } else {
-
               setScrapedData([{ message: "No Data Found" }]);
             }
 
