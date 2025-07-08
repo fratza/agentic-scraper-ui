@@ -30,38 +30,33 @@ const ScraperPage = () => {
   } = useScraper();
 
   useEffect(() => {
-    // Hide loader after page load
     const timer = setTimeout(() => {
       setPageLoading(false);
     }, 500);
     return () => clearTimeout(timer);
   }, []);
 
-  // Handle scraping start - close modal and show loading results
   const handleStartScraping = (resumeLink) => {
-    setIsModalOpen(false); // Close the modal
-    setShowLoadingResults(true); // Show loading results message
-    startScraping(resumeLink); // Start the scraping process
+    setIsModalOpen(false);
+    setShowLoadingResults(true);
+    startScraping(resumeLink);
   };
 
-  // Handle modal close - reset form stack and close SSE connection
   const handleModalClose = () => {
     setIsModalOpen(false);
-
-    // Always reset when modal is closed during preview loading
-    // Only avoid resetting if we're actively scraping or have scraped data
+    
     if (loading || (!scraping && !scrapedData)) {
-      resetScraper(); // This will close SSE connections
+      resetScraper();
     }
   };
 
-  // Reset loading results when scraping is complete or there's an error
-  // Navigate to template page when scraping is complete
   useEffect(() => {
     if (scrapedData) {
       setShowLoadingResults(false);
-      // Navigate to the template page to display results
-      window.location.href = '/template';
+      // Use history API for client-side navigation instead of full page reload
+      window.history.pushState({}, '', '/template');
+      // Dispatch a custom event to notify the router of the navigation
+      window.dispatchEvent(new CustomEvent('locationchange', { detail: '/template' }));
     } else if (error) {
       setShowLoadingResults(false);
     }
@@ -73,7 +68,6 @@ const ScraperPage = () => {
         <div className="container">
           <Hero />
 
-          {/* Only show the form if we're not showing results or loading */}
           {!scrapedData && !showLoadingResults && !scraping && (
             <ScraperForm
               onSubmit={(data) => {
@@ -83,7 +77,6 @@ const ScraperPage = () => {
             />
           )}
 
-          {/* Show loading results message */}
           {(showLoadingResults || scraping) && !scrapedData && (
             <div className="loading-results-container">
               <div className="loading-spinner-container">
@@ -111,7 +104,6 @@ const ScraperPage = () => {
             </div>
           )}
 
-          {/* Show error message if there is one */}
           {error && (
             <div className="error-container">
               <div className="error-message">
@@ -123,8 +115,6 @@ const ScraperPage = () => {
               </button>
             </div>
           )}
-
-          {/* Data will be shown on the dedicated page */}
 
           {/* Modal for preview */}
           <Modal

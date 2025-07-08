@@ -29,7 +29,31 @@ const routes = [
  * Router component that renders the current route based on the current path
  */
 export const Router = () => {
-  const currentPath = window.location.pathname;
+  const [currentPath, setCurrentPath] = React.useState(window.location.pathname);
+
+  React.useEffect(() => {
+    // Handle browser back/forward buttons
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname);
+    };
+
+    // Handle custom location change events
+    const handleLocationChange = (event) => {
+      if (event.detail) {
+        setCurrentPath(event.detail);
+      }
+    };
+
+    // Add event listeners
+    window.addEventListener('popstate', handlePopState);
+    window.addEventListener('locationchange', handleLocationChange);
+
+    // Clean up event listeners
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('locationchange', handleLocationChange);
+    };
+  }, []);
 
   // Find the matching route
   const route = routes.find((route) => {
