@@ -15,6 +15,8 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "primeflex/primeflex.css";
 
+import TableDisplay from "./TableDisplay";
+
 const ScrapedDataTable = ({ scrapedData, onBackToMain }) => {
   const [tableData, setTableData] = useState([]);
   const [filters, setFilters] = useState({});
@@ -225,45 +227,14 @@ const ScrapedDataTable = ({ scrapedData, onBackToMain }) => {
           </div>
         </div>
 
-        <div className="prime-datatable-wrapper">
-          <DataTable
-            value={tableData}
-            paginator
-            rows={10}
-            rowsPerPageOptions={[10, 25, 50]}
-            dataKey="id"
-            filters={filters}
-            filterDisplay="menu"
-            loading={loading}
-            responsiveLayout="scroll"
-            emptyMessage="No data found."
-            header={null}
-            scrollable
-            scrollHeight="60vh"
-            stripedRows
-            resizableColumns
-            columnResizeMode="fit"
-            className="p-datatable-gridlines"
-          >
-            {keys.map((key) => (
-              <Column
-                key={key}
-                field={key}
-                header={formatColumnHeader(key)}
-                sortable
-                filter
-                filterPlaceholder={`Search ${formatColumnHeader(key)}`}
-                body={(rowData) => formatCellValue(rowData, { field: key })}
-                style={{ minWidth: "12rem" }}
-                className={
-                  key.toLowerCase().includes("description")
-                    ? "description-column"
-                    : ""
-                }
-              />
-            ))}
-          </DataTable>
-        </div>
+        <TableDisplay
+          tableData={tableData}
+          filters={filters}
+          loading={loading}
+          formatColumnHeader={formatColumnHeader}
+          formatCellValue={formatCellValue}
+          keys={keys}
+        />
 
         <div className="action-buttons">
           <Button
