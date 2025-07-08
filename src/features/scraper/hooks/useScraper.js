@@ -314,23 +314,12 @@ const useScraper = () => {
             const parsedData = JSON.parse(event.data);
             console.log("Received scrapedData:", parsedData);
 
-            // Extract the extractedData within the data field from the response
-            if (
-              parsedData &&
-              parsedData.data &&
-              parsedData.data.extractedData &&
-              Array.isArray(parsedData.data.extractedData)
-            ) {
-              // This is the specific case where data contains extractedData array
-              console.log("Found extractedData array in data field:", parsedData.data.extractedData);
+            // Always display parsedData.data.extractedData in the Scrape Results Table
+            if (parsedData && parsedData.data && parsedData.data.extractedData) {
+              console.log("Displaying data.extractedData in Scrape Results Table:", parsedData.data.extractedData);
               setScrapedData(parsedData.data.extractedData);
             } else {
-              // If the specific structure is not found, display "No Data Found"
-              console.warn(
-                "Expected data structure not found. Displaying 'No Data Found':",
-                parsedData
-              );
-              // Create a single row with a message
+              console.warn("Expected data.extractedData not found. Displaying 'No Data Found'");
               setScrapedData([{ message: "No Data Found" }]);
             }
 
@@ -338,9 +327,7 @@ const useScraper = () => {
             setProgress(100);
 
             // Close the SSE connection
-            console.log(
-              "Closing scraping SSE connection after receiving scrapedData event"
-            );
+            console.log("Closing scraping SSE connection after receiving scrapedData event");
             apiService.closeEventSource(eventSource);
             scrapingEventSourceRef.current = null;
           } catch (err) {
