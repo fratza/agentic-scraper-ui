@@ -56,12 +56,12 @@ const ScraperPage = () => {
   };
 
   // Reset loading results when scraping is complete or there's an error
-  // Navigate to data results page when scraping is complete
+  // Navigate to template page when scraping is complete
   useEffect(() => {
     if (scrapedData) {
       setShowLoadingResults(false);
-      // Navigate to the data results page
-      window.location.href = '/extracted-data';
+      // Navigate to the template page to display results
+      window.location.href = '/template';
     } else if (error) {
       setShowLoadingResults(false);
     }
