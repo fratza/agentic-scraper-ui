@@ -158,6 +158,21 @@
   }
 }
 
+/* Row Number Column */
+.row-number-column {
+  width: 50px !important;
+  min-width: 50px !important;
+  max-width: 50px !important;
+  text-align: center !important;
+  background-color: #f0f0f0 !important;
+  font-weight: 600 !important;
+  color: #555 !important;
+  position: sticky !important;
+  left: 0 !important;
+  z-index: 1 !important;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1) !important;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .extracted-data-table th,

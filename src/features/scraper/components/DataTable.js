@@ -41,11 +41,15 @@ const DataTable = ({ data, title }) => {
       <div className="table-responsive">
         <table className="data-table">
           <thead>
-            <tr>{getHeaders()}</tr>
+            <tr>
+              <th className="row-number-column">#</th>
+              {getHeaders()}
+            </tr>
           </thead>
           <tbody>
             {tableData.map((item, index) => (
               <tr key={index}>
+                <td className="row-number-column">{index + 1}</td>
                 {Object.keys(item).map((key) => (
                   <td key={key}>{formatValue(item[key])}</td>
                 ))}

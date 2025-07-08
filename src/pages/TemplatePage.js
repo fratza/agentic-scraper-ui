@@ -6,6 +6,9 @@ import ExtractedDataTable from '../features/scraper/components/ExtractedDataTabl
 import useScraper from '../features/scraper/hooks/useScraper';
 import '../styles/TemplatePage.css';
 
+// Import PrimeReact theme only for the data table components
+// The rest of the page will use the app's theme variables
+
 const TemplatePage = () => {
   const { scrapedData, loading } = useScraper();
   
@@ -58,7 +61,9 @@ const TemplatePage = () => {
               </div>
             </Card>
           ) : displayData ? (
-            <ExtractedDataTable extractedData={displayData} />
+            <div className="data-table-wrapper">
+              <ExtractedDataTable extractedData={displayData} />
+            </div>
           ) : (
             <Card className="info-card">
               <p>No data available. Please run a scraper to get data.</p>

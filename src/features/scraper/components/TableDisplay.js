@@ -10,6 +10,11 @@ const TableDisplay = ({
   formatCellValue,
   keys,
 }) => {
+  // Row number template
+  const rowNumberTemplate = (rowData, options) => {
+    return <span>{options.rowIndex + 1}</span>;
+  };
+
   return (
     <div className="prime-datatable-wrapper">
       <DataTable
@@ -28,6 +33,14 @@ const TableDisplay = ({
         columnResizeMode="fit"
         className="p-datatable-gridlines"
       >
+        {/* Row number column */}
+        <Column
+          header="#"
+          body={rowNumberTemplate}
+          style={{ width: '4rem', textAlign: 'center' }}
+          frozen
+          className="row-number-column"
+        />
         {keys.map((key) => (
           <Column
             key={key}

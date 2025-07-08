@@ -57,6 +57,25 @@
   color: #333333;
 }
 
+/* Row Number Column */
+.row-number-column {
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
+  text-align: center;
+  background-color: #f0f0f0;
+  font-weight: 600;
+  color: #555;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.data-table td.row-number-column {
+  background-color: #f0f0f0;
+}
+
 /* Animation */
 @keyframes fadeIn {
   from {
