@@ -17,7 +17,7 @@ const PREVIEW_SSE_URL = `${API_URL.replace("/api", "")}/api/preview/events`;
 const EXTRACTED_DATA_SSE_URL = `${API_URL.replace(
   "/api",
   ""
-)}/api/extracted-data/events`;
+)}/api/scraped-data/events`;
 
 // Generate a unique session token for this client
 const SESSION_TOKEN = `${Date.now()}-${Math.random()
