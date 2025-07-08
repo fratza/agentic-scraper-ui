@@ -1,13 +1,11 @@
 /* Enhanced PrimeReact DataTable Styles */
 .scraped-data-table-container {
-  margin-top: 20px;
+  margin-bottom: 2rem;
   width: 100%;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  transition: var(--transition);
+  overflow: hidden;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .scraped-data-table-container:hover {
@@ -17,15 +15,18 @@
 
 /* PrimeReact DataTable wrapper */
 .prime-datatable-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
 }
 
 /* Header styles for DataTable */
 .scraped-data-table-container h3 {
-  margin: 0;
-  color: var(--text-color);
+  margin-top: 0;
+  margin-bottom: 1rem;
   font-size: 1.5rem;
-  font-weight: 700;
+  color: #333333;
 }
 
 /* Action buttons container */
@@ -49,13 +50,13 @@
 }
 
 .p-button.p-button-success {
-  background-color: #4CAF50; /* Green color for download */
-  border-color: #4CAF50;
+  background-color: #4caf50; /* Green color for download */
+  border-color: #4caf50;
 }
 
 .p-button.p-button-success:hover {
-  background-color: #66BB6A;
-  border-color: #66BB6A;
+  background-color: #66bb6a;
+  border-color: #66bb6a;
   transform: translateY(-2px);
 }
 
@@ -82,69 +83,31 @@
 }
 
 /* Custom styling for PrimeReact DataTable */
-.p-datatable {
-  font-family: inherit;
+.p-datatable-gridlines {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  font-family: "Poppins", sans-serif;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
-.p-datatable .p-datatable-header {
-  background: transparent;
-  border: none;
-  padding: 0.75rem 1rem;
-}
-
-.p-datatable .p-datatable-thead > tr > th {
-  background-color: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(5px);
-  border-radius: 8px;
-  text-align: left;
-  padding: 12px 15px;
+.p-datatable-gridlines th {
+  background-color: #f8f9fa;
+  color: #333333;
   font-weight: 600;
-  color: var(--text-color);
-  transition: background-color 0.3s ease;
-  border: none;
-  margin: 0 4px;
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 2px solid #e9ecef;
 }
 
-.p-datatable .p-datatable-thead > tr > th:hover {
-  background-color: rgba(255, 255, 255, 0.9);
+.p-datatable-gridlines td {
+  padding: 10px 16px;
+  border-bottom: 1px solid #e9ecef;
+  color: #333333;
 }
 
-.p-datatable .p-datatable-tbody > tr > td {
-  background-color: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(5px);
-  border-radius: 8px;
-  padding: 10px 15px;
-  color: var(--text-color);
-  word-break: break-word;
-  vertical-align: top;
-  transition: background-color 0.3s ease;
-  border: none;
-  margin: 4px;
-}
-
-.p-datatable .p-datatable-tbody > tr:hover > td {
-  background-color: rgba(255, 255, 255, 0.9);
-}
-
-.p-datatable .p-paginator {
-  background: transparent;
-  border: none;
-}
-
-.p-datatable .p-paginator .p-paginator-current,
-.p-datatable .p-paginator .p-paginator-first,
-.p-datatable .p-paginator .p-paginator-last,
-.p-datatable .p-paginator .p-paginator-next,
-.p-datatable .p-paginator .p-paginator-page,
-.p-datatable .p-paginator .p-paginator-prev {
-  background-color: rgba(255, 255, 255, 0.2);
-  border: 1px solid var(--border-color);
-  color: var(--text-color);
-}
-
-.p-datatable .p-paginator .p-paginator-page.p-highlight {
-  background-color: var(--primary-color);
-  color: #fff;
+.p-datatable-gridlines tbody tr:hover {
+  background-color: #f8f9fa;
 }
 
 /* Description column styling */
