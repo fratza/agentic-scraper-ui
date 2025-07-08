@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import './styles/App.css';
-import MainLayout from './layouts/MainLayout';
-import { Router } from './routes';
-import Loader from './components/Loader';
+import React, { useState } from "react";
+import "./styles/App.css";
+import MainLayout from "./layouts/MainLayout";
+import { Router } from "./routes";
+import Loader from "./components/Loader";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -16,7 +16,7 @@ function App() {
   }, []);
 
   return (
-    <div className={`app ${!loading ? 'fade-in' : ''}`}>
+    <div className={`app ${!loading ? "fade-in" : ""}`}>
       {loading && <Loader />}
       <MainLayout>
         <Router />

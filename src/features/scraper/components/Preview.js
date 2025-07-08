@@ -19,43 +19,41 @@ const Preview = ({
   const [actionInProgress, setActionInProgress] = useState(false);
   const previewRef = useRef(null);
 
-  // No need to scroll to preview when in modal
-  // Modal will be centered on screen
-
-  // Filter out unwanted fields (uuid, initiated_at) from preview data
   const filterUnwantedFields = (data) => {
     if (!data) return data;
-    
+
     if (Array.isArray(data)) {
-      return data.map(item => {
-        if (item && typeof item === 'object') {
-          const { initiated_at, uuid, ...rest } = item;
+      return data.map((item) => {
+        if (item && typeof item === "object") {
+          const { initiatedAt, uuid, ...rest } = item;
           return rest;
         }
         return item;
       });
-    } else if (data && typeof data === 'object') {
-      const { initiated_at, uuid, ...rest } = data;
+    } else if (data && typeof data === "object") {
+      const { initiatedAt, uuid, ...rest } = data;
       return rest;
     }
-    
+
     return data;
   };
-  
+
   // Get filtered preview data
   const getFilteredPreviewData = () => {
     if (previewData && previewData.sample) {
       return {
         ...previewData,
-        sample: filterUnwantedFields(previewData.sample)
+        sample: filterUnwantedFields(previewData.sample),
       };
     }
     return filterUnwantedFields(previewData);
   };
-  
+
   const handleCopyJson = () => {
     const dataToCopy =
-      previewData && previewData.sample ? filterUnwantedFields(previewData.sample) : filterUnwantedFields(previewData);
+      previewData && previewData.sample
+        ? filterUnwantedFields(previewData.sample)
+        : filterUnwantedFields(previewData);
     const jsonText = JSON.stringify(dataToCopy, null, 2);
     navigator.clipboard
       .writeText(jsonText)
@@ -89,10 +87,10 @@ const Preview = ({
           {previewData && previewData.url && (
             <div className="preview-url-container">
               <span className="url-label">URL: </span>
-              <a 
-                href={previewData.url} 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href={previewData.url}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="preview-url-link"
               >
                 {previewData.url}
@@ -107,7 +105,11 @@ const Preview = ({
               <DataTable data={[filterUnwantedFields(previewData.sample)]} />
             ) : (
               <pre id="json-preview">
-                {JSON.stringify(filterUnwantedFields(previewData.sample), null, 2)}
+                {JSON.stringify(
+                  filterUnwantedFields(previewData.sample),
+                  null,
+                  2
+                )}
               </pre>
             )
           ) : (
@@ -130,7 +132,7 @@ const Preview = ({
                   if (resetScraper) {
                     resetScraper();
                   }
-                  
+
                   // Close the modal after cancellation
                   if (onClose) {
                     onClose();
@@ -215,44 +217,60 @@ const Preview = ({
               className="btn-icon"
               onClick={() => {
                 // Download CSV functionality
-                const keys = Object.keys(scrapedData[0] || {}).filter(key => 
-                  key.toLowerCase() !== 'uuid' && key !== 'id');
-                
+                const keys = Object.keys(scrapedData[0] || {}).filter(
+                  (key) => key.toLowerCase() !== "uuid" && key !== "id"
+                );
+
                 // Create CSV header row
-                const header = keys.map(key => {
-                  return key
-                    .replace(/([A-Z])/g, " $1")
-                    .replace(/_/g, " ")
-                    .split(" ")
-                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                    .join(" ");
-                }).join(',');
-                
+                const header = keys
+                  .map((key) => {
+                    return key
+                      .replace(/([A-Z])/g, " $1")
+                      .replace(/_/g, " ")
+                      .split(" ")
+                      .map(
+                        (word) =>
+                          word.charAt(0).toUpperCase() +
+                          word.slice(1).toLowerCase()
+                      )
+                      .join(" ");
+                  })
+                  .join(",");
+
                 // Create CSV rows from data
-                const rows = scrapedData.map(item => {
-                  return keys.map(key => {
-                    const value = item[key];
-                    if (value === null || value === undefined) {
-                      return '';
-                    } else if (typeof value === 'object') {
-                      return `"${JSON.stringify(value).replace(/"/g, '""')}"`;  
-                    } else if (typeof value === 'string') {
-                      return `"${value.replace(/"/g, '""')}"`;  
-                    } else {
-                      return value;
-                    }
-                  }).join(',');
-                }).join('\n');
-                
+                const rows = scrapedData
+                  .map((item) => {
+                    return keys
+                      .map((key) => {
+                        const value = item[key];
+                        if (value === null || value === undefined) {
+                          return "";
+                        } else if (typeof value === "object") {
+                          return `"${JSON.stringify(value).replace(
+                            /"/g,
+                            '""'
+                          )}"`;
+                        } else if (typeof value === "string") {
+                          return `"${value.replace(/"/g, '""')}"`;
+                        } else {
+                          return value;
+                        }
+                      })
+                      .join(",");
+                  })
+                  .join("\n");
+
                 // Combine header and rows
                 const csv = `${header}\n${rows}`;
-                
+
                 // Create download link
-                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const blob = new Blob([csv], {
+                  type: "text/csv;charset=utf-8;",
+                });
                 const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.setAttribute('href', url);
-                link.setAttribute('download', 'scraped_data.csv');
+                const link = document.createElement("a");
+                link.setAttribute("href", url);
+                link.setAttribute("download", "scraped_data.csv");
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);

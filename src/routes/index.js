@@ -1,7 +1,7 @@
-import React from 'react';
-import ScraperPage from '../pages/ScraperPage';
-import ExtractedDataPage from '../pages/ExtractedDataPage';
-import TemplatePage from '../pages/TemplatePage';
+import React from "react";
+import ScraperPage from "../pages/ScraperPage";
+import ExtractedDataPage from "../pages/ExtractedDataPage";
+import TemplatePage from "../pages/TemplatePage";
 
 /**
  * Simple router configuration
@@ -9,20 +9,20 @@ import TemplatePage from '../pages/TemplatePage';
  */
 const routes = [
   {
-    path: '/',
+    path: "/",
     component: ScraperPage,
-    exact: true
+    exact: true,
   },
   {
-    path: '/extracted-data',
+    path: "/extracted-data",
     component: ExtractedDataPage,
-    exact: true
+    exact: true,
   },
   {
-    path: '/template',
+    path: "/template",
     component: TemplatePage,
-    exact: true
-  }
+    exact: true,
+  },
 ];
 
 /**
@@ -30,9 +30,9 @@ const routes = [
  */
 export const Router = () => {
   const currentPath = window.location.pathname;
-  
+
   // Find the matching route
-  const route = routes.find(route => {
+  const route = routes.find((route) => {
     if (route.exact) {
       return route.path === currentPath;
     }
