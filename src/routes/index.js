@@ -1,5 +1,6 @@
 import React from 'react';
 import ScraperPage from '../pages/ScraperPage';
+import ScrapedDataPage from '../pages/ScrapedDataPage';
 
 /**
  * Simple router configuration
@@ -9,6 +10,11 @@ const routes = [
   {
     path: '/',
     component: ScraperPage,
+    exact: true
+  },
+  {
+    path: '/scraped-data',
+    component: ScrapedDataPage,
     exact: true
   }
 ];

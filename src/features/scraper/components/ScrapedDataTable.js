@@ -215,17 +215,7 @@ const ScrapedDataTable = ({ scrapedData, onBackToMain }) => {
       transition={{ duration: 0.5 }}
     >
       <div className="outer-container">
-        <div className="flex justify-content-between align-items-center">
-          <h3 className="m-0">Scraped Data Results</h3>
-          <div className="p-input-icon-left">
-            <i className="pi pi-search" />
-            <InputText
-              value={globalFilterValue}
-              onChange={onGlobalFilterChange}
-              placeholder="Search..."
-            />
-          </div>
-        </div>
+        <h3 className="m-0">Scraped Data Results</h3>
 
         <TableDisplay
           tableData={tableData}
@@ -235,21 +225,6 @@ const ScrapedDataTable = ({ scrapedData, onBackToMain }) => {
           formatCellValue={formatCellValue}
           keys={keys}
         />
-
-        <div className="action-buttons">
-          <Button
-            label="Back to Main Page"
-            icon="pi pi-arrow-left"
-            className="p-button-danger"
-            onClick={onBackToMain}
-          />
-          <Button
-            label="Download CSV"
-            icon="pi pi-download"
-            className="p-button-success"
-            onClick={downloadCSV}
-          />
-        </div>
       </div>
     </motion.div>
   );
