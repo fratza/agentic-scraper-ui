@@ -62,18 +62,18 @@ const useScraper = () => {
 
         // Handle connection open
         eventSource.onopen = () => {
-          console.log("Preview SSE connection established");
+          // Preview SSE connection established
           // Add a timeout to handle case where connection is established but no events are received
           setTimeout(() => {
             // If we're still loading and haven't received any events
             if (loading && !previewData) {
-              console.log("No preview events received after connection open");
+              // No preview events received after connection open
               // Try a fallback approach - make a direct API call
               apiService
                 .getSamplePreview()
                 .then((data) => {
                   if (data) {
-                    console.log("Received fallback preview data:", data);
+                    // Fallback preview data received
                     // Use raw data directly without enrichment
                     console.log(
                       "Setting raw preview data from fallback:",
@@ -95,16 +95,14 @@ const useScraper = () => {
 
         // Handle connect event
         eventSource.addEventListener("connect", (event) => {
-          console.log("SSE connection established with event:", event);
+          // SSE connection established
           // This just confirms the connection, we still need to wait for data
         });
 
         // Handle message events (contains the actual preview data)
         eventSource.addEventListener("preview", (event) => {
           try {
-            console.log("Raw SSE event data:", event.data);
             const parsedData = JSON.parse(event.data);
-            console.log("Parsed SSE message data:", parsedData);
 
             // Extract the actual data from the structure
             // The SSE data structure is: { timestamp: "...", data: { ... } }
@@ -112,27 +110,8 @@ const useScraper = () => {
 
             // Check if the data is nested inside a data property
             if (parsedData && parsedData.data) {
-              console.log("Data is nested inside data property");
               previewData = parsedData.data;
             }
-
-            console.log("Extracted preview data:", previewData);
-
-            // Debug the structure of the data
-            console.log("Preview data structure:", {
-              hasData: !!previewData,
-              hasSample: previewData && !!previewData.sample,
-              sampleType:
-                previewData && previewData.sample
-                  ? typeof previewData.sample
-                  : "none",
-              isArray:
-                previewData && previewData.sample
-                  ? Array.isArray(previewData.sample)
-                  : false,
-              hasResumeLink: previewData && !!previewData.resume_link,
-              keys: previewData ? Object.keys(previewData) : [],
-            });
 
             // If the data doesn't have a sample property but is an array or object,
             // we need to add it to make the table display work
@@ -141,7 +120,6 @@ const useScraper = () => {
               !previewData.sample &&
               typeof previewData === "object"
             ) {
-              console.log("Adding sample property to preview data");
               previewData = {
                 ...previewData,
                 sample: Array.isArray(previewData)
@@ -168,25 +146,17 @@ const useScraper = () => {
 
         // Handle errors
         eventSource.onerror = (err) => {
+          // SSE connection error
           console.error("Preview SSE error:", err);
           apiService.closeEventSource(eventSource);
           previewEventSourceRef.current = null;
 
           // Instead of rejecting, let's try a fallback approach
-          console.log("Trying fallback after SSE error");
           apiService
             .getSamplePreview()
             .then((data) => {
               if (data) {
-                console.log(
-                  "Received fallback preview data after error:",
-                  data
-                );
                 // Use raw data directly without enrichment
-                console.log(
-                  "Setting raw preview data from error fallback:",
-                  data
-                );
                 setPreviewData(data);
                 setLoading(false);
                 resolve(data);
@@ -203,7 +173,7 @@ const useScraper = () => {
 
       // Set up a status update for long-running requests
       const statusUpdateInterval = setInterval(() => {
-        console.log("Still waiting for preview data...");
+        // Still waiting for preview data
         // You could update UI here to show waiting time or a more detailed status
       }, 10000); // Update every 10 seconds
 
@@ -272,7 +242,7 @@ const useScraper = () => {
         }
 
         if (runId) {
-          console.log("Found run_id in preview data:", runId);
+          // Found run_id in preview data
         }
       } catch (err) {
         console.error("Error extracting run_id from preview data:", err);
@@ -304,22 +274,26 @@ const useScraper = () => {
 
         // Handle connection open
         eventSource.onopen = () => {
-          console.log("Scraping SSE connection established");
+          // Scraping SSE connection established
         };
 
         // Handle scrapedData events
         eventSource.addEventListener("scrapedData", (event) => {
           try {
-            console.log("Raw scrapedData event:", event.data);
+
             const parsedData = JSON.parse(event.data);
-            console.log("Received scrapedData:", parsedData);
+
 
             // Always display parsedData.data.extractedData in the Scrape Results Table
-            if (parsedData && parsedData.data && parsedData.data.extractedData) {
-              console.log("Displaying data.extractedData in Scrape Results Table:", parsedData.data.extractedData);
+            if (
+              parsedData &&
+              parsedData.data &&
+              parsedData.data.extractedData
+            ) {
+
               setScrapedData(parsedData.data.extractedData);
             } else {
-              console.warn("Expected data.extractedData not found. Displaying 'No Data Found'");
+
               setScrapedData([{ message: "No Data Found" }]);
             }
 
@@ -327,7 +301,7 @@ const useScraper = () => {
             setProgress(100);
 
             // Close the SSE connection
-            console.log("Closing scraping SSE connection after receiving scrapedData event");
+
             apiService.closeEventSource(eventSource);
             scrapingEventSourceRef.current = null;
           } catch (err) {
@@ -341,7 +315,7 @@ const useScraper = () => {
         eventSource.addEventListener("message", (event) => {
           try {
             const parsedData = JSON.parse(event.data);
-            console.log("Received progress message:", parsedData);
+            // Received progress message
 
             if (parsedData.progress !== undefined) {
               setProgress(parsedData.progress);
@@ -353,6 +327,7 @@ const useScraper = () => {
 
         // Handle errors
         eventSource.addEventListener("error", (event) => {
+          // SSE connection error
           console.error("Scraping SSE error:", event);
           setError("Error receiving scraped data");
           setScraping(false);

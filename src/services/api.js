@@ -30,7 +30,7 @@ const apiService = {
   submitScrapeRequest: async (data) => {
     try {
       // Log the data being sent, including resume_link if present
-      console.log("Submitting scrape request with data:", data);
+      // Submit scrape request
 
       // If resume_link is provided, directly trigger n8n workflow without backend call
       if (data.resume_link) {
@@ -59,7 +59,7 @@ const apiService = {
     }
 
     try {
-      console.log("Directly triggering n8n workflow with URL:", resumeLink);
+      // Trigger n8n workflow
       // Make a POST request to the resume_link to trigger the n8n workflow
       // This is done without waiting for a response
       fetch(resumeLink, {
@@ -74,7 +74,7 @@ const apiService = {
           timestamp: Date.now(),
         }),
       })
-        .then(() => console.log("N8n workflow trigger request sent"))
+        .then(() => {})
         .catch((err) => console.error("Error triggering n8n workflow:", err));
 
       return true;
@@ -142,7 +142,7 @@ const apiService = {
 
     // Create and return the EventSource
     const eventSourceUrl = `${PREVIEW_SSE_URL}?${params.toString()}`;
-    console.log("Connecting to SSE endpoint for preview:", eventSourceUrl);
+    // Connect to SSE endpoint for preview
     return new EventSource(eventSourceUrl);
   },
 
@@ -162,7 +162,7 @@ const apiService = {
     params.append("sessionToken", SESSION_TOKEN);
 
     const eventSourceUrl = `${SCRAPED_DATA_SSE_URL}?${params.toString()}`;
-    console.log("Connecting to SSE endpoint for scraped data:", eventSourceUrl);
+    // Connect to SSE endpoint for scraped data
     return new EventSource(eventSourceUrl);
   },
   // Close an SSE connection
@@ -175,7 +175,7 @@ const apiService = {
   // Handle approve or cancel action for scraping
   handleScrapeAction: async (action) => {
     try {
-      console.log(`Sending ${action} action to backend`);
+      // Send action to backend
 
       const response = await fetch(API_URL + "/proceed-scrape", {
         method: "POST",
@@ -190,7 +190,7 @@ const apiService = {
       }
 
       const data = await response.json();
-      console.log(`${action} action response:`, data);
+      // Action response received
       return data;
     } catch (error) {
       console.error(`Error in ${action} action:`, error);
