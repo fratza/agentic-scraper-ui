@@ -200,25 +200,6 @@ const ScrapedDataTable = ({ scrapedData, onBackToMain }) => {
     );
   };
 
-  // Header template for the DataTable with search functionality
-  const renderHeader = () => {
-    return (
-      <div className="flex justify-content-between align-items-center">
-        <h3 className="m-0">Scraped Data Results</h3>
-        <div className="p-input-icon-left">
-          <i className="pi pi-search" />
-          <InputText
-            value={globalFilterValue}
-            onChange={onGlobalFilterChange}
-            placeholder="Search..."
-          />
-        </div>
-      </div>
-    );
-  };
-
-  const header = renderHeader();
-
   // If no data is available, return null
   if (!tableData.length) {
     return null;
@@ -231,59 +212,73 @@ const ScrapedDataTable = ({ scrapedData, onBackToMain }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="prime-datatable-wrapper">
-        <DataTable
-          value={tableData}
-          paginator
-          rows={10}
-          rowsPerPageOptions={[10, 25, 50]}
-          dataKey="id"
-          filters={filters}
-          filterDisplay="menu"
-          loading={loading}
-          responsiveLayout="scroll"
-          emptyMessage="No data found."
-          header={header}
-          scrollable
-          scrollHeight="60vh"
-          stripedRows
-          resizableColumns
-          columnResizeMode="fit"
-          className="p-datatable-gridlines"
-        >
-          {keys.map((key) => (
-            <Column
-              key={key}
-              field={key}
-              header={formatColumnHeader(key)}
-              sortable
-              filter
-              filterPlaceholder={`Search ${formatColumnHeader(key)}`}
-              body={(rowData) => formatCellValue(rowData, { field: key })}
-              style={{ minWidth: "12rem" }}
-              className={
-                key.toLowerCase().includes("description")
-                  ? "description-column"
-                  : ""
-              }
+      <div className="outer-container">
+        <div className="flex justify-content-between align-items-center">
+          <h3 className="m-0">Scraped Data Results</h3>
+          <div className="p-input-icon-left">
+            <i className="pi pi-search" />
+            <InputText
+              value={globalFilterValue}
+              onChange={onGlobalFilterChange}
+              placeholder="Search..."
             />
-          ))}
-        </DataTable>
-      </div>
+          </div>
+        </div>
 
-      <div className="action-buttons">
-        <Button
-          label="Back to Main Page"
-          icon="pi pi-arrow-left"
-          className="p-button-danger"
-          onClick={onBackToMain}
-        />
-        <Button
-          label="Download CSV"
-          icon="pi pi-download"
-          className="p-button-success"
-          onClick={downloadCSV}
-        />
+        <div className="prime-datatable-wrapper">
+          <DataTable
+            value={tableData}
+            paginator
+            rows={10}
+            rowsPerPageOptions={[10, 25, 50]}
+            dataKey="id"
+            filters={filters}
+            filterDisplay="menu"
+            loading={loading}
+            responsiveLayout="scroll"
+            emptyMessage="No data found."
+            header={null}
+            scrollable
+            scrollHeight="60vh"
+            stripedRows
+            resizableColumns
+            columnResizeMode="fit"
+            className="p-datatable-gridlines"
+          >
+            {keys.map((key) => (
+              <Column
+                key={key}
+                field={key}
+                header={formatColumnHeader(key)}
+                sortable
+                filter
+                filterPlaceholder={`Search ${formatColumnHeader(key)}`}
+                body={(rowData) => formatCellValue(rowData, { field: key })}
+                style={{ minWidth: "12rem" }}
+                className={
+                  key.toLowerCase().includes("description")
+                    ? "description-column"
+                    : ""
+                }
+              />
+            ))}
+          </DataTable>
+        </div>
+
+        <div className="action-buttons">
+          <Button
+            label="Back to Main Page"
+            icon="pi pi-arrow-left"
+            className="p-button-danger"
+            onClick={onBackToMain}
+          />
+          <Button
+            label="Download CSV"
+            icon="pi pi-download"
+            className="p-button-success"
+            onClick={downloadCSV}
+          />
+        </div>
       </div>
     </motion.div>
   );
