@@ -247,15 +247,10 @@ const useScraper = () => {
    */
   const startScraping = useCallback(
     async (resume_link) => {
-      if (!resume_link) {
-        setError("No resume link provided for scraping");
-        return;
-      }
-
       // Reset any previous scraping state
       setScrapedData(null);
       setError(null);
-      setScraping(true);
+      setScraping(true); // Open the loading modal
       setProgress(0);
 
       // Close any existing scraping event source
@@ -283,19 +278,24 @@ const useScraper = () => {
         console.error("Error extracting run_id from preview data:", err);
       }
 
-      console.log("Triggering direct scraping with resume_link:", resume_link);
+      // Trigger the workflow if resume_link is provided
+      if (resume_link) {
+        console.log(
+          "Triggering scraping workflow with resume_link:",
+          resume_link
+        );
+        const triggered = apiService.triggerN8nWorkflow(resume_link);
 
-      // Trigger the n8n workflow directly
-      const triggered = apiService.triggerN8nWorkflow(resume_link);
-
-      if (!triggered) {
-        setError("Failed to trigger scraping workflow");
-        setScraping(false);
-        return;
+        if (!triggered) {
+          setError("Failed to trigger scraping workflow");
+          setScraping(false);
+          return;
+        }
       }
 
       // Set up SSE for scraped data
       try {
+        // Create SSE connection to listen for scrapedData events
         const eventSource = apiService.createScrapingEventSource(
           `direct-${Date.now()}`,
           runId
@@ -304,7 +304,7 @@ const useScraper = () => {
 
         // Handle connection open
         eventSource.onopen = () => {
-          console.log("Direct scraping SSE connection established");
+          console.log("Scraping SSE connection established");
         };
 
         // Handle scrapedData events
@@ -314,19 +314,36 @@ const useScraper = () => {
             const parsedData = JSON.parse(event.data);
             console.log("Received scrapedData:", parsedData);
 
-            // Set the scraped data and update UI state
-            setScrapedData(parsedData.data || parsedData);
+            // Extract only the data field from the response
+            if (
+              parsedData &&
+              parsedData.data &&
+              Array.isArray(parsedData.data)
+            ) {
+              setScrapedData(parsedData.data);
+            } else if (Array.isArray(parsedData)) {
+              setScrapedData(parsedData);
+            } else {
+              console.warn(
+                "Received data is not in expected format:",
+                parsedData
+              );
+              setScrapedData(parsedData.data || parsedData);
+            }
+
             setScraping(false);
             setProgress(100);
 
-            // Close the connection
+            // Close the SSE connection
             console.log(
-              "Closing direct scraping SSE connection after receiving scrapedData event"
+              "Closing scraping SSE connection after receiving scrapedData event"
             );
             apiService.closeEventSource(eventSource);
             scrapingEventSourceRef.current = null;
           } catch (err) {
             console.error("Error parsing scrapedData:", err);
+            setError("Error processing scraped data");
+            setScraping(false);
           }
         });
 
@@ -346,7 +363,7 @@ const useScraper = () => {
 
         // Handle errors
         eventSource.addEventListener("error", (event) => {
-          console.error("Direct scraping SSE error:", event);
+          console.error("Scraping SSE error:", event);
           setError("Error receiving scraped data");
           setScraping(false);
 
@@ -365,7 +382,7 @@ const useScraper = () => {
             apiService.closeEventSource(eventSource);
             scrapingEventSourceRef.current = null;
           }
-        }, config.ui.progressTimeout);
+        }, config.ui.progressTimeout || 240000);
       } catch (err) {
         console.error("Error setting up direct scraping SSE:", err);
         setError("Failed to connect to scraped data stream");

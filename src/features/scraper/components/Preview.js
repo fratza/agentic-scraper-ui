@@ -144,7 +144,8 @@ const Preview = ({
                   // Send approve action to backend - only passing the action
                   await apiService.handleScrapeAction("approve");
 
-                  // Start the scraping process in the UI without passing resume_link
+                  // Start the scraping process in the UI
+                  // This will open the loading modal and set up SSE connection
                   onScrape();
                 } catch (error) {
                   // Handle approval error silently
