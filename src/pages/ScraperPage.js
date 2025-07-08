@@ -1,13 +1,17 @@
-import React, { useEffect, useState } from "react";
-import Hero from "../components/Hero";
-import ScraperForm from "../features/scraper/components/ScraperForm";
-import Preview from "../features/scraper/components/Preview";
-import ScrapedDataTable from "../features/scraper/components/ScrapedDataTable";
-import useScraper from "../features/scraper/hooks/useScraper";
-import Modal from "../components/Modal";
-import Loader from "../components/Loader";
-import "../styles/preview-loading.css";
-import "../styles/loading-results.css";
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Button } from 'primereact/button';
+import { InputText } from 'primereact/inputtext';
+import useScraper from '../features/scraper/hooks/useScraper';
+import Hero from '../components/Hero';
+import ScraperForm from '../features/scraper/components/ScraperForm';
+import Preview from '../features/scraper/components/Preview';
+import ExtractedDataTable from '../features/scraper/components/ExtractedDataTable';
+import Modal from '../components/Modal';
+import Loader from '../components/Loader';
+import '../styles/App.css';
+import '../styles/preview-loading.css';
+import '../styles/loading-results.css';
 
 const ScraperPage = () => {
   const [pageLoading, setPageLoading] = useState(true);
@@ -52,8 +56,13 @@ const ScraperPage = () => {
   };
 
   // Reset loading results when scraping is complete or there's an error
+  // Navigate to data results page when scraping is complete
   useEffect(() => {
-    if (scrapedData || error) {
+    if (scrapedData) {
+      setShowLoadingResults(false);
+      // Navigate to the data results page
+      window.location.href = '/extracted-data';
+    } else if (error) {
       setShowLoadingResults(false);
     }
   }, [scrapedData, error]);
@@ -115,13 +124,7 @@ const ScraperPage = () => {
             </div>
           )}
 
-          {/* Show scraped data table */}
-          {scrapedData && (
-            <ScrapedDataTable
-              scrapedData={scrapedData}
-              onBackToMain={resetScraper}
-            />
-          )}
+          {/* Data will be shown on the dedicated page */}
 
           {/* Modal for preview */}
           <Modal

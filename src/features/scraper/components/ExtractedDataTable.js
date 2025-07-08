@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./ScrapedDataTable.css";
+import "./ExtractedDataTable.css";
 import { motion } from "framer-motion";
 
 // PrimeReact imports
@@ -17,22 +17,24 @@ import "primeflex/primeflex.css";
 
 import TableDisplay from "./TableDisplay";
 
-const ScrapedDataTable = ({ scrapedData, onBackToMain }) => {
+const ExtractedDataTable = ({ extractedData, scrapedData, onBackToMain }) => {
+  // For backward compatibility, use extractedData if provided, otherwise fall back to scrapedData
+  const data = extractedData || scrapedData;
   const [tableData, setTableData] = useState([]);
   const [filters, setFilters] = useState({});
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // Initialize filters and process data when component mounts or scrapedData changes
+  // Initialize filters and process data when component mounts or data changes
   useEffect(() => {
     // Return early if no data is available
-    if (!scrapedData) {
+    if (!data) {
       setLoading(false);
       return;
     }
 
     // Determine the data to display - handle both direct data and nested data structures
-    const dataToDisplay = scrapedData.data ? scrapedData.data : scrapedData;
+    const dataToDisplay = data.data ? data.data : data;
 
     // Check if data is an array
     const isDataArray = Array.isArray(dataToDisplay);
@@ -46,7 +48,7 @@ const ScrapedDataTable = ({ scrapedData, onBackToMain }) => {
       return;
     }
 
-    // Process data for the table
+    // Process the data to ensure it's in the right format
     const processedData = dataArray.map((item, index) => {
       return { ...item, id: item.uuid || `row-${index}` };
     });
@@ -56,7 +58,7 @@ const ScrapedDataTable = ({ scrapedData, onBackToMain }) => {
     // Initialize filters
     initFilters();
     setLoading(false);
-  }, [scrapedData]);
+  }, [data]);
 
   // Get keys from the first data item, excluding UUID
   const keys =
@@ -140,7 +142,7 @@ const ScrapedDataTable = ({ scrapedData, onBackToMain }) => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", "scraped_data.csv");
+    link.setAttribute("download", "extracted_data.csv");
     link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
@@ -209,13 +211,13 @@ const ScrapedDataTable = ({ scrapedData, onBackToMain }) => {
 
   return (
     <motion.div
-      className="scraped-data-table-container fade-in"
+      className="extracted-data-table-container fade-in"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
       <div className="outer-container">
-        <h3 className="m-0">Scraped Data Results</h3>
+        <h3 className="m-0">Data Results</h3>
 
         <TableDisplay
           tableData={tableData}
@@ -230,4 +232,4 @@ const ScrapedDataTable = ({ scrapedData, onBackToMain }) => {
   );
 };
 
-export default ScrapedDataTable;
+export default ExtractedDataTable;

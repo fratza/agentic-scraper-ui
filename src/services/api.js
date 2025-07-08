@@ -14,10 +14,10 @@ const apiClient = axios.create({
 
 // SSE endpoint URLs
 const PREVIEW_SSE_URL = `${API_URL.replace("/api", "")}/api/preview/events`;
-const SCRAPED_DATA_SSE_URL = `${API_URL.replace(
+const EXTRACTED_DATA_SSE_URL = `${API_URL.replace(
   "/api",
   ""
-)}/api/scraped-data/events`;
+)}/api/extracted-data/events`;
 
 // Generate a unique session token for this client
 const SESSION_TOKEN = `${Date.now()}-${Math.random()
@@ -146,9 +146,9 @@ const apiService = {
     return new EventSource(eventSourceUrl);
   },
 
-  // Create an SSE connection for scraping progress and scraped data
+  // Create an SSE connection for scraping progress and extracted data
   createScrapingEventSource: (jobId, runId) => {
-    // Using the dedicated scraped-data endpoint
+    // Using the dedicated extracted-data endpoint
     const params = new URLSearchParams();
 
     // Use runId if provided, otherwise fall back to jobId
@@ -161,8 +161,8 @@ const apiService = {
     // Add session token
     params.append("sessionToken", SESSION_TOKEN);
 
-    const eventSourceUrl = `${SCRAPED_DATA_SSE_URL}?${params.toString()}`;
-    // Connect to SSE endpoint for scraped data
+    const eventSourceUrl = `${EXTRACTED_DATA_SSE_URL}?${params.toString()}`;
+    // Connect to SSE endpoint for extracted data
     return new EventSource(eventSourceUrl);
   },
   // Close an SSE connection

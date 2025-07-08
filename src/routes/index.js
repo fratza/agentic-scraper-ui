@@ -1,6 +1,6 @@
 import React from 'react';
 import ScraperPage from '../pages/ScraperPage';
-import ScrapedDataPage from '../pages/ScrapedDataPage';
+import ExtractedDataPage from '../pages/ExtractedDataPage';
 
 /**
  * Simple router configuration
@@ -13,18 +13,29 @@ const routes = [
     exact: true
   },
   {
-    path: '/scraped-data',
-    component: ScrapedDataPage,
+    path: '/extracted-data',
+    component: ExtractedDataPage,
     exact: true
   }
 ];
 
 /**
- * Router component that renders the current route
- * Currently just renders the ScraperPage since we only have one page
+ * Router component that renders the current route based on the current path
  */
 export const Router = () => {
-  return <ScraperPage />;
+  const currentPath = window.location.pathname;
+  
+  // Find the matching route
+  const route = routes.find(route => {
+    if (route.exact) {
+      return route.path === currentPath;
+    }
+    return currentPath.startsWith(route.path);
+  });
+
+  // Render the component for the matching route, or default to ScraperPage
+  const RouteComponent = route ? route.component : ScraperPage;
+  return <RouteComponent />;
 };
 
 export default routes;

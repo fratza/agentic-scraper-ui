@@ -14,9 +14,6 @@ const TableDisplay = ({
     <div className="prime-datatable-wrapper">
       <DataTable
         value={tableData}
-        paginator
-        rows={10}
-        rowsPerPageOptions={[10, 25, 50]}
         dataKey="id"
         filters={filters}
         filterDisplay="menu"

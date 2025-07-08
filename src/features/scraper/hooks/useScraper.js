@@ -8,7 +8,7 @@ import { config } from "../../../lib/config";
 const useScraper = () => {
   const [loading, setLoading] = useState(false);
   const [previewData, setPreviewData] = useState(null);
-  const [scrapedData, setScrapedData] = useState(null);
+  const [scrapedData, setScrapedData] = useState(null); // Keeping for backward compatibility
   const [scraping, setScraping] = useState(false);
   const [progress, setProgress] = useState(0);
   const [jobId, setJobId] = useState(null);
@@ -277,21 +277,21 @@ const useScraper = () => {
           // Scraping SSE connection established
         };
 
-        // Handle scrapedData events
+        // Handle extractedData events (previously scrapedData)
         eventSource.addEventListener("scrapedData", (event) => {
           try {
 
             const parsedData = JSON.parse(event.data);
 
 
-            // Always display parsedData.data.extractedData in the Scrape Results Table
+            // Always display parsedData.data.extractedData in the Data Results Table
             if (
               parsedData &&
               parsedData.data &&
               parsedData.data.extractedData
             ) {
 
-              setScrapedData(parsedData.data.extractedData);
+              setScrapedData(parsedData.data.extractedData); // Setting scrapedData for backward compatibility
             } else {
 
               setScrapedData([{ message: "No Data Found" }]);
@@ -305,8 +305,8 @@ const useScraper = () => {
             apiService.closeEventSource(eventSource);
             scrapingEventSourceRef.current = null;
           } catch (err) {
-            console.error("Error parsing scrapedData:", err);
-            setError("Error processing scraped data");
+            console.error("Error parsing extractedData:", err);
+            setError("Error processing extracted data");
             setScraping(false);
           }
         });
@@ -329,7 +329,7 @@ const useScraper = () => {
         eventSource.addEventListener("error", (event) => {
           // SSE connection error
           console.error("Scraping SSE error:", event);
-          setError("Error receiving scraped data");
+          setError("Error receiving extracted data");
           setScraping(false);
 
           // Close the connection
@@ -350,7 +350,7 @@ const useScraper = () => {
         }, config.ui.progressTimeout || 240000);
       } catch (err) {
         console.error("Error setting up direct scraping SSE:", err);
-        setError("Failed to connect to scraped data stream");
+        setError("Failed to connect to extracted data stream");
         setScraping(false);
       }
     },
@@ -386,7 +386,8 @@ const useScraper = () => {
   return {
     loading,
     previewData,
-    scrapedData,
+    scrapedData, // Keeping for backward compatibility
+    extractedData: scrapedData, // Adding new name for consistency
     scraping,
     progress,
     error,
