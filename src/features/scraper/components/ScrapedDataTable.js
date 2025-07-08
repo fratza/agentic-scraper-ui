@@ -8,8 +8,6 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { FilterMatchMode } from "primereact/api";
-import { Chart } from 'primereact/chart';
-import { Skeleton } from 'primereact/skeleton';
 
 // Import PrimeReact styles
 import "primereact/resources/themes/lara-light-indigo/theme.css";
@@ -59,15 +57,6 @@ const ScrapedDataTable = ({ scrapedData, onBackToMain }) => {
     initFilters();
     setLoading(false);
   }, [scrapedData]);
-
-  useEffect(() => {
-    // Simulate a data fetch
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   // Get keys from the first data item, excluding UUID
   const keys =
@@ -213,24 +202,6 @@ const ScrapedDataTable = ({ scrapedData, onBackToMain }) => {
     );
   };
 
-  // Sample chart data and options
-  const chartData = {
-    labels: ['January', 'February', 'March', 'April', 'May'],
-    datasets: [
-      {
-        label: 'Data Points',
-        data: [65, 59, 80, 81, 56],
-        fill: false,
-        borderColor: '#4caf50'
-      }
-    ]
-  };
-
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false
-  };
-
   // If no data is available, return null
   if (!tableData.length) {
     return null;
@@ -245,14 +216,6 @@ const ScrapedDataTable = ({ scrapedData, onBackToMain }) => {
     >
       <div className="outer-container">
         <h3 className="m-0">Scraped Data Results</h3>
-
-        {loading ? (
-          <Skeleton width="100%" height="400px" />
-        ) : (
-          <div className="chart-container" style={{ height: '400px' }}>
-            <Chart type="line" data={chartData} options={chartOptions} />
-          </div>
-        )}
 
         <TableDisplay
           tableData={tableData}

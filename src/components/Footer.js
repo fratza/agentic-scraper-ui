@@ -1,10 +1,9 @@
 import React from 'react';
 import './Footer.css';
-import '../styles/global.css';
 
 const Footer = () => {
   return (
-    <footer className="footer text-center">
+    <footer>
       <div className="container">
         <p>&copy; {new Date().getFullYear()} Ncompass-Tv. All rights reserved.</p>
       </div>

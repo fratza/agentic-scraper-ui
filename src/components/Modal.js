@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import './Modal.css';
-import '../styles/global.css';
 
 const Modal = ({ isOpen, onClose, children, title }) => {
   useEffect(() => {
@@ -20,7 +19,7 @@ const Modal = ({ isOpen, onClose, children, title }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-wrapper flex-center">
+    <div className="modal-overlay">
       <div className="modal-content">
         <div className="modal-header">
           {title && <h2>{title}</h2>}
