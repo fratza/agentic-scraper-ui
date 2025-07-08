@@ -314,21 +314,24 @@ const useScraper = () => {
             const parsedData = JSON.parse(event.data);
             console.log("Received scrapedData:", parsedData);
 
-            // Extract only the data field from the response
+            // Extract the extractedData within the data field from the response
             if (
               parsedData &&
               parsedData.data &&
-              Array.isArray(parsedData.data)
+              parsedData.data.extractedData &&
+              Array.isArray(parsedData.data.extractedData)
             ) {
-              setScrapedData(parsedData.data);
-            } else if (Array.isArray(parsedData)) {
-              setScrapedData(parsedData);
+              // This is the specific case where data contains extractedData array
+              console.log("Found extractedData array in data field:", parsedData.data.extractedData);
+              setScrapedData(parsedData.data.extractedData);
             } else {
+              // If the specific structure is not found, display "No Data Found"
               console.warn(
-                "Received data is not in expected format:",
+                "Expected data structure not found. Displaying 'No Data Found':",
                 parsedData
               );
-              setScrapedData(parsedData.data || parsedData);
+              // Create a single row with a message
+              setScrapedData([{ message: "No Data Found" }]);
             }
 
             setScraping(false);
