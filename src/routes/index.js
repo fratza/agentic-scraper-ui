@@ -1,6 +1,7 @@
 import React from 'react';
 import ScraperPage from '../pages/ScraperPage';
 import ExtractedDataPage from '../pages/ExtractedDataPage';
+import TemplatePage from '../pages/TemplatePage';
 
 /**
  * Simple router configuration
@@ -15,6 +16,11 @@ const routes = [
   {
     path: '/extracted-data',
     component: ExtractedDataPage,
+    exact: true
+  },
+  {
+    path: '/template',
+    component: TemplatePage,
     exact: true
   }
 ];
