@@ -108,21 +108,10 @@ const Preview = ({
               disabled={actionInProgress}
               onClick={async () => {
                 try {
-                  // Extract resume_link from previewData if it exists
-                  const resume_link =
-                    previewData && previewData.resume_link
-                      ? previewData.resume_link
-                      : null;
-
-                  if (!resume_link) {
-                    // No resume_link available to cancel
-                    return;
-                  }
-
                   setActionInProgress(true);
 
-                  // Send cancel action to backend
-                  await apiService.handleScrapeAction(resume_link, "cancel");
+                  // Send cancel action to backend - only passing the action
+                  await apiService.handleScrapeAction("cancel");
 
                   // Reset scraper state and close SSE connections
                   if (resetScraper) {
@@ -148,26 +137,15 @@ const Preview = ({
               disabled={actionInProgress}
               onClick={async () => {
                 try {
-                  // Extract resume_link from previewData if it exists
-                  const resume_link =
-                    previewData && previewData.resume_link
-                      ? previewData.resume_link
-                      : null;
-
-                  if (!resume_link) {
-                    // No resume_link available for approve action
-                    return;
-                  }
-
                   setActionInProgress(true);
                   setIsScraping(true);
                   setSessionError(false);
 
-                  // Send approve action to backend
-                  await apiService.handleScrapeAction(resume_link, "approve");
+                  // Send approve action to backend - only passing the action
+                  await apiService.handleScrapeAction("approve");
 
-                  // Start the scraping process in the UI
-                  onScrape(resume_link);
+                  // Start the scraping process in the UI without passing resume_link
+                  onScrape();
                 } catch (error) {
                   // Handle approval error silently
                   setSessionError(true);

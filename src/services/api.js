@@ -173,16 +173,15 @@ const apiService = {
   },
 
   // Handle approve or cancel action for scraping
-  handleScrapeAction: async (resumeLink, action) => {
+  handleScrapeAction: async (action) => {
     try {
-      console.log(`Sending ${action} action for resume link:`, resumeLink);
+      console.log(`Sending ${action} action to backend`);
 
       const response = await fetch(API_URL + "/proceed-scrape", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: action, // 'approve' or 'cancel'
-          resume_link: resumeLink,
         }),
       });
 
