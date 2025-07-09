@@ -306,6 +306,7 @@ const useScraper = (): ScraperHook => {
             const parsedData = JSON.parse(event.data);
 
             if (parsedData.data.extractedData) {
+              console.log("Extracted Data:", parsedData.data.extractedData);
               SetExtractedData(parsedData.data.extractedData);
             } else {
               SetExtractedData([{ message: "No Data Found" }]);

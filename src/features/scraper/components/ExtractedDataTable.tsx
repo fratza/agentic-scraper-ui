@@ -66,8 +66,6 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
     // Determine the data to display - handle both direct data and nested data structures
     const dataToDisplay = data.data ? data.data : data;
 
-    console.log("dataToDisplay", dataToDisplay);
-
     // Check if data is an array
     const isDataArray = Array.isArray(dataToDisplay);
 
