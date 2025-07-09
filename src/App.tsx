@@ -3,6 +3,7 @@ import "./styles/App.css";
 import MainLayout from "./layouts/MainLayout";
 import { Router } from "./routes";
 import Loader from "./components/Loader";
+import { ScraperProvider } from "./context/ScraperContext";
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -18,9 +19,11 @@ const App: React.FC = () => {
   return (
     <div className={`app ${!loading ? "fade-in" : ""}`}>
       {loading && <Loader />}
-      <MainLayout>
-        <Router />
-      </MainLayout>
+      <ScraperProvider>
+        <MainLayout>
+          <Router />
+        </MainLayout>
+      </ScraperProvider>
     </div>
   );
 };

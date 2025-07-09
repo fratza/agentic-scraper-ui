@@ -1,30 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import apiService from "../../../services/api";
 import { config } from "../../../lib/config";
-
-// Define types for the scraper state and data
-interface PreviewData {
-  data?: {
-    run_id?: string;
-    [key: string]: any;
-  };
-  run_id?: string;
-  sample?: Array<any>;
-  timestamp?: string;
-  [key: string]: any;
-}
-
-interface ScraperHook {
-  loading: boolean;
-  previewData: PreviewData | null;
-  extractedData: any[] | null;
-  scraping: boolean;
-  progress: number;
-  error: string | null;
-  handleFormSubmit: (formData: any) => Promise<void>;
-  startScraping: (resume_link: string) => Promise<void>;
-  resetScraper: () => void;
-}
+import { PreviewData, ScraperHook } from "../../../types/scraper";
 
 /**
  * Custom hook for managing scraper state and operations

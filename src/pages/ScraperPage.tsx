@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
-import useScraper from "../features/scraper/hooks/useScraper";
+import { useScraperContext } from "../context/ScraperContext";
 import Hero from "../components/Hero";
 import ScraperForm from "../features/scraper/components/ScraperForm";
 import Preview from "../features/scraper/components/Preview";
@@ -12,17 +12,7 @@ import Loader from "../components/Loader";
 import "../styles/App.css";
 import "../styles/preview-loading.css";
 import "../styles/loading-results.css";
-
-interface PreviewData {
-  data?: {
-    run_id?: string;
-    [key: string]: any;
-  };
-  run_id?: string;
-  sample?: Array<any>;
-  timestamp?: string;
-  [key: string]: any;
-}
+import { PreviewData } from "../types/scraper";
 
 const ScraperPage: React.FC = () => {
   const [pageLoading, setPageLoading] = useState<boolean>(true);
@@ -38,7 +28,7 @@ const ScraperPage: React.FC = () => {
     handleFormSubmit,
     startScraping,
     resetScraper,
-  } = useScraper();
+  } = useScraperContext();
 
   useEffect(() => {
     const timer = setTimeout(() => {

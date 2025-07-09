@@ -3,11 +3,11 @@ import { motion } from "framer-motion";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import ExtractedDataTable from "../features/scraper/components/ExtractedDataTable";
-import useScraper from "../features/scraper/hooks/useScraper";
+import { useScraperContext } from "../context/ScraperContext";
 import "../styles/TemplatePage.css";
 
 const TemplatePage: React.FC = () => {
-  const { extractedData, loading, resetScraper } = useScraper();
+  const { extractedData, loading, resetScraper } = useScraperContext();
   
   // Debug log to check extractedData
   console.log("TemplatePage - extractedData:", extractedData);
