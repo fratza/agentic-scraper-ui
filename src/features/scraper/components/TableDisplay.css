@@ -8,15 +8,18 @@
   border-radius: 0;
 }
 
-/* Table header with search and rows per page */
-.table-header {
+/* Table controls with search and rows per page */
+.table-controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   padding: 0.5rem 0;
   flex-wrap: wrap;
   gap: 1rem;
+  width: 100%;
+  position: relative;
+  z-index: 5;
 }
 
 /* Search container */
@@ -175,19 +178,25 @@
 
 /* Responsive styles */
 @media (max-width: 768px) {
-  .table-header {
+  .table-controls {
     flex-direction: column;
     align-items: flex-start;
+    margin-bottom: 1rem;
   }
   
   .search-container {
     max-width: 100%;
     width: 100%;
+    margin-bottom: 0.75rem;
   }
   
   .table-actions {
     width: 100%;
     justify-content: space-between;
+  }
+  
+  .rows-per-page {
+    flex: 1;
   }
   
   .custom-paginator {

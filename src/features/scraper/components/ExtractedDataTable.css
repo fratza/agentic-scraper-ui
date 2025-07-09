@@ -10,6 +10,18 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+.outer-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 1.5rem;
+  background-color: var(--surface-card, #1e1e1e);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
 .extracted-data-table-container:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-hover);
@@ -187,27 +199,33 @@
   color: var(--primary-color);
 }
 
-/* Table header with search and rows per page */
-.table-header {
+/* Table header container */
+.table-header-container {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  padding: 0.5rem 0;
-  flex-wrap: wrap;
-  gap: 1rem;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+  width: 100%;
 }
 
 .table-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: var(--space-xs);
-  font-size: var(--font-size-sm);
+  margin-top: 0.5rem;
   color: var(--text-light);
+  font-size: 0.9rem;
 }
 
 .table-count {
+  font-weight: 500;
+}
+
+.table-header-container h3 {
+  margin: 0;
+  color: var(--text-color);
+  font-size: 1.25rem;
   font-weight: 600;
 }
 

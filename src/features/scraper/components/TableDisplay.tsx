@@ -103,7 +103,7 @@ const TableDisplay: React.FC<TableDisplayProps> = ({
 
   return (
     <div className="table-container">
-      <div className="table-header">
+      <div className="table-controls">
         <div className="search-container">
           <span className="p-input-icon-left">
             <i className="pi pi-search" aria-hidden="true" />
@@ -142,6 +142,7 @@ const TableDisplay: React.FC<TableDisplayProps> = ({
           )}
         </div>
       </div>
+      
       {loading ? (
         loadingTemplate
       ) : (
