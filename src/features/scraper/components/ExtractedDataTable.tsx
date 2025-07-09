@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
-import "./ExtractedDataTable.css";
+import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
+import "./ExtractedDataTable.css";
 
 // PrimeReact imports
 import { DataTable } from "primereact/datatable";
@@ -19,6 +19,9 @@ import "primeicons/primeicons.css";
 import "primeflex/primeflex.css";
 
 import TableDisplay from "./TableDisplay";
+
+// Import mock data for development/testing
+import { mockTableData } from "../data/mockTableData";
 
 // Define interfaces for props and state
 interface ExtractedDataTableProps {
@@ -59,7 +62,14 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
   useEffect(() => {
     // Return early if no data is available
     if (!data) {
+      // Use mock data for development/testing when no real data is available
+      console.log("No data available, using mock data for development");
+      const processedMockData = mockTableData.map((item) => {
+        return { ...item };
+      });
+      setTableData(processedMockData);
       setLoading(false);
+      initFilters();
       return;
     }
 
@@ -74,7 +84,14 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
 
     // Return if the array is empty
     if (dataArray.length === 0) {
+      // Use mock data if the array is empty
+      console.log("Empty data array, using mock data for development");
+      const processedMockData = mockTableData.map((item) => {
+        return { ...item };
+      });
+      setTableData(processedMockData);
       setLoading(false);
+      initFilters();
       return;
     }
 
@@ -405,58 +422,88 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
     );
   }
 
-  // Function to handle download CSV action
-  const handleDownloadCSV = async (): Promise<void> => {
+  // Function to export data as CSV
+  const exportCSV = () => {
+    if (!tableData.length) {
+      toast.current?.show({
+        severity: "info",
+        summary: "No Data",
+        detail: "There is no data to export",
+        life: 3000,
+      });
+      return;
+    }
+    
     try {
-      setExportLoading(true);
-      await downloadCSV();
-
-      // Show success toast
-      if (toast.current) {
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "CSV file downloaded successfully",
-          life: 3000,
-        });
-      }
+      // Create CSV header row
+      const header = keys.join(',');
+      
+      // Create CSV data rows
+      const csvRows = tableData.map(row => {
+        return keys.map(key => {
+          // Handle special cases like objects or arrays
+          let cellValue = row[key];
+          if (typeof cellValue === 'object' && cellValue !== null) {
+            cellValue = JSON.stringify(cellValue);
+          }
+          // Escape quotes and wrap in quotes if contains comma
+          const escaped = String(cellValue ?? '').replace(/"/g, '""');
+          return `"${escaped}"`;
+        }).join(',');
+      });
+      
+      // Combine header and rows
+      const csvContent = [header, ...csvRows].join('\n');
+      
+      // Create download link
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'data_export.csv');
+      document.body.appendChild(link);
+      
+      // Trigger download and cleanup
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.current?.show({
+        severity: "success",
+        summary: "Export Successful",
+        detail: "Data exported as CSV",
+        life: 3000,
+      });
     } catch (error) {
-      console.error("Error downloading CSV:", error);
-
-      // Show error toast
-      if (toast.current) {
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Failed to download CSV file",
-          life: 5000,
-        });
-      }
-    } finally {
-      setExportLoading(false);
+      console.error("CSV Export Error:", error);
+      toast.current?.show({
+        severity: "error",
+        summary: "Export Failed",
+        detail: "Failed to export data",
+        life: 3000,
+      });
     }
   };
 
   // Function to handle back to main action
-  const handleBackToMain = (): void => {
+  const handleBackToMain = () => {
     if (onBackToMain) {
       onBackToMain();
     }
   };
 
   return (
-    <motion.div
-      className="extracted-data-table-container fade-in"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      role="region"
-      aria-label="Data results table"
-    >
+    <>
       {/* Toast for notifications */}
       <Toast ref={toast} position="top-right" />
 
-      <div className="outer-container">
+      <motion.div
+        className="outer-container fade-in"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        role="region"
+        aria-label="Data results table"
+      >
         <div className="table-header-container">
           <h3 id="data-results-title">Data Results</h3>
           <div className="table-info">
@@ -464,20 +511,25 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
             <span className="table-tip">
               Tip: Click on any cell to copy its value
             </span>
+            <Button 
+              icon="pi pi-download" 
+              label="Download CSV"
+              className="btn btn-primary" 
+              onClick={exportCSV}
+              aria-label="Download as CSV"
+            />
           </div>
         </div>
 
         <TableDisplay
           tableData={tableData}
-          filters={filters}
           loading={loading}
           formatColumnHeader={formatColumnHeader}
           formatCellValue={formatCellValue}
           keys={keys}
-          onDownloadCSV={handleDownloadCSV}
         />
-      </div>
-    </motion.div>
+      </motion.div>
+    </>
   );
 };
 

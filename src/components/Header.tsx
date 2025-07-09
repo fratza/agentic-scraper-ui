@@ -18,7 +18,7 @@ const Header: React.FC = () => {
   return (
     <header className={scrolled ? "scrolled" : ""}>
       <div className="container">
-        <div className="logo">
+        <div className="logo" onClick={() => window.location.href = "/"} style={{ cursor: 'pointer' }}>
           <span>Neuro</span>Scrape
         </div>
         <nav>

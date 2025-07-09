@@ -1,11 +1,12 @@
 /* TableDisplay Styles - Matching Preview Data Table styling */
 .table-container {
   width: 100%;
-  margin: 0;
-  padding: 0;
-  background-color: transparent;
-  box-shadow: none;
-  border-radius: 0;
+  margin: 1rem 0;
+  padding: 0.5rem;
+  background-color: var(--card-background, #ffffff);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 /* Table controls with search and rows per page */
@@ -83,42 +84,58 @@
 /* DataTable styling */
 .data-table {
   margin-bottom: 1rem;
-  border-radius: 4px;
+  border-radius: 8px;
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .data-table .p-datatable-wrapper {
-  border-radius: 4px;
+  border-radius: 8px;
   overflow: hidden;
+  border: 1px solid #444;
 }
 
 .data-table .p-datatable-thead > tr > th {
-  background-color: var(--surface-2, #2a2a2a);
-  color: var(--text-color);
+  background-color: var(--surface-2, #2d2d2d);
+  color: var(--text-color, #ffffff);
   font-weight: 600;
   padding: 0.75rem 1rem;
   border-color: var(--border-color);
+  font-size: 1rem;
 }
 
 .data-table .p-datatable-tbody > tr > td {
   padding: 0.75rem 1rem;
   border-color: var(--border-color);
+  color: var(--text-color, #ffffff);
+  font-size: 0.95rem;
+}
+
+.data-table .p-datatable-tbody > tr {
+  background-color: var(--card-background, #280221);
+}
+
+.data-table .p-datatable-tbody > tr:nth-child(even) {
+  background-color: var(--surface-1, #252525);
 }
 
 .data-table .p-datatable-tbody > tr:hover {
-  background-color: var(--surface-1, #333333);
+  background-color: var(--surface-2, #2d2d2d);
 }
 
 /* Row number column */
 .row-number {
   text-align: center;
-  font-weight: 500;
-  background-color: var(--surface-2, #2a2a2a);
+  font-weight: 600;
+  background-color: var(--surface-2, #2d2d2d) !important;
+  color: var(--text-color, #ffffff) !important;
 }
 
 .row-number-header {
   text-align: center;
-  background-color: var(--surface-3, #222222) !important;
+  background-color: var(--surface-3, #333333) !important;
+  color: var(--text-color, #ffffff) !important;
+  font-weight: 700;
 }
 
 /* Custom paginator styling */
@@ -183,22 +200,22 @@
     align-items: flex-start;
     margin-bottom: 1rem;
   }
-  
+
   .search-container {
     max-width: 100%;
     width: 100%;
     margin-bottom: 0.75rem;
   }
-  
+
   .table-actions {
     width: 100%;
     justify-content: space-between;
   }
-  
+
   .rows-per-page {
     flex: 1;
   }
-  
+
   .custom-paginator {
     justify-content: center;
   }

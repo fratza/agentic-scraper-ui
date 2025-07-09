@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
@@ -6,8 +6,22 @@ import ExtractedDataTable from "../features/scraper/components/ExtractedDataTabl
 import { useScraperContext } from "../context/ScraperContext";
 import "../styles/TemplatePage.css";
 
+// Import mock data for development/testing
+import { mockTableData } from "../features/scraper/data/mockTableData";
+
 const TemplatePage: React.FC = () => {
   const { extractedData, loading, resetScraper } = useScraperContext();
+  const [templateData, setTemplateData] = useState<any>(null);
+
+  // Use mock data when no real data is available
+  useEffect(() => {
+    if (!extractedData || (Array.isArray(extractedData) && extractedData.length === 0)) {
+      console.log('Using mock data for template page');
+      setTemplateData(mockTableData);
+    } else {
+      setTemplateData(extractedData);
+    }
+  }, [extractedData]);
 
   // Handle navigation back to main page
   const handleBackToMain = (): void => {
@@ -57,7 +71,7 @@ const TemplatePage: React.FC = () => {
             <h2 id="data-heading" className="sr-only">
               Data Results
             </h2>
-            {loading ? (
+            {loading && !templateData ? (
               <Card className="info-card">
                 <div
                   className="loading-indicator"
@@ -68,9 +82,9 @@ const TemplatePage: React.FC = () => {
                   <p>Loading data...</p>
                 </div>
               </Card>
-            ) : extractedData &&
-              (Array.isArray(extractedData) ||
-                typeof extractedData === "object") ? (
+            ) : templateData &&
+              (Array.isArray(templateData) ||
+                typeof templateData === "object") ? (
               <motion.div
                 className="data-table-wrapper"
                 initial={{ opacity: 0, y: 20 }}
@@ -78,7 +92,7 @@ const TemplatePage: React.FC = () => {
                 transition={{ duration: 0.5 }}
               >
                 <ExtractedDataTable
-                  extractedData={extractedData}
+                  extractedData={templateData}
                   onBackToMain={handleBackToMain}
                 />
               </motion.div>

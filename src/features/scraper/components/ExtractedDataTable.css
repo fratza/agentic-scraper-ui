@@ -1,28 +1,21 @@
 /* Enhanced PrimeReact DataTable Styles */
-.extracted-data-table-container {
-  margin-bottom: var(--space-xl);
-  width: 100%;
-  padding: 1rem;
-  background-color: var(--surface-card);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  color: var(--text-color);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
+/* Removed extracted-data-table-container and moved styles to outer-container */
 .outer-container {
   width: 100%;
   max-width: 100%;
   overflow-x: auto;
   padding: 1.5rem;
-  background-color: var(--surface-card, #1e1e1e);
+  background-color: var(--card-background, #1e1e1e);
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
+  margin-bottom: var(--space-xl);
+  color: var(--text-color);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.extracted-data-table-container:hover {
+.outer-container:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-hover);
 }
@@ -34,6 +27,21 @@
   box-shadow: var(--shadow);
   margin-bottom: var(--space-lg);
   background-color: var(--surface-2, #2a2a2a);
+}
+
+/* Table info section styling */
+.table-info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.table-count, .table-tip {
+  margin-right: 0.5rem;
+}
+
+.prime-datatable-wrapper {
   color: var(--text-color);
   scrollbar-width: thin;
   scrollbar-color: var(--border-hover) var(--surface-2, #2a2a2a);
@@ -56,7 +64,7 @@
 }
 
 /* Header styles for DataTable */
-.extracted-data-table-container h3 {
+.outer-container h3 {
   margin-top: 0;
   margin-bottom: var(--space-md);
   font-size: var(--font-size-xl);
@@ -236,7 +244,7 @@
 }
 
 .table-tip::before {
-  content: '💡';
+  content: "💡";
   font-size: var(--font-size-md);
 }
 
@@ -367,11 +375,11 @@
 
 /* Responsive adjustments */
 @media (max-width: 992px) {
-  .extracted-data-table-container h3 {
+  .outer-container h3 {
     font-size: var(--font-size-lg);
     padding: var(--space-sm) var(--space-md);
   }
-  
+
   .p-datatable .p-datatable-thead > tr > th,
   .p-datatable .p-datatable-tbody > tr > td {
     padding: var(--space-xs) var(--space-sm);
@@ -382,21 +390,21 @@
   .prime-datatable-wrapper {
     border-radius: var(--border-radius-sm);
   }
-  
+
   .p-datatable .p-datatable-thead > tr > th {
     font-size: var(--font-size-xs);
   }
-  
+
   .image-url {
     max-width: 200px;
   }
 }
 
 @media (max-width: 576px) {
-  .extracted-data-table-container {
+  .outer-container {
     margin-bottom: var(--space-md);
   }
-  
+
   .image-url {
     max-width: 150px;
   }

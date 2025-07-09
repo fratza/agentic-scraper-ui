@@ -15,7 +15,6 @@ import "../styles/loading-results.css";
 import { PreviewData } from "../types/scraper";
 
 const ScraperPage: React.FC = () => {
-  const [pageLoading, setPageLoading] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [showLoadingResults, setShowLoadingResults] = useState<boolean>(false);
   const {
@@ -30,12 +29,7 @@ const ScraperPage: React.FC = () => {
     resetScraper,
   } = useScraperContext();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setPageLoading(false);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
+  // Removed duplicate loading effect that was causing double refresh
 
   const handleStartScraping = (resumeLink: string): void => {
     setIsModalOpen(false);
@@ -66,7 +60,7 @@ const ScraperPage: React.FC = () => {
   }, [extractedData, error]);
 
   return (
-    <div className={`app ${!pageLoading ? "fade-in" : ""}`}>
+    <div className="app">
       <section className="scraper-section">
         <div className="container">
           <Hero />
