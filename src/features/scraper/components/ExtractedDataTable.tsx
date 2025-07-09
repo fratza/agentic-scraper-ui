@@ -183,7 +183,7 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
   const downloadCSV = (): Promise<void> => {
     return new Promise((resolve, reject) => {
       if (!tableData.length) {
-        reject(new Error('No data available to download'));
+        reject(new Error("No data available to download"));
         return;
       }
 
@@ -233,7 +233,7 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        
+
         // Clean up the URL object
         setTimeout(() => {
           URL.revokeObjectURL(url);
@@ -410,26 +410,26 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
     try {
       setExportLoading(true);
       await downloadCSV();
-      
+
       // Show success toast
       if (toast.current) {
         toast.current.show({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'CSV file downloaded successfully',
-          life: 3000
+          severity: "success",
+          summary: "Success",
+          detail: "CSV file downloaded successfully",
+          life: 3000,
         });
       }
     } catch (error) {
       console.error("Error downloading CSV:", error);
-      
+
       // Show error toast
       if (toast.current) {
         toast.current.show({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to download CSV file',
-          life: 5000
+          severity: "error",
+          summary: "Error",
+          detail: "Failed to download CSV file",
+          life: 5000,
         });
       }
     } finally {
@@ -476,16 +476,6 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
           keys={keys}
           onDownloadCSV={handleDownloadCSV}
         />
-
-        <div className="action-buttons">
-          <Button
-            icon="pi pi-arrow-left"
-            label="Back to Main"
-            className="btn btn-secondary"
-            onClick={handleBackToMain}
-            aria-label="Navigate back to main page"
-          />
-        </div>
       </div>
     </motion.div>
   );
