@@ -1,4 +1,5 @@
 import React, { useState, FormEvent, ChangeEvent } from 'react';
+import XmlParseForm from './XmlParseForm';
 import './ScraperForm.css';
 import apiService from '../../../services/api';
 import { isValidUrl } from '../../../lib/utils';
@@ -11,6 +12,7 @@ interface FormSubmitData {
   url: string;
   scrapeTarget: string;
   jobId?: string;
+  parseType?: string;
 }
 
 interface FormErrors {
@@ -24,6 +26,15 @@ const ScraperForm: React.FC<ScraperFormProps> = ({ onSubmit }) => {
   const [scrapeTarget, setScrapeTarget] = useState<string>("");
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [showXmlForm, setShowXmlForm] = useState<boolean>(false);
+
+  const handleSwitchToXmlMode = () => {
+    setShowXmlForm(true);
+  };
+
+  const handleSwitchToRegularMode = () => {
+    setShowXmlForm(false);
+  };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -66,7 +77,7 @@ const ScraperForm: React.FC<ScraperFormProps> = ({ onSubmit }) => {
       // Scrape request submitted successfully
 
       // Pass the response to parent component
-      onSubmit({ url, scrapeTarget, jobId: response.jobId });
+      onSubmit({ url, scrapeTarget, jobId: response.jobId, parseType: 'standard' });
       // Note: We don't reset isSubmitting here because the form will be replaced by preview
     } catch (error: any) {
       // Handle submission error silently
@@ -81,11 +92,30 @@ const ScraperForm: React.FC<ScraperFormProps> = ({ onSubmit }) => {
     }
   };
 
+  if (showXmlForm) {
+    return (
+      <XmlParseForm 
+        onSubmit={onSubmit} 
+        onSwitchToRegular={handleSwitchToRegularMode} 
+      />
+    );
+  }
+
   return (
     <div className="scraper-form-container fade-in">
       <form id="scraper-form" onSubmit={handleSubmit}>
         <div className={`form-group ${errors.url ? "error" : ""}`}>
-          <label htmlFor="url">URL</label>
+          <div className="label-row">
+            <label htmlFor="url">URL</label>
+            <button
+              type="button"
+              className="btn-xml-option"
+              onClick={handleSwitchToXmlMode}
+              disabled={isSubmitting}
+            >
+              XML Parse
+            </button>
+          </div>
           <input
             type="url"
             id="url"

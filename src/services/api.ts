@@ -168,6 +168,7 @@ const apiService = {
     const params = new URLSearchParams();
     if (formData.url) params.append("url", formData.url);
     if (formData.scrapeTarget) params.append("target", formData.scrapeTarget);
+    if (formData.parseType) params.append("parseType", formData.parseType);
 
     // Add session token
     params.append("sessionToken", SESSION_TOKEN);
