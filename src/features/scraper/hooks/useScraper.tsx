@@ -2,21 +2,46 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import apiService from "../../../services/api";
 import { config } from "../../../lib/config";
 
+// Define types for the scraper state and data
+interface PreviewData {
+  data?: {
+    run_id?: string;
+    [key: string]: any;
+  };
+  run_id?: string;
+  sample?: Array<any>;
+  timestamp?: string;
+  [key: string]: any;
+}
+
+interface ScraperHook {
+  loading: boolean;
+  previewData: PreviewData | null;
+  scrapedData: any[] | null;
+  extractedData: any[] | null;
+  scraping: boolean;
+  progress: number;
+  error: string | null;
+  handleFormSubmit: (formData: any) => Promise<void>;
+  startScraping: (resume_link: string) => Promise<void>;
+  resetScraper: () => void;
+}
+
 /**
  * Custom hook for managing scraper state and operations
  */
-const useScraper = () => {
-  const [loading, setLoading] = useState(false);
-  const [previewData, setPreviewData] = useState(null);
-  const [scrapedData, setScrapedData] = useState(null);
-  const [scraping, setScraping] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [jobId, setJobId] = useState(null);
-  const [error, setError] = useState(null);
+const useScraper = (): ScraperHook => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [previewData, setPreviewData] = useState<PreviewData | null>(null);
+  const [scrapedData, setScrapedData] = useState<any[] | null>(null);
+  const [scraping, setScraping] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
+  const [jobId, setJobId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   // Refs for event sources
-  const previewEventSourceRef = useRef(null);
-  const scrapingEventSourceRef = useRef(null);
+  const previewEventSourceRef = useRef<EventSource | null>(null);
+  const scrapingEventSourceRef = useRef<EventSource | null>(null);
 
   // Cleanup event sources on unmount
   useEffect(() => {
@@ -33,7 +58,7 @@ const useScraper = () => {
   /**
    * Handle form submission and fetch preview data from the backend using SSE
    */
-  const handleFormSubmit = useCallback(async (formData) => {
+  const handleFormSubmit = useCallback(async (formData: any) => {
     // Reset states
     setLoading(true);
     setError(null);
@@ -48,14 +73,14 @@ const useScraper = () => {
 
     try {
       // Set up timeout for preview data
-      const timeoutPromise = new Promise((_, reject) => {
+      const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => {
           reject(new Error("Preview request timed out"));
         }, 120000); // 2 minutes timeout (increased from 30 seconds)
       });
 
       // Create a new promise for SSE connection
-      const ssePromise = new Promise((resolve, reject) => {
+      const ssePromise = new Promise<PreviewData>((resolve, reject) => {
         // Create SSE connection
         const eventSource = apiService.createPreviewEventSource(formData);
         previewEventSourceRef.current = eventSource;
@@ -100,13 +125,13 @@ const useScraper = () => {
         });
 
         // Handle message events (contains the actual preview data)
-        eventSource.addEventListener("preview", (event) => {
+        eventSource.addEventListener("preview", (event: MessageEvent) => {
           try {
             const parsedData = JSON.parse(event.data);
 
             // Extract the actual data from the structure
             // The SSE data structure is: { timestamp: "...", data: { ... } }
-            let previewData = parsedData;
+            let previewData: PreviewData = parsedData;
 
             // Check if the data is nested inside a data property
             if (parsedData && parsedData.data) {
@@ -184,7 +209,7 @@ const useScraper = () => {
         // Clear the status update interval
         clearInterval(statusUpdateInterval);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error fetching preview data:", err);
 
       if (err.message === "Preview request timed out") {
@@ -194,7 +219,7 @@ const useScraper = () => {
         );
       } else {
         // Fallback to creating minimal data structure if API fails
-        const fallbackPreviewData = {
+        const fallbackPreviewData: PreviewData = {
           data: {
             message: "No data available",
             error: "API connection failed",
@@ -216,7 +241,7 @@ const useScraper = () => {
    * Start the scraping process using the resume_link and run_id from the preview data
    */
   const startScraping = useCallback(
-    async (resume_link) => {
+    async (resume_link: string) => {
       // Reset any previous scraping state
       setScrapedData(null);
       setError(null);
@@ -230,7 +255,7 @@ const useScraper = () => {
       }
 
       // Extract run_id from preview data if available
-      let runId = null;
+      let runId: string | null = null;
       try {
         // Check different possible locations for run_id
         if (previewData?.data?.run_id) {
@@ -277,7 +302,7 @@ const useScraper = () => {
           // Scraping SSE connection established
         };
 
-        eventSource.addEventListener("scrapedData", (event) => {
+        eventSource.addEventListener("scrapedData", (event: MessageEvent) => {
           try {
             const parsedData = JSON.parse(event.data);
 
@@ -291,7 +316,6 @@ const useScraper = () => {
             setProgress(100);
 
             // Close the SSE connection
-
             apiService.closeEventSource(eventSource);
             scrapingEventSourceRef.current = null;
           } catch (err) {
@@ -302,7 +326,7 @@ const useScraper = () => {
         });
 
         // Handle progress events if available
-        eventSource.addEventListener("message", (event) => {
+        eventSource.addEventListener("message", (event: MessageEvent) => {
           try {
             const parsedData = JSON.parse(event.data);
             // Received progress message
@@ -370,8 +394,6 @@ const useScraper = () => {
     setJobId(null);
     setError(null);
   }, []);
-
-  // No mock data generators - removed
 
   return {
     loading,
