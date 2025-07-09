@@ -57,32 +57,19 @@ const useScraper = (): ScraperHook => {
 
       // Create a new promise for SSE connection
       const ssePromise = new Promise<PreviewData>((resolve, reject) => {
-        // Create SSE connection
         const eventSource = apiService.createPreviewEventSource(formData);
         previewEventSourceRef.current = eventSource;
 
-        // Handle connection open
         eventSource.onopen = () => {
-          // Preview SSE connection established
-          // Add a timeout to handle case where connection is established but no events are received
           setTimeout(() => {
-            // If we're still loading and haven't received any events
             if (loading && !previewData) {
-              // No preview events received after connection open
-              // Try a fallback approach - make a direct API call
               apiService
                 .getSamplePreview()
                 .then((data) => {
                   if (data) {
-                    // Fallback preview data received
-                    // Use raw data directly without enrichment
-                    console.log(
-                      "Setting raw preview data from fallback:",
-                      data
-                    );
+                    console.log("Setting preview data from fallback:", data);
                     setPreviewData(data);
                     setLoading(false);
-                    // Close the SSE connection since we're using fallback data
                     apiService.closeEventSource(eventSource);
                     previewEventSourceRef.current = null;
                   }
@@ -91,10 +78,9 @@ const useScraper = (): ScraperHook => {
                   console.error("Fallback preview request failed:", err)
                 );
             }
-          }, 10000); // Wait 10 seconds for events before trying fallback
+          }, 10000);
         };
 
-        // Handle connect event
         eventSource.addEventListener("connect", (event) => {
           // SSE connection established
           // This just confirms the connection, we still need to wait for data
@@ -283,7 +269,6 @@ const useScraper = (): ScraperHook => {
             const parsedData = JSON.parse(event.data);
 
             if (parsedData.data.extractedData) {
-              console.log("Extracted Data:", parsedData.data.extractedData);
               SetExtractedData(parsedData.data.extractedData);
             } else {
               SetExtractedData([{ message: "No Data Found" }]);
@@ -291,7 +276,7 @@ const useScraper = (): ScraperHook => {
 
             setScraping(false);
             setProgress(100);
-
+            
             // Close the SSE connection
             apiService.closeEventSource(eventSource);
             scrapingEventSourceRef.current = null;

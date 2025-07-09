@@ -8,9 +8,6 @@ import "../styles/TemplatePage.css";
 
 const TemplatePage: React.FC = () => {
   const { extractedData, loading, resetScraper } = useScraperContext();
-  
-  // Debug log to check extractedData
-  console.log("TemplatePage - extractedData:", extractedData);
 
   // Handle navigation back to main page
   const handleBackToMain = (): void => {
@@ -57,13 +54,6 @@ const TemplatePage: React.FC = () => {
             aria-labelledby="data-heading"
             aria-live="polite"
           >
-            {/* Debug info */}
-            <div style={{ display: 'none' }}>
-              Has data: {extractedData ? 'Yes' : 'No'}, 
-              Type: {extractedData ? typeof extractedData : 'N/A'}, 
-              Is Array: {extractedData && Array.isArray(extractedData) ? 'Yes' : 'No'}, 
-              Length: {extractedData && Array.isArray(extractedData) ? extractedData.length : 'N/A'}
-            </div>
             <h2 id="data-heading" className="sr-only">
               Data Results
             </h2>
@@ -78,7 +68,9 @@ const TemplatePage: React.FC = () => {
                   <p>Loading data...</p>
                 </div>
               </Card>
-            ) : extractedData && (Array.isArray(extractedData) || typeof extractedData === 'object') ? (
+            ) : extractedData &&
+              (Array.isArray(extractedData) ||
+                typeof extractedData === "object") ? (
               <motion.div
                 className="data-table-wrapper"
                 initial={{ opacity: 0, y: 20 }}

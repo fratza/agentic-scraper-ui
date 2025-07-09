@@ -180,79 +180,70 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
   };
 
   // Function to download data as CSV
-  const downloadCSV = (): void => {
-    setExportLoading(true);
+  const downloadCSV = (): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      if (!tableData.length) {
+        reject(new Error('No data available to download'));
+        return;
+      }
 
-    try {
-      // Get all keys (columns)
-      const csvKeys = keys;
+      try {
+        // Get all keys (columns)
+        const csvKeys = keys;
 
-      // Create CSV header row
-      const header = csvKeys.map((key) => formatColumnHeader(key)).join(",");
+        // Create CSV header row
+        const header = csvKeys.map((key) => formatColumnHeader(key)).join(",");
 
-      // Create CSV rows from data
-      const rows = tableData
-        .map((item) => {
-          return csvKeys
-            .map((key) => {
-              const value = item[key];
-              // Format the value for CSV (handle strings with commas, quotes, etc.)
-              if (value === null || value === undefined) {
-                return "";
-              } else if (typeof value === "object") {
-                return `"${JSON.stringify(value).replace(/"/g, '""')}"`;
-              } else if (typeof value === "string") {
-                return `"${value.replace(/"/g, '""')}"`;
-              } else {
-                return String(value);
-              }
-            })
-            .join(",");
-        })
-        .join("\n");
+        // Create CSV rows from data
+        const rows = tableData
+          .map((item) => {
+            return csvKeys
+              .map((key) => {
+                const value = item[key];
+                // Format the value for CSV (handle strings with commas, quotes, etc.)
+                if (value === null || value === undefined) {
+                  return "";
+                } else if (typeof value === "object") {
+                  return `"${JSON.stringify(value).replace(/"/g, '""')}"`;
+                } else if (typeof value === "string") {
+                  return `"${value.replace(/"/g, '""')}"`;
+                } else {
+                  return String(value);
+                }
+              })
+              .join(",");
+          })
+          .join("\n");
 
-      // Combine header and rows
-      const csv = `${header}\n${rows}`;
+        // Combine header and rows
+        const csv = `${header}\n${rows}`;
 
-      // Get current date for filename
-      const date = new Date();
-      const formattedDate = date.toISOString().split("T")[0];
-      const filename = `extracted_data_${formattedDate}.csv`;
+        // Get current date for filename
+        const date = new Date();
+        const formattedDate = date.toISOString().split("T")[0];
+        const filename = `extracted_data_${formattedDate}.csv`;
 
-      // Create a blob and download link
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute("download", filename);
-      link.style.visibility = "hidden";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // Show success message
-      toast.current?.show({
-        severity: "success",
-        summary: "Success",
-        detail: `CSV file "${filename}" downloaded successfully`,
-        life: 3000,
-      });
-
-      // Clean up the URL object
-      setTimeout(() => {
-        URL.revokeObjectURL(url);
-        setExportLoading(false);
-      }, 100);
-    } catch (error) {
-      console.error("Error generating CSV:", error);
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to generate CSV file",
-        life: 3000,
-      });
-      setExportLoading(false);
-    }
+        // Create a blob and download link
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", filename);
+        link.style.visibility = "hidden";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up the URL object
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+          resolve();
+        }, 100);
+      } catch (error) {
+        console.error("Error exporting to CSV:", error);
+        reject(error);
+      }
+    });
   };
 
   // Format cell value based on type for PrimeReact DataTable
@@ -402,25 +393,47 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
     );
   };
 
-  // Debug tableData
-  console.log("ExtractedDataTable - tableData:", tableData);
-  
   // If no data is available, show a message instead of returning null
   if (!tableData.length) {
     return (
       <div className="empty-data-message">
-        <p>Processing data... If this persists, please check the console for errors.</p>
+        <p>
+          Processing data... If this persists, please check the console for
+          errors.
+        </p>
       </div>
     );
   }
 
   // Function to handle download CSV action
-  const handleDownloadCSV = (): void => {
+  const handleDownloadCSV = async (): Promise<void> => {
     try {
-      downloadCSV();
+      setExportLoading(true);
+      await downloadCSV();
+      
+      // Show success toast
+      if (toast.current) {
+        toast.current.show({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'CSV file downloaded successfully',
+          life: 3000
+        });
+      }
     } catch (error) {
       console.error("Error downloading CSV:", error);
-      // Could add toast notification here
+      
+      // Show error toast
+      if (toast.current) {
+        toast.current.show({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to download CSV file',
+          life: 5000
+        });
+      }
+    } finally {
+      setExportLoading(false);
     }
   };
 
@@ -461,18 +474,10 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
           formatColumnHeader={formatColumnHeader}
           formatCellValue={formatCellValue}
           keys={keys}
+          onDownloadCSV={handleDownloadCSV}
         />
 
         <div className="action-buttons">
-          <Button
-            icon="pi pi-download"
-            label="Download CSV"
-            className="btn btn-primary"
-            onClick={handleDownloadCSV}
-            aria-label="Download data as CSV file"
-            disabled={!tableData.length || exportLoading}
-            loading={exportLoading}
-          />
           <Button
             icon="pi pi-arrow-left"
             label="Back to Main"

@@ -2,10 +2,11 @@
 .extracted-data-table-container {
   margin-bottom: var(--space-xl);
   width: 100%;
-  overflow: hidden;
-  background-color: var(--card-background);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow);
+  padding: 1rem;
+  background-color: var(--surface-card);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  color: var(--text-color);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -20,10 +21,10 @@
   border-radius: var(--border-radius-md);
   box-shadow: var(--shadow);
   margin-bottom: var(--space-lg);
-  background-color: var(--card-background);
+  background-color: var(--surface-2, #2a2a2a);
   color: var(--text-color);
   scrollbar-width: thin;
-  scrollbar-color: var(--border-hover) var(--card-background);
+  scrollbar-color: var(--border-hover) var(--surface-2, #2a2a2a);
 }
 
 /* Custom scrollbar for webkit browsers */
@@ -33,13 +34,13 @@
 }
 
 .prime-datatable-wrapper::-webkit-scrollbar-track {
-  background: var(--card-background);
+  background: var(--surface-2, #2a2a2a);
 }
 
 .prime-datatable-wrapper::-webkit-scrollbar-thumb {
   background-color: var(--border-hover);
   border-radius: 20px;
-  border: 3px solid var(--card-background);
+  border: 3px solid var(--surface-2, #2a2a2a);
 }
 
 /* Header styles for DataTable */
@@ -61,11 +62,27 @@
   justify-content: flex-end;
 }
 
+/* Download button styling */
+.download-btn {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.download-btn:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
 /* Custom paginator styling */
 .custom-paginator {
-  margin-top: var(--space-md);
-  border-top: 1px solid var(--border-color);
-  padding-top: var(--space-md);
+  margin-top: 1rem;
+  padding: 0.5rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .custom-paginator .p-paginator-current {
@@ -75,10 +92,11 @@
 
 .custom-paginator .p-paginator-page.p-highlight {
   background-color: var(--primary-color);
-  color: var(--text-on-primary);
-  background-color: var(--error-color);
-  border-color: var(--error-color);
-  transition: var(--transition);
+  color: white;
+}
+
+.custom-paginator .p-paginator-page:not(.p-highlight):hover {
+  background-color: var(--surface-1);
 }
 
 .p-button.p-button-danger:hover {
@@ -169,13 +187,15 @@
   color: var(--primary-color);
 }
 
-/* Table header container */
-.table-header-container {
+/* Table header with search and rows per page */
+.table-header {
   display: flex;
-  flex-direction: column;
-  margin-bottom: var(--space-md);
-  padding: var(--space-md) var(--space-lg);
-  border-bottom: 1px solid var(--border-color);
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .table-info {
@@ -437,54 +457,91 @@
   border-width: 0;
 }
 
-/* Search input styling */
-.p-input-icon-left {
-  width: 100%;
-  max-width: 300px;
+/* Search container */
+.search-container {
+  flex: 1;
+  min-width: 200px;
+  max-width: 400px;
 }
 
-.p-input-icon-left i {
+.search-container .p-input-icon-left {
+  width: 100%;
+}
+
+.search-container .p-input-icon-left i {
   color: var(--text-light);
+  left: 0.75rem;
 }
 
-.p-inputtext {
+.global-search {
   width: 100%;
+  padding-left: 2.5rem;
   background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid var(--border-color);
   color: var(--text-color);
+  border-radius: 4px;
 }
 
-.p-inputtext:focus {
+.global-search:focus {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 1px var(--primary-color-light);
 }
 
+/* Rows per page and download container */
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.rows-per-page {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rows-label {
+  color: var(--text-light);
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.rows-dropdown {
+  min-width: 5rem;
+}
+
+.rows-dropdown .p-dropdown-label {
+  padding-right: 2.5rem;
+}
+
 /* Custom styling for PrimeReact DataTable */
-.p-datatable-gridlines {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #ffffff;
-  font-family: "Poppins", sans-serif;
-  animation: fadeIn 0.5s ease-in-out;
+.data-table {
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
-.p-datatable-gridlines th {
-  background-color: #f8f9fa;
-  color: #333333;
+.data-table .p-datatable-wrapper {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.data-table .p-datatable-thead > tr > th {
+  background-color: var(--surface-2, #2a2a2a);
+  color: var(--text-color);
   font-weight: 600;
-  text-align: left;
-  padding: 12px 16px;
-  border-bottom: 2px solid #e9ecef;
+  padding: 0.75rem 1rem;
+  border-color: var(--border-color);
 }
 
-.p-datatable-gridlines td {
-  padding: 12px 16px; /* Consistent padding with headers */
-  border-bottom: 1px solid #e9ecef;
-  color: #333333;
+.data-table .p-datatable-tbody > tr > td {
+  padding: 0.75rem 1rem;
+  border-color: var(--border-color);
 }
 
-.p-datatable-gridlines tbody tr:hover {
-  background-color: #f8f9fa;
+.data-table .p-datatable-tbody > tr:hover {
+  background-color: var(--surface-1, #333333);
 }
 
 /* Description column styling */
@@ -535,15 +592,27 @@
   }
 }
 
-/* Row Number Column */
+/* Row number column */
+.row-number {
+  text-align: center;
+  font-weight: 500;
+  background-color: var(--surface-2, #2a2a2a);
+}
+
+.row-number-header {
+  text-align: center;
+  background-color: var(--surface-3, #222222) !important;
+}
+
+/* Row Number Column - for sticky positioning */
 .row-number-column {
-  width: 50px !important;
-  min-width: 50px !important;
-  max-width: 50px !important;
+  width: 4rem !important;
+  min-width: 4rem !important;
+  max-width: 4rem !important;
   text-align: center !important;
-  background-color: #f0f0f0 !important;
+  background-color: var(--surface-2, #2a2a2a) !important;
   font-weight: 600 !important;
-  color: #555 !important;
+  color: var(--text-color) !important;
   position: sticky !important;
   left: 0 !important;
   z-index: 1 !important;

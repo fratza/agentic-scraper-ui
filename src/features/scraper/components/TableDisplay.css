@@ -1,0 +1,196 @@
+/* TableDisplay Styles - Matching Preview Data Table styling */
+.table-container {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+/* Table header with search and rows per page */
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Search container */
+.search-container {
+  flex: 1;
+  min-width: 200px;
+  max-width: 400px;
+}
+
+.search-container .p-input-icon-left {
+  width: 100%;
+}
+
+.search-container .p-input-icon-left i {
+  color: var(--text-light);
+  left: 0.75rem;
+}
+
+.global-search {
+  width: 100%;
+  padding-left: 2.5rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  border-radius: 4px;
+}
+
+.global-search:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 1px var(--primary-color-light);
+}
+
+/* Rows per page and download container */
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.rows-per-page {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rows-label {
+  color: var(--text-light);
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.rows-dropdown {
+  min-width: 5rem;
+}
+
+.rows-dropdown .p-dropdown-label {
+  padding-right: 2.5rem;
+}
+
+/* DataTable styling */
+.data-table {
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.data-table .p-datatable-wrapper {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.data-table .p-datatable-thead > tr > th {
+  background-color: var(--surface-2, #2a2a2a);
+  color: var(--text-color);
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  border-color: var(--border-color);
+}
+
+.data-table .p-datatable-tbody > tr > td {
+  padding: 0.75rem 1rem;
+  border-color: var(--border-color);
+}
+
+.data-table .p-datatable-tbody > tr:hover {
+  background-color: var(--surface-1, #333333);
+}
+
+/* Row number column */
+.row-number {
+  text-align: center;
+  font-weight: 500;
+  background-color: var(--surface-2, #2a2a2a);
+}
+
+.row-number-header {
+  text-align: center;
+  background-color: var(--surface-3, #222222) !important;
+}
+
+/* Custom paginator styling */
+.custom-paginator {
+  margin-top: 1rem;
+  padding: 0.5rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.custom-paginator .p-paginator-current {
+  font-weight: 500;
+  color: var(--text-light);
+}
+
+.custom-paginator .p-paginator-page.p-highlight {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.custom-paginator .p-paginator-page:not(.p-highlight):hover {
+  background-color: var(--surface-1);
+}
+
+/* Loading and empty states */
+.loading-container,
+.empty-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: var(--text-light);
+  text-align: center;
+  gap: 1rem;
+}
+
+.loading-container .p-progress-spinner {
+  width: 50px;
+  height: 50px;
+}
+
+/* Download button styling */
+.download-btn {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.download-btn:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .search-container {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .table-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .custom-paginator {
+    justify-content: center;
+  }
+}

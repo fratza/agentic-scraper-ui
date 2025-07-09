@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Paginator } from "primereact/paginator";
 import { ProgressSpinner } from "primereact/progressspinner";
+import { Button } from "primereact/button";
+import "./TableDisplay.css";
 
 interface TableDisplayProps {
   tableData: any[];
@@ -13,6 +15,7 @@ interface TableDisplayProps {
   formatColumnHeader: (key: string) => string;
   formatCellValue: (rowData: any, column: { field: string }) => React.ReactNode;
   keys: string[];
+  onDownloadCSV?: () => void;
 }
 
 const TableDisplay: React.FC<TableDisplayProps> = ({
@@ -22,16 +25,38 @@ const TableDisplay: React.FC<TableDisplayProps> = ({
   formatColumnHeader,
   formatCellValue,
   keys,
+  onDownloadCSV,
 }) => {
   const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [first, setFirst] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(0);
+  const [filteredData, setFilteredData] = useState<any[]>(tableData);
+
+  // Update filtered data when tableData changes
+  useEffect(() => {
+    setFilteredData(tableData);
+  }, [tableData]);
 
   // Handle global filter input change
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setGlobalFilterValue(value);
+    
+    // Filter the data based on the search value
+    if (value.trim()) {
+      const filtered = tableData.filter(item => {
+        return keys.some(key => {
+          const cellValue = item[key];
+          if (cellValue === null || cellValue === undefined) return false;
+          return String(cellValue).toLowerCase().includes(value.toLowerCase());
+        });
+      });
+      setFilteredData(filtered);
+    } else {
+      setFilteredData(tableData);
+    }
+    
     // Reset to first page when filtering
     setFirst(0);
     setCurrentPage(0);
@@ -50,6 +75,14 @@ const TableDisplay: React.FC<TableDisplayProps> = ({
     setFirst(event.first);
     setRowsPerPage(event.rows);
     setCurrentPage(event.page);
+  };
+
+  // Handle rows per page change
+  const onRowsPerPageChange = (e: { value: number }) => {
+    const newRowsPerPage = e.value;
+    setRowsPerPage(newRowsPerPage);
+    setFirst(0); // Reset to first page
+    setCurrentPage(0);
   };
 
   // Empty message for when there's no data
@@ -83,22 +116,30 @@ const TableDisplay: React.FC<TableDisplayProps> = ({
             />
           </span>
         </div>
-        <div className="rows-per-page">
-          <label htmlFor="rows-per-page" className="rows-label">
-            Rows per page:
-          </label>
-          <Dropdown
-            id="rows-per-page"
-            value={rowsPerPage}
-            options={rowsPerPageOptions}
-            onChange={(e) => {
-              setRowsPerPage(e.value);
-              setFirst(0);
-              setCurrentPage(0);
-            }}
-            className="rows-dropdown"
-            aria-label="Select number of rows per page"
-          />
+        <div className="table-actions">
+          <div className="rows-per-page">
+            <label htmlFor="rows-per-page" className="rows-label">
+              Rows per page:
+            </label>
+            <Dropdown
+              id="rows-per-page"
+              value={rowsPerPage}
+              options={rowsPerPageOptions}
+              onChange={onRowsPerPageChange}
+              className="rows-dropdown"
+              aria-label="Select number of rows per page"
+            />
+          </div>
+          
+          {onDownloadCSV && (
+            <Button
+              icon="pi pi-download"
+              label="Download CSV"
+              className="download-btn p-button-sm"
+              onClick={onDownloadCSV}
+              aria-label="Download data as CSV file"
+            />
+          )}
         </div>
       </div>
       {loading ? (
@@ -106,7 +147,7 @@ const TableDisplay: React.FC<TableDisplayProps> = ({
       ) : (
         <>
           <DataTable
-            value={tableData}
+            value={filteredData}
             rows={rowsPerPage}
             first={first}
             tableStyle={{ minWidth: "50rem" }}
@@ -126,6 +167,12 @@ const TableDisplay: React.FC<TableDisplayProps> = ({
             rowHover
             resizableColumns
             reorderableColumns
+            paginator
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            paginatorClassName="custom-paginator"
+            paginatorPosition="bottom"
+            lazy={false}
           >
             {/* Row number column */}
             <Column
@@ -134,6 +181,8 @@ const TableDisplay: React.FC<TableDisplayProps> = ({
               style={{ width: '4rem' }}
               bodyClassName="row-number"
               headerClassName="row-number-header"
+              frozen
+              alignHeader="center"
             />
             
             {keys.map((key) => (
@@ -149,17 +198,6 @@ const TableDisplay: React.FC<TableDisplayProps> = ({
               />
             ))}
           </DataTable>
-          
-          {/* Custom paginator */}
-          <Paginator
-            first={first}
-            rows={rowsPerPage}
-            totalRecords={tableData.length}
-            onPageChange={onPageChange}
-            template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-            className="custom-paginator"
-          />
         </>
       )}
     </div>
