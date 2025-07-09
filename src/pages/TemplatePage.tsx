@@ -20,10 +20,16 @@ interface ProductData {
 // The rest of the page will use the app's theme variables
 
 const TemplatePage: React.FC = () => {
-  const { scrapedData, loading } = useScraper();
+  const { scrapedData, loading, resetScraper } = useScraper();
 
   // Sample data for demonstration if no real data is available
   const [demoData, setDemoData] = useState<ProductData[] | null>(null);
+  
+  // Handle navigation back to main page
+  const handleBackToMain = (): void => {
+    resetScraper();
+    window.location.href = "/";
+  };
 
   useEffect(() => {
     // Create demo data if no scraped data is available
@@ -111,7 +117,10 @@ const TemplatePage: React.FC = () => {
             </Card>
           ) : displayData ? (
             <div className="data-table-wrapper">
-              <ExtractedDataTable extractedData={displayData} />
+              <ExtractedDataTable 
+                extractedData={displayData} 
+                onBackToMain={handleBackToMain} 
+              />
             </div>
           ) : (
             <Card className="info-card">

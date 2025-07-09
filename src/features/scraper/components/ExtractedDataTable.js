@@ -17,9 +17,9 @@ import "primeflex/primeflex.css";
 
 import TableDisplay from "./TableDisplay";
 
-const ExtractedDataTable = ({ extractedData, scrapedData, onBackToMain }) => {
+const ExtractedDataTable = ({ extractedData, onBackToMain }) => {
   // For backward compatibility, use extractedData if provided, otherwise fall back to scrapedData
-  const data = extractedData || scrapedData;
+  const data = extractedData;
   const [tableData, setTableData] = useState([]);
   const [filters, setFilters] = useState({});
   const [globalFilterValue, setGlobalFilterValue] = useState("");
