@@ -8,7 +8,7 @@ import { config } from "../../../lib/config";
 const useScraper = () => {
   const [loading, setLoading] = useState(false);
   const [previewData, setPreviewData] = useState(null);
-  const [scrapedData, setScrapedData] = useState(null); // Keeping for backward compatibility
+  const [scrapedData, setScrapedData] = useState(null);
   const [scraping, setScraping] = useState(false);
   const [progress, setProgress] = useState(0);
   const [jobId, setJobId] = useState(null);
@@ -277,13 +277,13 @@ const useScraper = () => {
           // Scraping SSE connection established
         };
 
-        // Handle extractedData events (previously scrapedData)
         eventSource.addEventListener("scrapedData", (event) => {
           try {
             const parsedData = JSON.parse(event.data);
 
-            console.log("THIS IS PARSED DATA", parsedData);
+            console.log("THIS IS PARSED DATA", parsedData.data.extractedData);
             if (parsedData.data.extractedData) {
+              console.log("YAHOOO");
               setScrapedData(parsedData.data.extractedData);
             } else {
               setScrapedData([{ message: "No Data Found" }]);
