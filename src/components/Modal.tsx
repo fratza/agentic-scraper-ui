@@ -1,12 +1,6 @@
-import React, { useEffect, ReactNode } from 'react';
+import React, { useEffect } from 'react';
 import './Modal.css';
-
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  children: ReactNode;
-  title?: string;
-}
+import { ModalProps } from '../model';
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
   useEffect(() => {

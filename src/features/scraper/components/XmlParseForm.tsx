@@ -1,36 +1,23 @@
-import React, { useState, FormEvent, ChangeEvent } from 'react';
-import './ScraperForm.css';
-import apiService from '../../../services/api';
-import { isValidUrl } from '../../../lib/utils';
+import React, { useState, FormEvent, ChangeEvent } from "react";
+import "./ScraperForm.css";
+import apiService from "../../../services/api";
+import { isValidUrl } from "../../../lib/utils";
+import { XmlParseFormProps, FormSubmitData, FormErrors } from "../../../model";
 
-interface XmlParseFormProps {
-  onSubmit: (data: FormSubmitData) => void;
-  onSwitchToRegular: () => void;
-}
-
-interface FormSubmitData {
-  url: string;
-  scrapeTarget: string;
-  jobId?: string;
-  parseType?: string;
-}
-
-interface FormErrors {
-  url?: string;
-  api?: string;
-}
-
-const XmlParseForm: React.FC<XmlParseFormProps> = ({ onSubmit, onSwitchToRegular }) => {
+const XmlParseForm: React.FC<XmlParseFormProps> = ({
+  onSubmit,
+  onSwitchToRegular,
+}) => {
   const [url, setUrl] = useState<string>("");
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     // Prevent multiple submissions
     if (isSubmitting) return;
-    
+
     // Set submitting state to true
     setIsSubmitting(true);
 
@@ -52,9 +39,28 @@ const XmlParseForm: React.FC<XmlParseFormProps> = ({ onSubmit, onSwitchToRegular
     // Clear errors
     setErrors({});
 
+    const formData = { url };
+
     // Submit with XML parse type
-    // For XML parsing, we use an empty string for scrapeTarget since it's not needed
-    onSubmit({ url, scrapeTarget: '', parseType: 'xml' });
+    try {
+      // Send data to backend API
+      const response = await apiService.submitScrapeRequest(formData);
+      // Scrape request submitted successfully
+
+      // Pass the response to parent component
+      onSubmit({ url, jobId: response.jobId });
+      // Note: We don't reset isSubmitting here because the form will be replaced by preview
+    } catch (error: any) {
+      // Handle submission error silently
+      // Handle API errors
+      setErrors({
+        api:
+          error.response?.data?.message ||
+          "Failed to connect to the server. Please try again.",
+      });
+      // Reset submitting state on error
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -88,18 +94,16 @@ const XmlParseForm: React.FC<XmlParseFormProps> = ({ onSubmit, onSwitchToRegular
             name="url"
             placeholder="Enter the website URL to parse XML from"
             value={url}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setUrl(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setUrl(e.target.value)
+            }
           />
           {errors.url && <div className="error-message">{errors.url}</div>}
         </div>
 
         <div className="form-actions">
-          <button 
-            type="submit" 
-            className="btn-submit" 
-            disabled={isSubmitting}
-          >
-            <span>{isSubmitting ? 'Submitting...' : 'Parse XML'}</span>
+          <button type="submit" className="btn-submit" disabled={isSubmitting}>
+            <span>{isSubmitting ? "Submitting..." : "Parse XML"}</span>
           </button>
         </div>
       </form>

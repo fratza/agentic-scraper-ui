@@ -1,10 +1,6 @@
 import React, { ReactElement } from 'react';
 import './DataTable.css';
-
-interface DataTableProps {
-  data: any[] | Record<string, any>;
-  title?: string;
-}
+import { DataTableProps } from '../../../model';
 
 const DataTable: React.FC<DataTableProps> = ({ data, title }) => {
   // If data is empty or null, return null

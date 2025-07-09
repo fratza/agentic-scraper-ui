@@ -1,25 +1,9 @@
-import React, { useState, FormEvent, ChangeEvent } from 'react';
-import XmlParseForm from './XmlParseForm';
-import './ScraperForm.css';
-import apiService from '../../../services/api';
-import { isValidUrl } from '../../../lib/utils';
-
-interface ScraperFormProps {
-  onSubmit: (data: FormSubmitData) => void;
-}
-
-interface FormSubmitData {
-  url: string;
-  scrapeTarget: string;
-  jobId?: string;
-  parseType?: string;
-}
-
-interface FormErrors {
-  url?: string;
-  scrapeTarget?: string;
-  api?: string;
-}
+import React, { useState, FormEvent, ChangeEvent } from "react";
+import XmlParseForm from "./XmlParseForm";
+import "./ScraperForm.css";
+import apiService from "../../../services/api";
+import { isValidUrl } from "../../../lib/utils";
+import { ScraperFormProps, FormSubmitData, FormErrors } from "../../../model";
 
 const ScraperForm: React.FC<ScraperFormProps> = ({ onSubmit }) => {
   const [url, setUrl] = useState<string>("");
@@ -38,10 +22,10 @@ const ScraperForm: React.FC<ScraperFormProps> = ({ onSubmit }) => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     // Prevent multiple submissions
     if (isSubmitting) return;
-    
+
     // Set submitting state to true
     setIsSubmitting(true);
 
@@ -77,8 +61,7 @@ const ScraperForm: React.FC<ScraperFormProps> = ({ onSubmit }) => {
       // Scrape request submitted successfully
 
       // Pass the response to parent component
-      onSubmit({ url, scrapeTarget, jobId: response.jobId, parseType: 'standard' });
-      // Note: We don't reset isSubmitting here because the form will be replaced by preview
+      onSubmit({ url, scrapeTarget, jobId: response.jobId });
     } catch (error: any) {
       // Handle submission error silently
       // Handle API errors
@@ -94,9 +77,9 @@ const ScraperForm: React.FC<ScraperFormProps> = ({ onSubmit }) => {
 
   if (showXmlForm) {
     return (
-      <XmlParseForm 
-        onSubmit={onSubmit} 
-        onSwitchToRegular={handleSwitchToRegularMode} 
+      <XmlParseForm
+        onSubmit={onSubmit}
+        onSwitchToRegular={handleSwitchToRegularMode}
       />
     );
   }
@@ -122,7 +105,9 @@ const ScraperForm: React.FC<ScraperFormProps> = ({ onSubmit }) => {
             name="url"
             placeholder="Enter the website URL to scrape"
             value={url}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setUrl(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setUrl(e.target.value)
+            }
           />
           {errors.url && <div className="error-message">{errors.url}</div>}
         </div>
@@ -135,7 +120,9 @@ const ScraperForm: React.FC<ScraperFormProps> = ({ onSubmit }) => {
             placeholder="E.g., product prices, article titles, images"
             rows={3}
             value={scrapeTarget}
-            onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setScrapeTarget(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+              setScrapeTarget(e.target.value)
+            }
           ></textarea>
           {errors.scrapeTarget && (
             <div className="error-message">{errors.scrapeTarget}</div>
@@ -143,12 +130,8 @@ const ScraperForm: React.FC<ScraperFormProps> = ({ onSubmit }) => {
         </div>
 
         <div className="form-actions">
-          <button 
-            type="submit" 
-            className="btn-submit" 
-            disabled={isSubmitting}
-          >
-            <span>{isSubmitting ? 'Submitting...' : 'Submit'}</span>
+          <button type="submit" className="btn-submit" disabled={isSubmitting}>
+            <span>{isSubmitting ? "Submitting..." : "Submit"}</span>
           </button>
         </div>
       </form>

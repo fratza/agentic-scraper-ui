@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import apiService from "../../../services/api";
 import { config } from "../../../lib/config";
-import { PreviewData, ScraperHook } from "../../../types/scraper";
+import { PreviewData, ScraperHook } from "../../../model";
 
 /**
  * Custom hook for managing scraper state and operations

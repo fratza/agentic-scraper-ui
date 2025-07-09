@@ -1,15 +1,8 @@
-// Define types for the scraper state and data
-export interface PreviewData {
-  data?: {
-    run_id?: string;
-    [key: string]: any;
-  };
-  run_id?: string;
-  sample?: Array<any>;
-  timestamp?: string;
-  [key: string]: any;
-}
+import { PreviewData } from './api';
 
+/**
+ * Interface for the scraper hook functionality
+ */
 export interface ScraperHook {
   loading: boolean;
   previewData: PreviewData | null;

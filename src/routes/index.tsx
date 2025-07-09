@@ -1,22 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ScraperPage from "../pages/ScraperPage";
 import TemplatePage from "../pages/TemplatePage";
-
-/**
- * Interface for route configuration
- */
-interface Route {
-  path: string;
-  component: React.ComponentType;
-  exact: boolean;
-}
-
-/**
- * Custom event interface for location change events
- */
-interface LocationChangeEvent extends Event {
-  detail?: string;
-}
+import { Route, LocationChangeEvent } from "../model";
 
 /**
  * Simple router configuration

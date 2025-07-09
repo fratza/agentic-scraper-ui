@@ -3,14 +3,7 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { ProgressSpinner } from "primereact/progressspinner";
 import "./TableDisplay.css";
-
-interface TableDisplayProps {
-  tableData: any[];
-  loading: boolean;
-  formatColumnHeader: (key: string) => string;
-  formatCellValue: (rowData: any, column: { field: string }) => React.ReactNode;
-  keys: string[];
-}
+import { TableDisplayProps } from "../../../model";
 
 const TableDisplay: React.FC<TableDisplayProps> = ({
   tableData,

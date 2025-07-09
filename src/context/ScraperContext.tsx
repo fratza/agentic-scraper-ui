@@ -1,27 +1,12 @@
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext } from 'react';
 import useScraper from '../features/scraper/hooks/useScraper';
-import { PreviewData } from '../types/scraper';
+import { ScraperHook, ScraperProviderProps } from '../model';
 
-// Define the context type
-interface ScraperContextType {
-  loading: boolean;
-  previewData: PreviewData | null;
-  extractedData: any[] | null;
-  scraping: boolean;
-  progress: number;
-  error: string | null;
-  handleFormSubmit: (formData: any) => Promise<void>;
-  startScraping: (resume_link: string) => Promise<void>;
-  resetScraper: () => void;
-}
+// Use the ScraperHook interface from model folder
+type ScraperContextType = ScraperHook;
 
 // Create the context with a default value
 const ScraperContext = createContext<ScraperContextType | undefined>(undefined);
-
-// Provider component
-interface ScraperProviderProps {
-  children: ReactNode;
-}
 
 export const ScraperProvider: React.FC<ScraperProviderProps> = ({ children }) => {
   // Use the useScraper hook to get all the scraper functionality

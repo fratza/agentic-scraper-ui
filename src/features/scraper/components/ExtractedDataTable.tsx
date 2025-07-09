@@ -23,22 +23,8 @@ import TableDisplay from "./TableDisplay";
 // Import mock data for development/testing
 import { mockTableData } from "../data/mockTableData";
 
-// Define interfaces for props and state
-interface ExtractedDataTableProps {
-  extractedData?: any;
-  onBackToMain?: () => void;
-}
-
-interface ImageWithToggleProps {
-  url: string;
-}
-
-interface FilterDisplayOptions {
-  [key: string]: {
-    value: any;
-    matchMode: FilterMatchMode;
-  };
-}
+// Import interfaces from model folder
+import { ExtractedDataTableProps, ImageWithToggleProps, FilterDisplayOptions } from '../../../model';
 
 const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
   extractedData,

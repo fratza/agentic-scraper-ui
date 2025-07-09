@@ -12,7 +12,7 @@ import Loader from "../components/Loader";
 import "../styles/App.css";
 import "../styles/preview-loading.css";
 import "../styles/loading-results.css";
-import { PreviewData } from "../types/scraper";
+import { PreviewData } from "../model";
 
 const ScraperPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);

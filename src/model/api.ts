@@ -1,5 +1,5 @@
 /**
- * Type definitions for the Scraper UI application
+ * API related interfaces
  */
 
 /**
@@ -63,20 +63,4 @@ export interface SSEEventData {
   type: string;
   data: any;
   timestamp: string;
-}
-
-/**
- * Table data row
- */
-export interface TableRow {
-  id: string;
-  [key: string]: any;
-}
-
-/**
- * Filter configuration for tables
- */
-export interface FilterConfig {
-  value: any;
-  matchMode: string;
 }

@@ -2,17 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import "./Preview.css";
 import DataTable from "./DataTable";
 import apiService from "../../../services/api";
-
-interface PreviewProps {
-  previewData: any;
-  onScrape: (resumeLink: string) => void;
-  scraping: boolean;
-  progress: number;
-  scrapedData: any[] | null;
-  error: string | null;
-  onClose: () => void;
-  resetScraper: () => void;
-}
+import { PreviewProps } from "../../../model";
 
 const Preview: React.FC<PreviewProps> = ({
   previewData,
