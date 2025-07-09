@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import ScraperPage from "../pages/ScraperPage";
-import ExtractedDataPage from "../pages/ExtractedDataPage";
 import TemplatePage from "../pages/TemplatePage";
 
 /**
@@ -27,11 +26,6 @@ const routes: Route[] = [
   {
     path: "/",
     component: ScraperPage,
-    exact: true,
-  },
-  {
-    path: "/extracted-data",
-    component: ExtractedDataPage,
     exact: true,
   },
   {

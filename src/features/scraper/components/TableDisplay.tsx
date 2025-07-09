@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { FilterMatchMode } from "primereact/api";
+import { InputText } from "primereact/inputtext";
+import { Dropdown } from "primereact/dropdown";
+import { Paginator } from "primereact/paginator";
+import { ProgressSpinner } from "primereact/progressspinner";
 
-// Define interfaces for props
 interface TableDisplayProps {
-  tableData: Record<string, any>[];
-  filters: Record<string, { value: any; matchMode: FilterMatchMode }>;
+  tableData: any[];
+  filters: any;
   loading: boolean;
   formatColumnHeader: (key: string) => string;
   formatCellValue: (rowData: any, column: { field: string }) => React.ReactNode;
@@ -21,55 +23,145 @@ const TableDisplay: React.FC<TableDisplayProps> = ({
   formatCellValue,
   keys,
 }) => {
-  // Row number template
-  const rowNumberTemplate = (rowData: any, options: { rowIndex: number }) => {
-    return <span>{options.rowIndex + 1}</span>;
+  const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
+  const [first, setFirst] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(0);
+
+  // Handle global filter input change
+  const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setGlobalFilterValue(value);
+    // Reset to first page when filtering
+    setFirst(0);
+    setCurrentPage(0);
   };
 
+  // Options for rows per page dropdown
+  const rowsPerPageOptions = [
+    { label: "10", value: 10 },
+    { label: "25", value: 25 },
+    { label: "50", value: 50 },
+    { label: "100", value: 100 },
+  ];
+
+  // Handle pagination change
+  const onPageChange = (event: { first: number; rows: number; page: number }) => {
+    setFirst(event.first);
+    setRowsPerPage(event.rows);
+    setCurrentPage(event.page);
+  };
+
+  // Empty message for when there's no data
+  const emptyMessage = (
+    <div className="empty-message" role="status" aria-live="polite">
+      <i className="pi pi-info-circle" aria-hidden="true" />
+      <p>No data available</p>
+    </div>
+  );
+
+  // Loading indicator
+  const loadingTemplate = (
+    <div className="loading-container" role="status" aria-live="polite">
+      <ProgressSpinner aria-label="Loading data" />
+      <span>Loading data...</span>
+    </div>
+  );
+
   return (
-    <div className="prime-datatable-wrapper">
-      <DataTable
-        value={tableData}
-        dataKey="id"
-        filters={filters}
-        filterDisplay="menu"
-        loading={loading}
-        responsiveLayout="scroll"
-        emptyMessage="No data found."
-        header={null}
-        scrollable
-        scrollHeight="60vh"
-        stripedRows
-        resizableColumns
-        columnResizeMode="fit"
-        className="p-datatable-gridlines"
-      >
-        {/* Row number column */}
-        <Column
-          header="#"
-          body={rowNumberTemplate}
-          style={{ width: "4rem", textAlign: "center" }}
-          frozen
-          className="row-number-column"
-        />
-        {keys.map((key) => (
-          <Column
-            key={key}
-            field={key}
-            header={formatColumnHeader(key)}
-            sortable
-            filter
-            filterPlaceholder={`Search ${formatColumnHeader(key)}`}
-            body={(rowData) => formatCellValue(rowData, { field: key })}
-            style={{ minWidth: "12rem" }}
-            className={
-              key.toLowerCase().includes("description")
-                ? "description-column"
-                : ""
-            }
+    <div className="table-container">
+      <div className="table-header">
+        <div className="search-container">
+          <span className="p-input-icon-left">
+            <i className="pi pi-search" aria-hidden="true" />
+            <InputText
+              value={globalFilterValue}
+              onChange={onGlobalFilterChange}
+              placeholder="Search"
+              className="global-search"
+              aria-label="Search across all data"
+            />
+          </span>
+        </div>
+        <div className="rows-per-page">
+          <label htmlFor="rows-per-page" className="rows-label">
+            Rows per page:
+          </label>
+          <Dropdown
+            id="rows-per-page"
+            value={rowsPerPage}
+            options={rowsPerPageOptions}
+            onChange={(e) => {
+              setRowsPerPage(e.value);
+              setFirst(0);
+              setCurrentPage(0);
+            }}
+            className="rows-dropdown"
+            aria-label="Select number of rows per page"
           />
-        ))}
-      </DataTable>
+        </div>
+      </div>
+      {loading ? (
+        loadingTemplate
+      ) : (
+        <>
+          <DataTable
+            value={tableData}
+            rows={rowsPerPage}
+            first={first}
+            tableStyle={{ minWidth: "50rem" }}
+            filters={filters}
+            filterDisplay="menu"
+            emptyMessage={emptyMessage}
+            responsiveLayout="stack"
+            breakpoint="768px"
+            globalFilterFields={keys}
+            dataKey="id"
+            className="data-table"
+            scrollable
+            scrollHeight="flex"
+            stripedRows
+            showGridlines
+            size="small"
+            rowHover
+            resizableColumns
+            reorderableColumns
+          >
+            {/* Row number column */}
+            <Column
+              header="#"
+              body={(data, options) => options.rowIndex + first + 1}
+              style={{ width: '4rem' }}
+              bodyClassName="row-number"
+              headerClassName="row-number-header"
+            />
+            
+            {keys.map((key) => (
+              <Column
+                key={key}
+                field={key}
+                header={formatColumnHeader(key)}
+                body={(rowData) => formatCellValue(rowData, { field: key })}
+                sortable
+                filter
+                filterPlaceholder={`Search ${formatColumnHeader(key)}`}
+                style={{ minWidth: '12rem' }}
+              />
+            ))}
+          </DataTable>
+          
+          {/* Custom paginator */}
+          <Paginator
+            first={first}
+            rows={rowsPerPage}
+            totalRecords={tableData.length}
+            onPageChange={onPageChange}
+            template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            className="custom-paginator"
+          />
+        </>
+      )}
     </div>
   );
 };

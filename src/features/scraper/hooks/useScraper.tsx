@@ -17,7 +17,6 @@ interface PreviewData {
 interface ScraperHook {
   loading: boolean;
   previewData: PreviewData | null;
-  scrapedData: any[] | null;
   extractedData: any[] | null;
   scraping: boolean;
   progress: number;
@@ -33,7 +32,7 @@ interface ScraperHook {
 const useScraper = (): ScraperHook => {
   const [loading, setLoading] = useState<boolean>(false);
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
-  const [scrapedData, setScrapedData] = useState<any[] | null>(null);
+  const [extractedData, setextractedData] = useState<any[] | null>(null);
   const [scraping, setScraping] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
   const [jobId, setJobId] = useState<string | null>(null);
@@ -63,7 +62,7 @@ const useScraper = (): ScraperHook => {
     setLoading(true);
     setError(null);
     setPreviewData(null); // Clear any previous preview data
-    setScrapedData(null);
+    setextractedData(null);
 
     // Close any existing event source
     if (previewEventSourceRef.current) {
@@ -243,7 +242,7 @@ const useScraper = (): ScraperHook => {
   const startScraping = useCallback(
     async (resume_link: string) => {
       // Reset any previous scraping state
-      setScrapedData(null);
+      setextractedData(null);
       setError(null);
       setScraping(true); // Open the loading modal
       setProgress(0);
@@ -290,7 +289,7 @@ const useScraper = (): ScraperHook => {
 
       // Set up SSE for scraped data
       try {
-        // Create SSE connection to listen for scrapedData events
+        // Create SSE connection to listen for extractedData events
         const eventSource = apiService.createScrapingEventSource(
           `direct-${Date.now()}`,
           runId
@@ -307,9 +306,9 @@ const useScraper = (): ScraperHook => {
             const parsedData = JSON.parse(event.data);
 
             if (parsedData.data.extractedData) {
-              setScrapedData(parsedData.data.extractedData);
+              setextractedData(parsedData.data.extractedData);
             } else {
-              setScrapedData([{ message: "No Data Found" }]);
+              setextractedData([{ message: "No Data Found" }]);
             }
 
             setScraping(false);
@@ -388,7 +387,7 @@ const useScraper = (): ScraperHook => {
 
     // Reset all state
     setPreviewData(null);
-    setScrapedData(null);
+    setextractedData(null);
     setScraping(false);
     setProgress(0);
     setJobId(null);
@@ -398,8 +397,7 @@ const useScraper = (): ScraperHook => {
   return {
     loading,
     previewData,
-    scrapedData, // Keeping for backward compatibility
-    extractedData: scrapedData, // Adding new name for consistency
+    extractedData, // Keeping for backward compatibility
     scraping,
     progress,
     error,
