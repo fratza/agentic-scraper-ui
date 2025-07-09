@@ -31,7 +31,7 @@ const ScraperPage: React.FC = () => {
   const {
     loading,
     previewData,
-    scrapedData,
+    extractedData,
     scraping,
     progress,
     error,
@@ -56,13 +56,13 @@ const ScraperPage: React.FC = () => {
   const handleModalClose = (): void => {
     setIsModalOpen(false);
 
-    if (loading || (!scraping && !scrapedData)) {
+    if (loading || (!scraping && !extractedData)) {
       resetScraper();
     }
   };
 
   useEffect(() => {
-    if (scrapedData) {
+    if (extractedData) {
       setShowLoadingResults(false);
       // Use history API for client-side navigation instead of full page reload
       window.history.pushState({}, "", "/template");
@@ -73,7 +73,7 @@ const ScraperPage: React.FC = () => {
     } else if (error) {
       setShowLoadingResults(false);
     }
-  }, [scrapedData, error]);
+  }, [extractedData, error]);
 
   return (
     <div className={`app ${!pageLoading ? "fade-in" : ""}`}>
@@ -81,7 +81,7 @@ const ScraperPage: React.FC = () => {
         <div className="container">
           <Hero />
 
-          {!scrapedData && !showLoadingResults && !scraping && (
+          {!extractedData && !showLoadingResults && !scraping && (
             <ScraperForm
               onSubmit={(data: any) => {
                 handleFormSubmit(data);
@@ -90,7 +90,7 @@ const ScraperPage: React.FC = () => {
             />
           )}
 
-          {(showLoadingResults || scraping) && !scrapedData && (
+          {(showLoadingResults || scraping) && !extractedData && (
             <div className="loading-results-container">
               <div className="loading-spinner-container">
                 <div className="loading-spinner"></div>
@@ -148,7 +148,7 @@ const ScraperPage: React.FC = () => {
                 onScrape={handleStartScraping}
                 scraping={scraping}
                 progress={progress}
-                scrapedData={scrapedData}
+                scrapedData={extractedData}
                 error={error}
                 onClose={handleModalClose}
                 resetScraper={resetScraper}

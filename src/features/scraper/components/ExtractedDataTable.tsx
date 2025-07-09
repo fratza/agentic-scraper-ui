@@ -23,7 +23,6 @@ import TableDisplay from "./TableDisplay";
 // Define interfaces for props and state
 interface ExtractedDataTableProps {
   extractedData?: any;
-  scrapedData?: any;
   onBackToMain?: () => void;
 }
 
@@ -40,11 +39,10 @@ interface FilterDisplayOptions {
 
 const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
   extractedData,
-  scrapedData,
   onBackToMain,
 }) => {
   // For backward compatibility, use extractedData if provided, otherwise fall back to scrapedData
-  const data = extractedData || scrapedData;
+  const data = extractedData;
   const [tableData, setTableData] = useState<Record<string, any>[]>([]);
   const [keys, setKeys] = useState<string[]>([]);
   const [filters, setFilters] = useState<
@@ -162,7 +160,8 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
       textToCopy = String(value);
     }
 
-    navigator.clipboard.writeText(textToCopy)
+    navigator.clipboard
+      .writeText(textToCopy)
       .then(() => {
         toast.current?.show({
           severity: "success",
@@ -203,9 +202,9 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
               if (value === null || value === undefined) {
                 return "";
               } else if (typeof value === "object") {
-                return `"${JSON.stringify(value).replace(/"/g, '""')}"`;  
+                return `"${JSON.stringify(value).replace(/"/g, '""')}"`;
               } else if (typeof value === "string") {
-                return `"${value.replace(/"/g, '""')}"`;  
+                return `"${value.replace(/"/g, '""')}"`;
               } else {
                 return String(value);
               }
@@ -219,9 +218,9 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
 
       // Get current date for filename
       const date = new Date();
-      const formattedDate = date.toISOString().split('T')[0];
+      const formattedDate = date.toISOString().split("T")[0];
       const filename = `extracted_data_${formattedDate}.csv`;
-      
+
       // Create a blob and download link
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
@@ -232,27 +231,27 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       // Show success message
       toast.current?.show({
-        severity: 'success',
-        summary: 'Success',
+        severity: "success",
+        summary: "Success",
         detail: `CSV file "${filename}" downloaded successfully`,
-        life: 3000
+        life: 3000,
       });
-      
+
       // Clean up the URL object
       setTimeout(() => {
         URL.revokeObjectURL(url);
         setExportLoading(false);
       }, 100);
     } catch (error) {
-      console.error('Error generating CSV:', error);
+      console.error("Error generating CSV:", error);
       toast.current?.show({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Failed to generate CSV file',
-        life: 3000
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to generate CSV file",
+        life: 3000,
       });
       setExportLoading(false);
     }
@@ -265,19 +264,25 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
   ): React.ReactNode => {
     const key = column.field;
     const value = rowData[key];
-    
+
     // Wrapper to make cells clickable for copy functionality
-    const CopyableCell = ({ children, value }: { children: React.ReactNode, value: any }) => {
+    const CopyableCell = ({
+      children,
+      value,
+    }: {
+      children: React.ReactNode;
+      value: any;
+    }) => {
       return (
-        <div 
-          className="copyable-cell" 
+        <div
+          className="copyable-cell"
           onClick={() => copyToClipboard(value)}
           title="Click to copy"
           tabIndex={0}
           role="button"
           aria-label="Copy to clipboard"
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
+            if (e.key === "Enter" || e.key === " ") {
               copyToClipboard(value);
               e.preventDefault();
             }
@@ -295,7 +300,11 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
       return (
         <CopyableCell value={value}>
           <i
-            className={value ? "pi pi-check boolean-icon-true" : "pi pi-times boolean-icon-false"}
+            className={
+              value
+                ? "pi pi-check boolean-icon-true"
+                : "pi pi-times boolean-icon-false"
+            }
             aria-label={value ? "Yes" : "No"}
             role="img"
           />
@@ -308,7 +317,9 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
       return (
         <CopyableCell value={value}>
           <div className="json-value" title={jsonString}>
-            {jsonString.length > 100 ? `${jsonString.substring(0, 100)}...` : jsonString}
+            {jsonString.length > 100
+              ? `${jsonString.substring(0, 100)}...`
+              : jsonString}
           </div>
         </CopyableCell>
       );
@@ -326,7 +337,9 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
         <CopyableCell value={value}>
           <>
             <Tooltip target=".truncated-text" position="top">
-              <div style={{ maxWidth: "400px", whiteSpace: "normal" }}>{value}</div>
+              <div style={{ maxWidth: "400px", whiteSpace: "normal" }}>
+                {value}
+              </div>
             </Tooltip>
             <div className="truncated-text" data-pr-tooltip={value}>
               {value.substring(0, 100)}...
@@ -335,11 +348,7 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
         </CopyableCell>
       );
     } else {
-      return (
-        <CopyableCell value={value}>
-          {value}
-        </CopyableCell>
-      );
+      return <CopyableCell value={value}>{value}</CopyableCell>;
     }
   };
 
@@ -377,15 +386,16 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
         </div>
         {showImage && (
           <div className="image-preview-container">
-            <img 
-              src={url} 
-              alt="Preview" 
-              className="image-preview" 
-              loading="lazy" 
+            <img
+              src={url}
+              alt="Preview"
+              className="image-preview"
+              loading="lazy"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.onerror = null;
-                target.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23999" d="M21.9 21.9l-8.49-8.49-9.82-9.82L2.1 2.1 0.69 3.51 3 5.83V19c0 1.1 0.9 2 2 2h13.17l2.31 2.31 1.42-1.41zM5 19V7.83l7.17 7.17H5zm11.17-8L13 7.83l-1.59-1.59 1.41-1.41 1.17 1.17 3.42-3.42 1.41 1.42-3.65 3.66z"/></svg>';
+                target.src =
+                  'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23999" d="M21.9 21.9l-8.49-8.49-9.82-9.82L2.1 2.1 0.69 3.51 3 5.83V19c0 1.1 0.9 2 2 2h13.17l2.31 2.31 1.42-1.41zM5 19V7.83l7.17 7.17H5zm11.17-8L13 7.83l-1.59-1.59 1.41-1.41 1.17 1.17 3.42-3.42 1.41 1.42-3.65 3.66z"/></svg>';
               }}
             />
           </div>
@@ -404,7 +414,7 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
     try {
       downloadCSV();
     } catch (error) {
-      console.error('Error downloading CSV:', error);
+      console.error("Error downloading CSV:", error);
       // Could add toast notification here
     }
   };
@@ -427,13 +437,15 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
     >
       {/* Toast for notifications */}
       <Toast ref={toast} position="top-right" />
-      
+
       <div className="outer-container">
         <div className="table-header-container">
           <h3 id="data-results-title">Data Results</h3>
           <div className="table-info">
             <span className="table-count">{tableData.length} items</span>
-            <span className="table-tip">Tip: Click on any cell to copy its value</span>
+            <span className="table-tip">
+              Tip: Click on any cell to copy its value
+            </span>
           </div>
         </div>
 
@@ -445,7 +457,7 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
           formatCellValue={formatCellValue}
           keys={keys}
         />
-        
+
         <div className="action-buttons">
           <Button
             icon="pi pi-download"

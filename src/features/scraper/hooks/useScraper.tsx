@@ -32,7 +32,7 @@ interface ScraperHook {
 const useScraper = (): ScraperHook => {
   const [loading, setLoading] = useState<boolean>(false);
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
-  const [extractedData, setextractedData] = useState<any[] | null>(null);
+  const [extractedData, SetExtractedData] = useState<any[] | null>(null);
   const [scraping, setScraping] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
   const [jobId, setJobId] = useState<string | null>(null);
@@ -62,7 +62,7 @@ const useScraper = (): ScraperHook => {
     setLoading(true);
     setError(null);
     setPreviewData(null); // Clear any previous preview data
-    setextractedData(null);
+    SetExtractedData(null);
 
     // Close any existing event source
     if (previewEventSourceRef.current) {
@@ -242,7 +242,7 @@ const useScraper = (): ScraperHook => {
   const startScraping = useCallback(
     async (resume_link: string) => {
       // Reset any previous scraping state
-      setextractedData(null);
+      SetExtractedData(null);
       setError(null);
       setScraping(true); // Open the loading modal
       setProgress(0);
@@ -306,9 +306,9 @@ const useScraper = (): ScraperHook => {
             const parsedData = JSON.parse(event.data);
 
             if (parsedData.data.extractedData) {
-              setextractedData(parsedData.data.extractedData);
+              SetExtractedData(parsedData.data.extractedData);
             } else {
-              setextractedData([{ message: "No Data Found" }]);
+              SetExtractedData([{ message: "No Data Found" }]);
             }
 
             setScraping(false);
@@ -387,7 +387,7 @@ const useScraper = (): ScraperHook => {
 
     // Reset all state
     setPreviewData(null);
-    setextractedData(null);
+    SetExtractedData(null);
     setScraping(false);
     setProgress(0);
     setJobId(null);
