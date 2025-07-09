@@ -49,6 +49,44 @@
   transform: translateY(-2px);
 }
 
+/* Boolean value icons */
+.boolean-icon-true {
+  color: #10b981;
+  font-size: 1.2rem;
+}
+
+.boolean-icon-false {
+  color: #ef4444;
+  font-size: 1.2rem;
+}
+
+/* Image toggle styles */
+.image-toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.image-toggle-url {
+  word-break: break-all;
+  max-width: 300px;
+}
+
+.image-toggle-button {
+  background: none;
+  border: none;
+  color: #4f46e5;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 2px 5px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.image-toggle-button:hover {
+  background-color: #f3f4f6;
+}
+
 .p-button.p-button-success {
   background-color: #4caf50; /* Green color for download */
   border-color: #4caf50;
