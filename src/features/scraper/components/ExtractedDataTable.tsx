@@ -402,9 +402,16 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
     );
   };
 
-  // If no data is available, return null
+  // Debug tableData
+  console.log("ExtractedDataTable - tableData:", tableData);
+  
+  // If no data is available, show a message instead of returning null
   if (!tableData.length) {
-    return null;
+    return (
+      <div className="empty-data-message">
+        <p>Processing data... If this persists, please check the console for errors.</p>
+      </div>
+    );
   }
 
   // Function to handle download CSV action
