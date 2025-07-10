@@ -63,20 +63,8 @@ const apiService = {
     try {
       // Log the data being sent, including resume_link if present
       // Submit scrape request
-
-      // If resume_link is provided, directly trigger n8n workflow without backend call
-      if (data.resume_link) {
-        console.log(
-          "Directly triggering n8n workflow with resume_link:",
-          data.resume_link
-        );
-        // Return a mock response with a jobId to maintain compatibility with existing code
-        return { jobId: `direct-${Date.now()}`, directTriggered: true };
-      } else {
-        // Regular scrape without resume_link
-        const response = await apiClient.post("/scrape", data);
-        return response.data;
-      }
+      const response = await apiClient.post("/scrape", data);
+      return response.data;
     } catch (error) {
       console.error("Error submitting scrape request:", error);
       throw error;

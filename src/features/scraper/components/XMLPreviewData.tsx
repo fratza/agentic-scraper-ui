@@ -1,5 +1,6 @@
 import React, { useState, useEffect, ChangeEvent, KeyboardEvent } from "react";
 import { XMLPreviewDataProps, XMLRowData } from "../../../model/xmlPreviewData";
+import apiService from "../../../services/api";
 import "./XMLPreviewData.css";
 
 const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
@@ -36,6 +37,8 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
       return updatedData;
     });
   };
+
+
 
   // Process XML data when it changes
   useEffect(() => {
@@ -267,17 +270,41 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
   const handleParse = async () => {
     if (isSubmitting) return;
     
+    // Collect field mappings
+    const fieldMappings: {[key: string]: string} = {};
+    
+    displayData.forEach(row => {
+      if (row.selectedAction) {
+        fieldMappings[row.fieldName] = row.selectedAction;
+      }
+    });
+    
+    // Create payload for API request
+    const payload: Record<string, any> = {
+      contentType: 'xml',
+      fieldMappings: fieldMappings
+    };
+    
+    // If there's XML data, add it to the payload
+    if (xmlData && xmlData.length > 0) {
+      payload.xmlData = xmlData;
+    }
+    
     setIsSubmitting(true);
     
     try {
-      // Call onParse if provided, otherwise fall back to onClose
+      // Submit the data to the API
+      const response = await apiService.submitScrapeRequest(payload);
+      
+      // If onParse callback is provided, call it with the response
       if (onParse) {
-        await onParse();
-      } else {
-        onClose();
+        onParse();
       }
+      
+      // Close the modal
+      onClose();
     } catch (error) {
-      console.error('Error during parsing:', error);
+      console.error('Error submitting XML field mappings:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -288,13 +315,24 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
       <div className="xml-preview-content">
         <div className="xml-preview-header">
           <h2>Preview XML Data</h2>
+          <div className="xml-preview-actions">
+            <button 
+              className="btn-close" 
+              onClick={onClose} 
+              title="Close"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+        
+        <div className="xml-preview-submit">
           <button 
-            className="btn-parse" 
+            className="btn-submit-xml" 
             onClick={handleParse} 
             disabled={isSubmitting}
-            title="Parse XML"
           >
-            &times;
+            {isSubmitting ? "Submitting..." : "Submit XML Mapping"}
           </button>
         </div>
 
