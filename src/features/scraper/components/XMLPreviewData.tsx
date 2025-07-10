@@ -10,14 +10,16 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
   onAddRow,
 }) => {
   const [displayData, setDisplayData] = useState<XMLRowData[]>([]);
-  const [showRawXml, setShowRawXml] = useState<Record<string | number, boolean>>({});
+  const [showRawXml, setShowRawXml] = useState<
+    Record<string | number, boolean>
+  >({});
 
   // Process XML data when it changes
   useEffect(() => {
     if (xmlData && xmlData.length > 0) {
       // Extract the first item from the XML data
       const firstItem = xmlData[0] as Record<string, any>;
-      
+
       // Store the original raw XML data for each field
 
       // Create structured rows for display
@@ -42,9 +44,13 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
             ("date" in firstItem ? firstItem.date : "") ||
             "-",
           rawXml: JSON.stringify(
-            "pubDate" in firstItem ? firstItem.pubDate : 
-            "date" in firstItem ? firstItem.date : "-", 
-            null, 2
+            "pubDate" in firstItem
+              ? firstItem.pubDate
+              : "date" in firstItem
+              ? firstItem.date
+              : "-",
+            null,
+            2
           ),
         });
       }
@@ -59,9 +65,13 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
               ? firstItem.enclosure.url
               : "-"),
           rawXml: JSON.stringify(
-            "image" in firstItem ? firstItem.image : 
-            "enclosure" in firstItem ? firstItem.enclosure : "-", 
-            null, 2
+            "image" in firstItem
+              ? firstItem.image
+              : "enclosure" in firstItem
+              ? firstItem.enclosure
+              : "-",
+            null,
+            2
           ),
         });
       }
@@ -75,9 +85,13 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
             ("content" in firstItem ? firstItem.content : "") ||
             "-",
           rawXml: JSON.stringify(
-            "description" in firstItem ? firstItem.description : 
-            "content" in firstItem ? firstItem.content : "-", 
-            null, 2
+            "description" in firstItem
+              ? firstItem.description
+              : "content" in firstItem
+              ? firstItem.content
+              : "-",
+            null,
+            2
           ),
         });
       }
@@ -171,9 +185,9 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
 
   // Toggle raw XML display for a specific row
   const toggleRawXml = (id: string | number) => {
-    setShowRawXml(prev => ({
+    setShowRawXml((prev) => ({
       ...prev,
-      [id]: !prev[id]
+      [id]: !prev[id],
     }));
   };
 
@@ -210,12 +224,14 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                       </div>
                     </td>
                     <td className="xml-actions-column">
-                      <Button 
-                        icon={showRawXml[row.id] ? "pi pi-eye-slash" : "pi pi-eye"} 
+                      <Button
+                        icon={
+                          showRawXml[row.id] ? "pi pi-eye-slash" : "pi pi-eye"
+                        }
                         className="p-button-rounded p-button-text p-button-sm"
                         onClick={() => toggleRawXml(row.id)}
                         tooltip="Toggle XML Data"
-                        tooltipOptions={{ position: 'top' }}
+                        tooltipOptions={{ position: "top" }}
                       />
                       {showRawXml[row.id] && row.rawXml && (
                         <div className="xml-raw-data">
