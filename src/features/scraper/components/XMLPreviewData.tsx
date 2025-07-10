@@ -330,16 +330,6 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
           </div>
         </div>
 
-        <div className="xml-preview-submit">
-          <button
-            className="btn-submit-xml"
-            onClick={handleParse}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Submitting..." : "Submit XML Mapping"}
-          </button>
-        </div>
-
         <div className="xml-preview-body">
           <div className="xml-data-table-container">
             <table className="xml-data-table">
@@ -438,6 +428,22 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
           <div className="xml-add-row-container">
             <button className="btn-add-row" onClick={handleAddRow}>
               <span>+</span> Add New Row
+            </button>
+          </div>
+          
+          <div className="xml-buttons-container">
+            <button 
+              className="btn-cancel-xml"
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+            <button
+              className="btn-submit-xml"
+              onClick={handleParse}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Submitting..." : "Submit Parse Data"}
             </button>
           </div>
         </div>
