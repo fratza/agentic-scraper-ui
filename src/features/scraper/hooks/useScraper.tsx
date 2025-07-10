@@ -99,15 +99,16 @@ const useScraper = (): ScraperHook => {
             if (parsedData && parsedData.data) {
               previewData = parsedData.data;
             }
-            
+
             // Check content type from the parsed data
+            console.log("Preview data received:", previewData);
             const contentType = previewData.contentType || "html";
             console.log("Content type detected in preview:", contentType);
-            
+
             // Store content type with the preview data
             previewData = {
               ...previewData,
-              contentType: contentType
+              contentType: contentType,
             };
 
             // If the data doesn't have a sample property but is an array or object,
@@ -277,26 +278,28 @@ const useScraper = (): ScraperHook => {
         eventSource.addEventListener("scrapedData", (event: MessageEvent) => {
           try {
             const parsedData = JSON.parse(event.data);
-            
+
             if (parsedData.data.extractedData) {
               // Use the content type from preview if available, otherwise default to html
               const contentType = previewData?.contentType || "html";
-              
+
               // Store content type with the extracted data
               const extractedDataWithType = {
                 ...parsedData.data.extractedData,
-                contentType: contentType
+                contentType: contentType,
               };
               SetExtractedData(extractedDataWithType);
             } else {
               // Use the content type from preview if available, otherwise default to html
               const contentType = previewData?.contentType || "html";
-              SetExtractedData([{ message: "No Data Found", contentType: contentType }]);
+              SetExtractedData([
+                { message: "No Data Found", contentType: contentType },
+              ]);
             }
 
             setScraping(false);
             setProgress(100);
-            
+
             // Close the SSE connection
             apiService.closeEventSource(eventSource);
             scrapingEventSourceRef.current = null;
