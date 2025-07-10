@@ -14,31 +14,31 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [displayData, setDisplayData] = useState<XMLRowData[]>([]);
   const [availableFields, setAvailableFields] = useState<string[]>([]);
-  const [editableRows, setEditableRows] = useState<Set<string | number>>(new Set());
-  
+  const [editableRows, setEditableRows] = useState<Set<string | number>>(
+    new Set()
+  );
+
   // Handle dropdown change for action selection
   const handleActionChange = (id: string | number, value: string) => {
-    setDisplayData(prevData => {
-      const updatedData = prevData.map(row => 
+    setDisplayData((prevData) => {
+      const updatedData = prevData.map((row) =>
         row.id === id ? { ...row, selectedAction: value } : row
       );
-      
+
       // If onActionSelect callback is provided, call it with the updated field mappings
       if (onActionSelect) {
-        const fieldMappings: {[key: string]: string} = {};
-        updatedData.forEach(row => {
+        const fieldMappings: { [key: string]: string } = {};
+        updatedData.forEach((row) => {
           if (row.selectedAction) {
             fieldMappings[row.fieldName] = row.selectedAction;
           }
         });
         onActionSelect(fieldMappings);
       }
-      
+
       return updatedData;
     });
   };
-
-
 
   // Process XML data when it changes
   useEffect(() => {
@@ -47,7 +47,9 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
       const firstItem = xmlData[0] as Record<string, any>;
 
       // Extract available fields from XML data
-      const fields = Object.keys(firstItem).filter(key => key !== 'contentType');
+      const fields = Object.keys(firstItem).filter(
+        (key) => key !== "contentType"
+      );
       setAvailableFields(fields);
 
       // Create structured rows for display
@@ -204,25 +206,25 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
             )
           ) + 1
         : 1;
-  
+
     // Create a new row with empty values and add it to the display data
-    const newRow: XMLRowData = { 
-      id: newId, 
-      fieldName: "New Field", 
-      value: "-", 
-      rawXml: "-", 
-      selectedAction: "" 
+    const newRow: XMLRowData = {
+      id: newId,
+      fieldName: "New Field",
+      value: "-",
+      rawXml: "-",
+      selectedAction: "",
     };
-  
+
     setDisplayData([...displayData, newRow]);
-    
+
     // Mark this row as editable
-    setEditableRows(prev => {
+    setEditableRows((prev) => {
       const newSet = new Set(prev);
       newSet.add(newId);
       return newSet;
     });
-  
+
     // If onAddRow callback is provided, call it
     if (onAddRow) onAddRow();
   };
@@ -231,80 +233,87 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
   const handleRemoveRow = (id: string | number) => {
     // Convert id to number for comparison if it's a string
     const numId = typeof id === "number" ? id : parseInt(id.toString()) || 0;
-    
+
     // Don't allow removing rows with id <= 4 (standard fields)
     if (numId <= 4) return;
-    
-    setDisplayData(prevData => prevData.filter(row => row.id !== id));
-    
+
+    setDisplayData((prevData) => prevData.filter((row) => row.id !== id));
+
     // Remove from editable rows if present
-    setEditableRows(prev => {
+    setEditableRows((prev) => {
       const newSet = new Set(prev);
       newSet.delete(id);
       return newSet;
     });
   };
-  
+
   // Handle field name editing
   const handleFieldNameChange = (id: string | number, newName: string) => {
-    setDisplayData(prevData => 
-      prevData.map(row => 
+    setDisplayData((prevData) =>
+      prevData.map((row) =>
         row.id === id ? { ...row, fieldName: newName } : row
       )
     );
   };
-  
+
   // Handle key press in editable field
-  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>, id: string | number) => {
-    if (e.key === 'Enter') {
+  const handleKeyPress = (
+    e: KeyboardEvent<HTMLInputElement>,
+    id: string | number
+  ) => {
+    if (e.key === "Enter") {
       // Remove from editable rows on Enter key
-      setEditableRows(prev => {
+      setEditableRows((prev) => {
         const newSet = new Set(prev);
         newSet.delete(id);
         return newSet;
       });
     }
   };
-  
+
   // Handle parse button click
   const handleParse = async () => {
     if (isSubmitting) return;
-    
+
     // Collect field mappings
-    const fieldMappings: {[key: string]: string} = {};
-    
-    displayData.forEach(row => {
+    const fieldMappings: { [key: string]: string } = {};
+
+    displayData.forEach((row) => {
       if (row.selectedAction) {
         fieldMappings[row.fieldName] = row.selectedAction;
       }
     });
-    
+
     // Create payload for API request
     const payload: Record<string, any> = {
-      contentType: 'xml',
-      fieldMappings: fieldMappings
+      contentType: "xml",
+      fieldMappings: fieldMappings,
     };
-    
+
     // If there's XML data, add it to the payload
     if (xmlData && xmlData.length > 0) {
       payload.xmlData = xmlData;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
-      // Submit the data to the API
+      // First submit the data to the API
       const response = await apiService.submitScrapeRequest(payload);
       
-      // If onParse callback is provided, call it with the response
+      // Then send approve action to backend - same as in Preview component
+      await apiService.handleScrapeAction("approve");
+
+      // If onParse callback is provided, call it
       if (onParse) {
+        // Call onParse without arguments as per its interface definition
         onParse();
       }
-      
+
       // Close the modal
       onClose();
     } catch (error) {
-      console.error('Error submitting XML field mappings:', error);
+      console.error("Error submitting XML field mappings:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -316,20 +325,16 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
         <div className="xml-preview-header">
           <h2>Preview XML Data</h2>
           <div className="xml-preview-actions">
-            <button 
-              className="btn-close" 
-              onClick={onClose} 
-              title="Close"
-            >
+            <button className="btn-close" onClick={onClose} title="Close">
               &times;
             </button>
           </div>
         </div>
-        
+
         <div className="xml-preview-submit">
-          <button 
-            className="btn-submit-xml" 
-            onClick={handleParse} 
+          <button
+            className="btn-submit-xml"
+            onClick={handleParse}
             disabled={isSubmitting}
           >
             {isSubmitting ? "Submitting..." : "Submit XML Mapping"}
@@ -349,9 +354,12 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
               <tbody>
                 {displayData.map((row) => {
                   // Convert id to number for comparison if it's a string
-                  const numId = typeof row.id === "number" ? row.id : parseInt(row.id.toString()) || 0;
+                  const numId =
+                    typeof row.id === "number"
+                      ? row.id
+                      : parseInt(row.id.toString()) || 0;
                   const canRemove = numId > 4;
-                  
+
                   return (
                     <tr key={row.id}>
                       <td className="xml-row-number-column">{row.id}</td>
@@ -363,10 +371,12 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                                 type="text"
                                 className="xml-field-name-input"
                                 value={row.fieldName}
-                                onChange={(e) => handleFieldNameChange(row.id, e.target.value)}
+                                onChange={(e) =>
+                                  handleFieldNameChange(row.id, e.target.value)
+                                }
                                 onKeyPress={(e) => handleKeyPress(e, row.id)}
                                 onBlur={() => {
-                                  setEditableRows(prev => {
+                                  setEditableRows((prev) => {
                                     const newSet = new Set(prev);
                                     newSet.delete(row.id);
                                     return newSet;
@@ -385,24 +395,32 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                           <select
                             className="xml-action-dropdown"
                             value={row.selectedAction || ""}
-                            onChange={(e: ChangeEvent<HTMLSelectElement>) => 
+                            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
                               handleActionChange(row.id, e.target.value)
                             }
                           >
                             <option value="">Select XML data</option>
-                            {xmlData && xmlData.length > 0 && Object.entries(xmlData[0] as Record<string, any>)
-                              .filter(([key]) => key !== 'contentType')
-                              .map(([key, value]) => (
-                                <option key={key} value={key}>
-                                  {key}: {typeof value === 'string' ? 
-                                    (value.length > 30 ? value.substring(0, 30) + '...' : value) : 
-                                    JSON.stringify(value).substring(0, 30) + (JSON.stringify(value).length > 30 ? '...' : '')}
-                                </option>
-                              ))}
+                            {xmlData &&
+                              xmlData.length > 0 &&
+                              Object.entries(xmlData[0] as Record<string, any>)
+                                .filter(([key]) => key !== "contentType")
+                                .map(([key, value]) => (
+                                  <option key={key} value={key}>
+                                    {key}:{" "}
+                                    {typeof value === "string"
+                                      ? value.length > 30
+                                        ? value.substring(0, 30) + "..."
+                                        : value
+                                      : JSON.stringify(value).substring(0, 30) +
+                                        (JSON.stringify(value).length > 30
+                                          ? "..."
+                                          : "")}
+                                  </option>
+                                ))}
                           </select>
                           {canRemove && (
-                            <button 
-                              className="btn-remove-row" 
+                            <button
+                              className="btn-remove-row"
                               onClick={() => handleRemoveRow(row.id)}
                               title="Remove row"
                             >

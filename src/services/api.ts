@@ -205,7 +205,7 @@ const apiService = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: action, // 'approve' or 'cancel'
+          action: action,
         }),
       });
 
