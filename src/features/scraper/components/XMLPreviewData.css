@@ -23,15 +23,18 @@
 
 /* XML Preview Table Styles */
 .xml-table-container {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   width: 100%;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
   overflow: hidden;
 }
 
 .xml-table-responsive {
   overflow-x: auto;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
 }
 
 .xml-data-table {
@@ -40,6 +43,7 @@
   background-color: #ffffff;
   font-family: 'Poppins', sans-serif;
   animation: fadeIn 0.5s ease-in-out;
+  font-size: 0.85rem;
 }
 
 .xml-data-table th {
@@ -47,12 +51,12 @@
   color: #333333;
   font-weight: 600;
   text-align: left;
-  padding: 12px 16px;
-  border-bottom: 2px solid #e9ecef;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e9ecef;
 }
 
 .xml-data-table td {
-  padding: 10px 16px;
+  padding: 6px 12px;
   border-bottom: 1px solid #e9ecef;
   color: #333333;
   vertical-align: top;
@@ -64,9 +68,9 @@
 
 /* Row Number Column */
 .xml-row-number-column {
-  width: 50px;
-  min-width: 50px;
-  max-width: 50px;
+  width: 30px;
+  min-width: 30px;
+  max-width: 30px;
   text-align: center;
   background-color: #f0f0f0;
   font-weight: 600;
@@ -74,7 +78,7 @@
   position: sticky;
   left: 0;
   z-index: 1;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 1px 0 3px rgba(0, 0, 0, 0.08);
 }
 
 .xml-data-table td.xml-row-number-column {
@@ -90,36 +94,37 @@
 .xml-field-content {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
 .xml-field-name {
   font-weight: 600;
   color: #555;
-  font-size: 0.85rem;
-  margin-bottom: 4px;
+  font-size: 0.75rem;
+  margin-bottom: 2px;
 }
 
 .xml-field-value {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: #333;
 }
 
 .xml-image-preview {
-  max-width: 100px;
-  max-height: 100px;
+  max-width: 80px;
+  max-height: 80px;
   object-fit: contain;
-  border-radius: 4px;
+  border-radius: 3px;
   border: 1px solid #e9ecef;
 }
 
 .xml-description {
-  max-width: 300px;
+  max-width: 250px;
   white-space: pre-wrap;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
@@ -127,20 +132,20 @@
 .xml-add-row-container {
   display: flex;
   justify-content: center;
-  margin-top: 1rem;
-  margin-bottom: 2rem;
+  margin-top: 0.75rem;
+  margin-bottom: 1.5rem;
 }
 
 .btn-add-row {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 0.75rem 1.5rem;
+  gap: 6px;
+  padding: 0.5rem 1rem;
   background-color: var(--primary-color);
   color: white;
   border: none;
-  border-radius: 4px;
-  font-size: 0.9rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
   transition: var(--transition);

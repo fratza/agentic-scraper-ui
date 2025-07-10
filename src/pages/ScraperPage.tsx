@@ -6,6 +6,7 @@ import { useScraperContext } from "../context/ScraperContext";
 import Hero from "../components/Hero";
 import ScraperForm from "../features/scraper/components/ScraperForm";
 import Preview from "../features/scraper/components/Preview";
+import XMLPreviewData from "../features/scraper/components/XMLPreviewData";
 import ExtractedDataTable from "../features/scraper/components/ExtractedDataTable";
 import Modal from "../components/Modal";
 import Loader from "../components/Loader";
@@ -127,16 +128,26 @@ const ScraperPage: React.FC = () => {
                 <p>Loading preview data from source...</p>
               </div>
             ) : previewData ? (
-              <Preview
-                previewData={previewData}
-                onScrape={handleStartScraping}
-                scraping={scraping}
-                progress={progress}
-                scrapedData={extractedData}
-                error={error}
-                onClose={handleModalClose}
-                resetScraper={resetScraper}
-              />
+              // Check if the content type is XML/RSS or HTML
+              extractedData && typeof extractedData === 'object' && 'contentType' in extractedData && extractedData.contentType === "xml" ? (
+                <XMLPreviewData
+                  isOpen={true}
+                  xmlData={Array.isArray(extractedData) ? extractedData : [extractedData]}
+                  onClose={handleModalClose}
+                  onAddRow={() => console.log("Add row clicked")}
+                />
+              ) : (
+                <Preview
+                  previewData={previewData}
+                  onScrape={handleStartScraping}
+                  scraping={scraping}
+                  progress={progress}
+                  scrapedData={extractedData}
+                  error={error}
+                  onClose={handleModalClose}
+                  resetScraper={resetScraper}
+                />
+              )
             ) : error ? (
               <div className="preview-error-container">
                 <div className="preview-error-icon">

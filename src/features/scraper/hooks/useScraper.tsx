@@ -267,11 +267,20 @@ const useScraper = (): ScraperHook => {
         eventSource.addEventListener("scrapedData", (event: MessageEvent) => {
           try {
             const parsedData = JSON.parse(event.data);
-
+            
+            // Check content type from the parsed data
+            const contentType = parsedData.data.contentType || "html";
+            console.log("Content type detected:", contentType);
+            
             if (parsedData.data.extractedData) {
-              SetExtractedData(parsedData.data.extractedData);
+              // Store content type with the extracted data
+              const extractedDataWithType = {
+                ...parsedData.data.extractedData,
+                contentType: contentType
+              };
+              SetExtractedData(extractedDataWithType);
             } else {
-              SetExtractedData([{ message: "No Data Found" }]);
+              SetExtractedData([{ message: "No Data Found", contentType: contentType }]);
             }
 
             setScraping(false);

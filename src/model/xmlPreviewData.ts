@@ -14,9 +14,7 @@ export interface XMLPreviewDataProps {
  * Structure for XML row data
  */
 export interface XMLRowData {
-  id: string;
-  title: string;
-  date: string;
-  image: string;
-  description: string;
+  id: string | number;
+  fieldName: string;
+  value: any;
 }
