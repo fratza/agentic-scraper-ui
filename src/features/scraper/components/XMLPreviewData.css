@@ -1,0 +1,161 @@
+/* XMLPreviewData Styles */
+.xml-preview-container {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.xml-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.xml-preview-header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* XML Preview Table Styles */
+.xml-table-container {
+  margin-bottom: 2rem;
+  width: 100%;
+  overflow: hidden;
+}
+
+.xml-table-responsive {
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.xml-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.xml-data-table th {
+  background-color: #f8f9fa;
+  color: #333333;
+  font-weight: 600;
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.xml-data-table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid #e9ecef;
+  color: #333333;
+  vertical-align: top;
+}
+
+.xml-data-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Row Number Column */
+.xml-row-number-column {
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
+  text-align: center;
+  background-color: #f0f0f0;
+  font-weight: 600;
+  color: #555;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.xml-data-table td.xml-row-number-column {
+  background-color: #f0f0f0;
+}
+
+/* XML Data Cell Styles */
+.xml-data-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.xml-data-label {
+  font-weight: 600;
+  color: #555;
+  font-size: 0.85rem;
+}
+
+.xml-data-value {
+  font-size: 0.9rem;
+}
+
+.xml-image-preview {
+  max-width: 100px;
+  max-height: 100px;
+  object-fit: contain;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+}
+
+.xml-description {
+  max-width: 300px;
+  white-space: pre-wrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/* Add Row Button */
+.xml-add-row-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+.btn-add-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-add-row:hover {
+  background-color: var(--button-hover);
+  transform: translateY(-2px);
+}
+
+.btn-add-row:active {
+  transform: translateY(0);
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

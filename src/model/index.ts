@@ -13,6 +13,7 @@ export * from './extractedDataTable';
 export * from './preview';
 export * from './tableDisplay';
 export * from './modal';
+export * from './xmlPreviewData';
 
 // API and data interfaces
 export * from './api';
