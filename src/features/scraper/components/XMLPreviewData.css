@@ -233,8 +233,14 @@
   vertical-align: middle;
 }
 
+.xml-dropdown-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .xml-action-dropdown {
-  width: 100%;
+  flex: 1;
   padding: 6px 8px;
   border: 1px solid #e9ecef;
   border-radius: 4px;
@@ -253,6 +259,34 @@
 
 .xml-action-dropdown option {
   padding: 4px;
+}
+
+/* Remove Row Button */
+.btn-remove-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--error-color);
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.btn-remove-row:hover {
+  background-color: #f05252;
+  transform: scale(1.1);
+}
+
+.btn-remove-row:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.4);
 }
 
 /* Animation */

@@ -214,6 +214,17 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
     if (onAddRow) onAddRow();
   };
 
+  // Handle removing a row
+  const handleRemoveRow = (id: string | number) => {
+    // Convert id to number for comparison if it's a string
+    const numId = typeof id === "number" ? id : parseInt(id.toString()) || 0;
+    
+    // Don't allow removing rows with id <= 4 (standard fields)
+    if (numId <= 4) return;
+    
+    setDisplayData(prevData => prevData.filter(row => row.id !== id));
+  };
+
   return (
     <div className="xml-preview-modal">
       <div className="xml-preview-content">
@@ -235,36 +246,53 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                 </tr>
               </thead>
               <tbody>
-                {displayData.map((row) => (
-                  <tr key={row.id}>
-                    <td className="xml-row-number-column">{row.id}</td>
-                    <td className="xml-data-label">
-                      <div className="xml-field-content">
-                        <div className="xml-field-name">{row.fieldName}</div>
-                      </div>
-                    </td>
-                    <td className="xml-dropdown-column">
-                      <select
-                        className="xml-action-dropdown"
-                        value={row.selectedAction || ""}
-                        onChange={(e: ChangeEvent<HTMLSelectElement>) => 
-                          handleActionChange(row.id, e.target.value)
-                        }
-                      >
-                        <option value="">Select XML data</option>
-                        {xmlData && xmlData.length > 0 && Object.entries(xmlData[0] as Record<string, any>)
-                          .filter(([key]) => key !== 'contentType')
-                          .map(([key, value]) => (
-                            <option key={key} value={key}>
-                              {key}: {typeof value === 'string' ? 
-                                (value.length > 30 ? value.substring(0, 30) + '...' : value) : 
-                                JSON.stringify(value).substring(0, 30) + (JSON.stringify(value).length > 30 ? '...' : '')}
-                            </option>
-                          ))}
-                      </select>
-                    </td>
-                  </tr>
-                ))}
+                {displayData.map((row) => {
+                  // Convert id to number for comparison if it's a string
+                  const numId = typeof row.id === "number" ? row.id : parseInt(row.id.toString()) || 0;
+                  const canRemove = numId > 4;
+                  
+                  return (
+                    <tr key={row.id}>
+                      <td className="xml-row-number-column">{row.id}</td>
+                      <td className="xml-data-label">
+                        <div className="xml-field-content">
+                          <div className="xml-field-name">{row.fieldName}</div>
+                        </div>
+                      </td>
+                      <td className="xml-dropdown-column">
+                        <div className="xml-dropdown-container">
+                          <select
+                            className="xml-action-dropdown"
+                            value={row.selectedAction || ""}
+                            onChange={(e: ChangeEvent<HTMLSelectElement>) => 
+                              handleActionChange(row.id, e.target.value)
+                            }
+                          >
+                            <option value="">Select XML data</option>
+                            {xmlData && xmlData.length > 0 && Object.entries(xmlData[0] as Record<string, any>)
+                              .filter(([key]) => key !== 'contentType')
+                              .map(([key, value]) => (
+                                <option key={key} value={key}>
+                                  {key}: {typeof value === 'string' ? 
+                                    (value.length > 30 ? value.substring(0, 30) + '...' : value) : 
+                                    JSON.stringify(value).substring(0, 30) + (JSON.stringify(value).length > 30 ? '...' : '')}
+                                </option>
+                              ))}
+                          </select>
+                          {canRemove && (
+                            <button 
+                              className="btn-remove-row" 
+                              onClick={() => handleRemoveRow(row.id)}
+                              title="Remove row"
+                            >
+                              &times;
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
