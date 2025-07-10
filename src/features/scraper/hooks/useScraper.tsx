@@ -101,18 +101,19 @@ const useScraper = (): ScraperHook => {
             }
 
             // Check content type from the parsed data
-            console.log("Preview data received:", previewData);
-            const contentType = previewData.contentType || "html";
+            console.log("Preview data received:", parsedData);
+            // The content_type is at the root level of the parsed data
+            const contentType = parsedData.content_type || "html";
             console.log("Content type detected in preview:", contentType);
 
             // Store content type with the preview data
+            // Handle both "rss" and "xml" content types
+            const isXmlContent = contentType === "rss" || contentType === "xml";
             previewData = {
               ...previewData,
-              contentType: contentType,
+              contentType: isXmlContent ? "xml" : "html",
             };
 
-            // If the data doesn't have a sample property but is an array or object,
-            // we need to add it to make the table display work
             if (
               previewData &&
               !previewData.sample &&
@@ -279,10 +280,11 @@ const useScraper = (): ScraperHook => {
           try {
             const parsedData = JSON.parse(event.data);
 
+            // Check for content_type in the parsed data
+            const contentType = parsedData.content_type || previewData?.contentType || "html";
+            console.log("Content type in scrapedData:", contentType);
+            
             if (parsedData.data.extractedData) {
-              // Use the content type from preview if available, otherwise default to html
-              const contentType = previewData?.contentType || "html";
-
               // Store content type with the extracted data
               const extractedDataWithType = {
                 ...parsedData.data.extractedData,
@@ -290,8 +292,6 @@ const useScraper = (): ScraperHook => {
               };
               SetExtractedData(extractedDataWithType);
             } else {
-              // Use the content type from preview if available, otherwise default to html
-              const contentType = previewData?.contentType || "html";
               SetExtractedData([
                 { message: "No Data Found", contentType: contentType },
               ]);
