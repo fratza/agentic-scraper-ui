@@ -23,34 +23,33 @@
 
 /* Parse Button */
 .btn-parse {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 1.25rem;
-  background-color: var(--primary-color);
-  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  color: #333;
   border: none;
-  border-radius: var(--border-radius-sm);
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 1.25rem;
+  font-weight: bold;
   cursor: pointer;
-  transition: var(--transition);
-  min-width: 100px;
+  transition: background-color 0.2s;
 }
 
 .btn-parse:hover {
-  background-color: var(--primary-dark);
-  transform: translateY(-2px);
+  background-color: #d0d0d0;
 }
 
 .btn-parse:active {
-  transform: translateY(0);
+  background-color: #c0c0c0;
 }
 
 .btn-parse:disabled {
-  background-color: var(--text-muted);
+  background-color: #f0f0f0;
+  color: #999;
   cursor: not-allowed;
-  transform: none;
 }
 
 /* XML Preview Table Styles */
@@ -73,7 +72,7 @@
   width: 100%;
   border-collapse: collapse;
   background-color: #ffffff;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   animation: fadeIn 0.5s ease-in-out;
   font-size: 0.85rem;
 }
@@ -295,7 +294,7 @@
   border-radius: 4px;
   background-color: #ffffff;
   color: #333333;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 0.75rem;
   transition: border-color 0.2s, box-shadow 0.2s;
 }

@@ -292,8 +292,9 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
             className="btn-parse" 
             onClick={handleParse} 
             disabled={isSubmitting}
+            title="Parse XML"
           >
-            {isSubmitting ? "Processing..." : "Parse"}
+            &times;
           </button>
         </div>
 
