@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./XMLPreviewData.css";
 import { XMLPreviewDataProps, XMLRowData } from "../../../model";
-import { Button } from "primereact/button";
 
 const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
   isOpen,
@@ -10,9 +9,6 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
   onAddRow,
 }) => {
   const [displayData, setDisplayData] = useState<XMLRowData[]>([]);
-  const [showRawXml, setShowRawXml] = useState<
-    Record<string | number, boolean>
-  >({});
 
   // Process XML data when it changes
   useEffect(() => {
@@ -183,13 +179,7 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
     if (onAddRow) onAddRow();
   };
 
-  // Toggle raw XML display for a specific row
-  const toggleRawXml = (id: string | number) => {
-    setShowRawXml((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
+
 
   return (
     <div className="xml-preview-modal">
@@ -224,20 +214,9 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                       </div>
                     </td>
                     <td className="xml-actions-column">
-                      <Button
-                        icon={
-                          showRawXml[row.id] ? "pi pi-eye-slash" : "pi pi-eye"
-                        }
-                        className="p-button-rounded p-button-text p-button-sm"
-                        onClick={() => toggleRawXml(row.id)}
-                        tooltip="Toggle XML Data"
-                        tooltipOptions={{ position: "top" }}
-                      />
-                      {showRawXml[row.id] && row.rawXml && (
-                        <div className="xml-raw-data">
-                          <pre>{row.rawXml}</pre>
-                        </div>
-                      )}
+                      <div className="xml-data-display">
+                        <pre className="xml-code">{row.rawXml}</pre>
+                      </div>
                     </td>
                   </tr>
                 ))}

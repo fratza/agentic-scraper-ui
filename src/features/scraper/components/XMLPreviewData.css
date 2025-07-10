@@ -193,6 +193,33 @@
   color: #333;
 }
 
+/* XML Actions Column */
+.xml-actions-column {
+  width: 200px;
+  min-width: 200px;
+  max-width: 200px;
+  padding: 8px;
+  vertical-align: top;
+}
+
+.xml-data-display {
+  max-height: 120px;
+  overflow-y: auto;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.xml-code {
+  margin: 0;
+  white-space: pre-wrap;
+  font-family: monospace;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: #333;
+}
+
 /* Animation */
 @keyframes fadeIn {
   from {
