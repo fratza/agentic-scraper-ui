@@ -179,8 +179,6 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
     if (onAddRow) onAddRow();
   };
 
-
-
   return (
     <div className="xml-preview-modal">
       <div className="xml-preview-content">
@@ -211,7 +209,10 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                   </td>
                   <td className="xml-actions-column">
                     <div className="xml-data-display">
-                      <pre className="xml-code">{displayData.find(row => row.fieldName === "Title")?.rawXml || "{}"}</pre>
+                      <pre className="xml-code">
+                        {displayData.find((row) => row.fieldName === "Title")
+                          ?.rawXml || ""}
+                      </pre>
                     </div>
                   </td>
                 </tr>
@@ -224,7 +225,10 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                   </td>
                   <td className="xml-actions-column">
                     <div className="xml-data-display">
-                      <pre className="xml-code">{displayData.find(row => row.fieldName === "Date")?.rawXml || "{}"}</pre>
+                      <pre className="xml-code">
+                        {displayData.find((row) => row.fieldName === "Date")
+                          ?.rawXml || ""}
+                      </pre>
                     </div>
                   </td>
                 </tr>
@@ -237,7 +241,10 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                   </td>
                   <td className="xml-actions-column">
                     <div className="xml-data-display">
-                      <pre className="xml-code">{displayData.find(row => row.fieldName === "Image")?.rawXml || "{}"}</pre>
+                      <pre className="xml-code">
+                        {displayData.find((row) => row.fieldName === "Image")
+                          ?.rawXml || ""}
+                      </pre>
                     </div>
                   </td>
                 </tr>
@@ -250,7 +257,11 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                   </td>
                   <td className="xml-actions-column">
                     <div className="xml-data-display">
-                      <pre className="xml-code">{displayData.find(row => row.fieldName === "Description")?.rawXml || "{}"}</pre>
+                      <pre className="xml-code">
+                        {displayData.find(
+                          (row) => row.fieldName === "Description"
+                        )?.rawXml || ""}
+                      </pre>
                     </div>
                   </td>
                 </tr>
