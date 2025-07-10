@@ -54,39 +54,54 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
               <tr>
                 <th className="xml-row-number-column">#</th>
                 <th>Field</th>
-                <th>Value</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td className="xml-row-number-column">1</td>
-                <td className="xml-data-label">Title</td>
-                <td>{xmlData[0]?.title || '-'}</td>
+                <td className="xml-data-label">
+                  <div className="xml-field-content">
+                    <div className="xml-field-name">Title</div>
+                    <div className="xml-field-value">{xmlData[0]?.title || '-'}</div>
+                  </div>
+                </td>
                 <td>
                   {/* Empty for now - will be used for future controls like edit/delete */}
                 </td>
               </tr>
               <tr>
                 <td className="xml-row-number-column">2</td>
-                <td className="xml-data-label">Date</td>
-                <td>{xmlData[0]?.date || '-'}</td>
+                <td className="xml-data-label">
+                  <div className="xml-field-content">
+                    <div className="xml-field-name">Date</div>
+                    <div className="xml-field-value">{xmlData[0]?.date || '-'}</div>
+                  </div>
+                </td>
                 <td>
                   {/* Empty for now */}
                 </td>
               </tr>
               <tr>
                 <td className="xml-row-number-column">3</td>
-                <td className="xml-data-label">Image</td>
-                <td>{renderImage(xmlData[0]?.image || '')}</td>
+                <td className="xml-data-label">
+                  <div className="xml-field-content">
+                    <div className="xml-field-name">Image</div>
+                    <div className="xml-field-value">{renderImage(xmlData[0]?.image || '')}</div>
+                  </div>
+                </td>
                 <td>
                   {/* Empty for now */}
                 </td>
               </tr>
               <tr>
                 <td className="xml-row-number-column">4</td>
-                <td className="xml-data-label">Description</td>
-                <td className="xml-description">{xmlData[0]?.description || '-'}</td>
+                <td className="xml-data-label">
+                  <div className="xml-field-content">
+                    <div className="xml-field-name">Description</div>
+                    <div className="xml-field-value xml-description">{xmlData[0]?.description || '-'}</div>
+                  </div>
+                </td>
                 <td>
                   {/* Empty for now */}
                 </td>
