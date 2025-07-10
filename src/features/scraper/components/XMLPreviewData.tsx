@@ -202,24 +202,58 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                 </tr>
               </thead>
               <tbody>
-                {displayData.map((row) => (
-                  <tr key={row.id}>
-                    <td className="xml-row-number-column">{row.id}</td>
-                    <td className="xml-data-label">
-                      <div className="xml-field-content">
-                        <div className="xml-field-name">{row.fieldName}</div>
-                        <div className="xml-field-value">
-                          {renderFieldValue(row.fieldName, row.value)}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="xml-actions-column">
-                      <div className="xml-data-display">
-                        <pre className="xml-code">{row.rawXml}</pre>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                <tr>
+                  <td className="xml-row-number-column">1</td>
+                  <td className="xml-data-label">
+                    <div className="xml-field-content">
+                      <div className="xml-field-name">Title</div>
+                    </div>
+                  </td>
+                  <td className="xml-actions-column">
+                    <div className="xml-data-display">
+                      <pre className="xml-code">{displayData.find(row => row.fieldName === "Title")?.rawXml || "{}"}</pre>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="xml-row-number-column">2</td>
+                  <td className="xml-data-label">
+                    <div className="xml-field-content">
+                      <div className="xml-field-name">Date</div>
+                    </div>
+                  </td>
+                  <td className="xml-actions-column">
+                    <div className="xml-data-display">
+                      <pre className="xml-code">{displayData.find(row => row.fieldName === "Date")?.rawXml || "{}"}</pre>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="xml-row-number-column">3</td>
+                  <td className="xml-data-label">
+                    <div className="xml-field-content">
+                      <div className="xml-field-name">Image</div>
+                    </div>
+                  </td>
+                  <td className="xml-actions-column">
+                    <div className="xml-data-display">
+                      <pre className="xml-code">{displayData.find(row => row.fieldName === "Image")?.rawXml || "{}"}</pre>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="xml-row-number-column">4</td>
+                  <td className="xml-data-label">
+                    <div className="xml-field-content">
+                      <div className="xml-field-name">Description</div>
+                    </div>
+                  </td>
+                  <td className="xml-actions-column">
+                    <div className="xml-data-display">
+                      <pre className="xml-code">{displayData.find(row => row.fieldName === "Description")?.rawXml || "{}"}</pre>
+                    </div>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
