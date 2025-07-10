@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import "./XMLPreviewData.css";
 import { XMLPreviewDataProps, XMLRowData } from "../../../model";
 
@@ -7,8 +7,32 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
   xmlData,
   onClose,
   onAddRow,
+  onActionSelect,
 }) => {
   const [displayData, setDisplayData] = useState<XMLRowData[]>([]);
+  const [availableFields, setAvailableFields] = useState<string[]>([]);
+  
+  // Handle dropdown change for action selection
+  const handleActionChange = (id: string | number, value: string) => {
+    setDisplayData(prevData => {
+      const updatedData = prevData.map(row => 
+        row.id === id ? { ...row, selectedAction: value } : row
+      );
+      
+      // If onActionSelect callback is provided, call it with the updated field mappings
+      if (onActionSelect) {
+        const fieldMappings: {[key: string]: string} = {};
+        updatedData.forEach(row => {
+          if (row.selectedAction) {
+            fieldMappings[row.fieldName] = row.selectedAction;
+          }
+        });
+        onActionSelect(fieldMappings);
+      }
+      
+      return updatedData;
+    });
+  };
 
   // Process XML data when it changes
   useEffect(() => {
@@ -16,7 +40,9 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
       // Extract the first item from the XML data
       const firstItem = xmlData[0] as Record<string, any>;
 
-      // Store the original raw XML data for each field
+      // Extract available fields from XML data
+      const fields = Object.keys(firstItem).filter(key => key !== 'contentType');
+      setAvailableFields(fields);
 
       // Create structured rows for display
       const rows: XMLRowData[] = [];
@@ -196,75 +222,42 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                 <tr>
                   <th className="xml-row-number-column">#</th>
                   <th>Field</th>
+                  <th>XML Data</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="xml-row-number-column">1</td>
-                  <td className="xml-data-label">
-                    <div className="xml-field-content">
-                      <div className="xml-field-name">Title</div>
-                    </div>
-                  </td>
-                  <td className="xml-actions-column">
-                    <div className="xml-data-display">
-                      <pre className="xml-code">
-                        {displayData.find((row) => row.fieldName === "Title")
-                          ?.rawXml || ""}
-                      </pre>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="xml-row-number-column">2</td>
-                  <td className="xml-data-label">
-                    <div className="xml-field-content">
-                      <div className="xml-field-name">Date</div>
-                    </div>
-                  </td>
-                  <td className="xml-actions-column">
-                    <div className="xml-data-display">
-                      <pre className="xml-code">
-                        {displayData.find((row) => row.fieldName === "Date")
-                          ?.rawXml || ""}
-                      </pre>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="xml-row-number-column">3</td>
-                  <td className="xml-data-label">
-                    <div className="xml-field-content">
-                      <div className="xml-field-name">Image</div>
-                    </div>
-                  </td>
-                  <td className="xml-actions-column">
-                    <div className="xml-data-display">
-                      <pre className="xml-code">
-                        {displayData.find((row) => row.fieldName === "Image")
-                          ?.rawXml || ""}
-                      </pre>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="xml-row-number-column">4</td>
-                  <td className="xml-data-label">
-                    <div className="xml-field-content">
-                      <div className="xml-field-name">Description</div>
-                    </div>
-                  </td>
-                  <td className="xml-actions-column">
-                    <div className="xml-data-display">
-                      <pre className="xml-code">
-                        {displayData.find(
-                          (row) => row.fieldName === "Description"
-                        )?.rawXml || ""}
-                      </pre>
-                    </div>
-                  </td>
-                </tr>
+                {displayData.map((row) => (
+                  <tr key={row.id}>
+                    <td className="xml-row-number-column">{row.id}</td>
+                    <td className="xml-data-label">
+                      <div className="xml-field-content">
+                        <div className="xml-field-name">{row.fieldName}</div>
+                      </div>
+                    </td>
+                    <td className="xml-actions-column">
+                      <div className="xml-data-display">
+                        <pre className="xml-code">{row.rawXml || ""}</pre>
+                      </div>
+                    </td>
+                    <td className="xml-dropdown-column">
+                      <select
+                        className="xml-action-dropdown"
+                        value={row.selectedAction || ""}
+                        onChange={(e: ChangeEvent<HTMLSelectElement>) => 
+                          handleActionChange(row.id, e.target.value)
+                        }
+                      >
+                        <option value="">Select field</option>
+                        {availableFields.map((field) => (
+                          <option key={field} value={field}>
+                            {field}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

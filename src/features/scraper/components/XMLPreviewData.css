@@ -223,6 +223,37 @@
   color: #333;
 }
 
+/* XML Dropdown Column */
+.xml-dropdown-column {
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+  padding: 8px;
+  vertical-align: middle;
+}
+
+.xml-action-dropdown {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  background-color: #ffffff;
+  color: #333333;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.75rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.xml-action-dropdown:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2);
+}
+
+.xml-action-dropdown option {
+  padding: 4px;
+}
+
 /* Animation */
 @keyframes fadeIn {
   from {

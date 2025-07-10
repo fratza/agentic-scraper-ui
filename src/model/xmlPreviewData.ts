@@ -8,6 +8,7 @@ export interface XMLPreviewDataProps {
   onClose: () => void;
   xmlData: XMLRowData[];
   onAddRow: () => void;
+  onActionSelect?: (fieldMappings: {[key: string]: string}) => void;
 }
 
 /**
@@ -18,4 +19,5 @@ export interface XMLRowData {
   fieldName: string;
   value: any;
   rawXml?: string;
+  selectedAction?: string;
 }
