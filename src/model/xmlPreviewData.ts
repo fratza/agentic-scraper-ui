@@ -17,4 +17,5 @@ export interface XMLRowData {
   id: string | number;
   fieldName: string;
   value: any;
+  rawXml?: string;
 }

@@ -160,6 +160,39 @@
   transform: translateY(0);
 }
 
+/* XML Actions Column */
+.xml-actions-column {
+  width: 120px;
+  min-width: 120px;
+  text-align: center;
+  position: relative;
+}
+
+.xml-raw-data {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 300px;
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 8px;
+  z-index: 10;
+  text-align: left;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.xml-raw-data pre {
+  margin: 0;
+  white-space: pre-wrap;
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: #333;
+}
+
 /* Animation */
 @keyframes fadeIn {
   from {

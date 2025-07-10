@@ -129,13 +129,18 @@ const ScraperPage: React.FC = () => {
               </div>
             ) : previewData ? (
               // Check if the content type is XML/RSS or HTML
-              (previewData && typeof previewData === 'object' && 'contentType' in previewData && previewData.contentType === "xml") ? (
+              previewData &&
+              typeof previewData === "object" &&
+              "contentType" in previewData &&
+              previewData.contentType === "xml" ? (
                 <XMLPreviewData
                   isOpen={true}
                   xmlData={
                     // Extract the items from the RSS data structure
-                    previewData?.sample?.[0]?.items || 
-                    (Array.isArray(extractedData) ? extractedData : [extractedData])
+                    previewData?.sample?.[0]?.items ||
+                    (Array.isArray(extractedData)
+                      ? extractedData
+                      : [extractedData])
                   }
                   onClose={handleModalClose}
                   onAddRow={() => console.log("Add row clicked")}
