@@ -134,9 +134,10 @@
 /* Add Row Button */
 .xml-add-row-container {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   margin-top: 0.75rem;
   margin-bottom: 1.5rem;
+  padding-left: 8px; /* Match the table cell padding */
 }
 
 .btn-add-row {
@@ -225,9 +226,9 @@
 
 /* XML Dropdown Column */
 .xml-dropdown-column {
-  width: 180px;
-  min-width: 180px;
-  max-width: 180px;
+  width: 350px;
+  min-width: 350px;
+  max-width: 350px;
   padding: 8px;
   vertical-align: middle;
 }

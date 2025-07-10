@@ -198,10 +198,19 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
             )
           ) + 1
         : 1;
-    setDisplayData([
-      ...displayData,
-      { id: newId, fieldName: "New Field", value: "-", rawXml: "-" },
-    ]);
+  
+    // Create a new row with empty values and add it to the display data
+    const newRow: XMLRowData = { 
+      id: newId, 
+      fieldName: "New Field", 
+      value: "-", 
+      rawXml: "-", 
+      selectedAction: "" 
+    };
+  
+    setDisplayData([...displayData, newRow]);
+  
+    // If onAddRow callback is provided, call it
     if (onAddRow) onAddRow();
   };
 
@@ -222,7 +231,6 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                 <tr>
                   <th className="xml-row-number-column">#</th>
                   <th>Field</th>
-                  <th>XML Data</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -235,11 +243,6 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                         <div className="xml-field-name">{row.fieldName}</div>
                       </div>
                     </td>
-                    <td className="xml-actions-column">
-                      <div className="xml-data-display">
-                        <pre className="xml-code">{row.rawXml || ""}</pre>
-                      </div>
-                    </td>
                     <td className="xml-dropdown-column">
                       <select
                         className="xml-action-dropdown"
@@ -248,12 +251,16 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                           handleActionChange(row.id, e.target.value)
                         }
                       >
-                        <option value="">Select field</option>
-                        {availableFields.map((field) => (
-                          <option key={field} value={field}>
-                            {field}
-                          </option>
-                        ))}
+                        <option value="">Select XML data</option>
+                        {xmlData && xmlData.length > 0 && Object.entries(xmlData[0] as Record<string, any>)
+                          .filter(([key]) => key !== 'contentType')
+                          .map(([key, value]) => (
+                            <option key={key} value={key}>
+                              {key}: {typeof value === 'string' ? 
+                                (value.length > 30 ? value.substring(0, 30) + '...' : value) : 
+                                JSON.stringify(value).substring(0, 30) + (JSON.stringify(value).length > 30 ? '...' : '')}
+                            </option>
+                          ))}
                       </select>
                     </td>
                   </tr>
