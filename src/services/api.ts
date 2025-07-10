@@ -197,6 +197,21 @@ const apiService = {
     }
   },
 
+  // Submit XML parsing request
+  submitXmlParseRequest: async (data: ScrapeRequestData): Promise<ScrapeResponse> => {
+    try {
+      // Submit XML parse request to the correct endpoint
+      const response = await apiClient.post("/proceed-scrape", {
+        ...data,
+        parseType: "xml"
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error submitting XML parse request:", error);
+      throw error;
+    }
+  },
+
   // Handle approve or cancel action for scraping
   handleScrapeAction: async (action: "approve" | "cancel"): Promise<any> => {
     try {

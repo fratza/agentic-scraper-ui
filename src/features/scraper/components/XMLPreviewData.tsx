@@ -298,11 +298,10 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
     setIsSubmitting(true);
 
     try {
-      // First submit the data to the API
-      const response = await apiService.submitScrapeRequest(payload);
+      // First submit the data to the API using the XML-specific endpoint
+      const response = await apiService.submitXmlParseRequest(payload);
       
-      // Then send approve action to backend - same as in Preview component
-      await apiService.handleScrapeAction("approve");
+      // No need to send approve action since the XML parse endpoint already handles this
 
       // If onParse callback is provided, call it
       if (onParse) {
