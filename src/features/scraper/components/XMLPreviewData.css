@@ -133,28 +133,27 @@
 }
 
 .xml-field-name {
-  font-weight: 500;
-  color: var(--text-color);
-  font-size: 0.875rem;
+  font-weight: 600;
+  color: #555;
+  font-size: 0.75rem;
+  margin-bottom: 2px;
 }
 
+/* Editable field input */
 .xml-field-name-input {
   width: 100%;
-  padding: 4px 8px;
-  border: 1px solid var(--border-focus);
-  border-radius: var(--border-radius-sm);
-  background-color: var(--surface-1);
-  color: var(--text-color);
-  font-family: 'Poppins', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: var(--transition);
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  color: #555;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 2px;
 }
 
 .xml-field-name-input:focus {
   outline: none;
-  box-shadow: var(--shadow-focus);
-  border-color: var(--primary-color);
 }
 
 .xml-field-value {

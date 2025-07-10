@@ -318,25 +318,27 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                       <td className="xml-row-number-column">{row.id}</td>
                       <td className="xml-data-label">
                         <div className="xml-field-content">
-                          {editableRows.has(row.id) ? (
-                            <input
-                              type="text"
-                              className="xml-field-name-input"
-                              value={row.fieldName}
-                              onChange={(e) => handleFieldNameChange(row.id, e.target.value)}
-                              onKeyPress={(e) => handleKeyPress(e, row.id)}
-                              onBlur={() => {
-                                setEditableRows(prev => {
-                                  const newSet = new Set(prev);
-                                  newSet.delete(row.id);
-                                  return newSet;
-                                });
-                              }}
-                              autoFocus
-                            />
-                          ) : (
-                            <div className="xml-field-name">{row.fieldName}</div>
-                          )}
+                          <div className="xml-field-name">
+                            {editableRows.has(row.id) ? (
+                              <input
+                                type="text"
+                                className="xml-field-name-input"
+                                value={row.fieldName}
+                                onChange={(e) => handleFieldNameChange(row.id, e.target.value)}
+                                onKeyPress={(e) => handleKeyPress(e, row.id)}
+                                onBlur={() => {
+                                  setEditableRows(prev => {
+                                    const newSet = new Set(prev);
+                                    newSet.delete(row.id);
+                                    return newSet;
+                                  });
+                                }}
+                                autoFocus
+                              />
+                            ) : (
+                              row.fieldName
+                            )}
+                          </div>
                         </div>
                       </td>
                       <td className="xml-dropdown-column">
