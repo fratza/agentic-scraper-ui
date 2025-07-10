@@ -413,12 +413,29 @@
 /* JSON value styling */
 .json-value {
   font-family: monospace;
-  padding: var(--space-xs);
-  background-color: var(--surface-1);
-  border-radius: var(--border-radius-sm);
-  font-size: var(--font-size-xs);
-  overflow-wrap: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   max-width: 300px;
+  padding: 0.25rem;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+/* XML value styling */
+.xml-value {
+  font-family: monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+  padding: 0.25rem;
+  background-color: rgba(0, 100, 0, 0.1);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: var(--text-color);
+  border-left: 3px solid var(--primary-color);
 }
 
 /* Truncated text styling */

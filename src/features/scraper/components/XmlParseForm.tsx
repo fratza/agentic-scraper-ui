@@ -43,8 +43,8 @@ const XmlParseForm: React.FC<XmlParseFormProps> = ({
 
     // Submit with XML parse type
     try {
-      // Send data to backend API using the XML-specific endpoint
-      const response = await apiService.submitXmlParseRequest(formData);
+      // Send data to backend API using the scrape endpoint
+      const response = await apiService.submitScrapeRequest(formData);
       // XML parse request submitted successfully
 
       // Pass the response to parent component

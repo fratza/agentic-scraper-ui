@@ -112,7 +112,7 @@
 }
 
 .data-table .p-datatable-tbody > tr {
-  background-color: var(--card-background, #280221);
+  background-color: var(--card-background, #1e1e1e);
 }
 
 .data-table .p-datatable-tbody > tr:nth-child(even) {

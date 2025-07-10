@@ -63,7 +63,7 @@ const apiService = {
     try {
       // Log the data being sent, including resume_link if present
       // Submit scrape request
-      const response = await apiClient.post("/scrape", data);
+      const response = await apiClient.post("/api/scrape", data);
       return response.data;
     } catch (error) {
       console.error("Error submitting scrape request:", error);
@@ -201,7 +201,7 @@ const apiService = {
   submitXmlParseRequest: async (data: ScrapeRequestData): Promise<ScrapeResponse> => {
     try {
       // Submit XML parse request to the correct endpoint
-      const response = await apiClient.post("/proceed-scrape", {
+      const response = await apiClient.post("/api/proceed-scrape", {
         ...data,
         parseType: "xml"
       });

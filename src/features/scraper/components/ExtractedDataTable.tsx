@@ -305,16 +305,55 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
     } else if (value === null || value === undefined) {
       return <span className="text-muted">-</span>;
     } else if (typeof value === "object") {
-      const jsonString = JSON.stringify(value);
-      return (
-        <CopyableCell value={value}>
-          <div className="json-value" title={jsonString}>
-            {jsonString.length > 100
-              ? `${jsonString.substring(0, 100)}...`
-              : jsonString}
-          </div>
-        </CopyableCell>
-      );
+      // Check if this is XML data (often has specific properties or structure)
+      const isXmlData = key.toLowerCase().includes('xml') || 
+                       (typeof value === 'object' && 
+                        (value.contentType === 'xml' || 
+                         (value.toString && value.toString().includes('<') && value.toString().includes('>'))
+                        ));
+      
+      if (isXmlData) {
+        // Format XML data more nicely
+        try {
+          // Try to get the actual content if it's in a specific format
+          const xmlContent = value.content || value.data || value.value || value;
+          const displayValue = typeof xmlContent === 'string' ? xmlContent : JSON.stringify(xmlContent);
+          
+          return (
+            <CopyableCell value={displayValue}>
+              <div className="xml-value" title={displayValue}>
+                {displayValue.length > 100
+                  ? `${displayValue.substring(0, 100)}...`
+                  : displayValue}
+              </div>
+            </CopyableCell>
+          );
+        } catch (e) {
+          // Fall back to JSON if XML processing fails
+          const jsonString = JSON.stringify(value);
+          return (
+            <CopyableCell value={value}>
+              <div className="json-value" title={jsonString}>
+                {jsonString.length > 100
+                  ? `${jsonString.substring(0, 100)}...`
+                  : jsonString}
+              </div>
+            </CopyableCell>
+          );
+        }
+      } else {
+        // Regular JSON handling
+        const jsonString = JSON.stringify(value);
+        return (
+          <CopyableCell value={value}>
+            <div className="json-value" title={jsonString}>
+              {jsonString.length > 100
+                ? `${jsonString.substring(0, 100)}...`
+                : jsonString}
+            </div>
+          </CopyableCell>
+        );
+      }
     } else if (
       typeof value === "string" &&
       (key.toLowerCase().includes("image") ||
