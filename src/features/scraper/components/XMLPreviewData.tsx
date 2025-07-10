@@ -1,6 +1,6 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent, KeyboardEvent } from "react";
+import { XMLPreviewDataProps, XMLRowData } from "../../../model/xmlPreviewData";
 import "./XMLPreviewData.css";
-import { XMLPreviewDataProps, XMLRowData } from "../../../model";
 
 const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
   isOpen,
@@ -13,6 +13,7 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [displayData, setDisplayData] = useState<XMLRowData[]>([]);
   const [availableFields, setAvailableFields] = useState<string[]>([]);
+  const [editableRows, setEditableRows] = useState<Set<string | number>>(new Set());
   
   // Handle dropdown change for action selection
   const handleActionChange = (id: string | number, value: string) => {
@@ -211,6 +212,13 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
     };
   
     setDisplayData([...displayData, newRow]);
+    
+    // Mark this row as editable
+    setEditableRows(prev => {
+      const newSet = new Set(prev);
+      newSet.add(newId);
+      return newSet;
+    });
   
     // If onAddRow callback is provided, call it
     if (onAddRow) onAddRow();
@@ -225,6 +233,34 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
     if (numId <= 4) return;
     
     setDisplayData(prevData => prevData.filter(row => row.id !== id));
+    
+    // Remove from editable rows if present
+    setEditableRows(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(id);
+      return newSet;
+    });
+  };
+  
+  // Handle field name editing
+  const handleFieldNameChange = (id: string | number, newName: string) => {
+    setDisplayData(prevData => 
+      prevData.map(row => 
+        row.id === id ? { ...row, fieldName: newName } : row
+      )
+    );
+  };
+  
+  // Handle key press in editable field
+  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>, id: string | number) => {
+    if (e.key === 'Enter') {
+      // Remove from editable rows on Enter key
+      setEditableRows(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(id);
+        return newSet;
+      });
+    }
   };
   
   // Handle parse button click
@@ -282,7 +318,25 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                       <td className="xml-row-number-column">{row.id}</td>
                       <td className="xml-data-label">
                         <div className="xml-field-content">
-                          <div className="xml-field-name">{row.fieldName}</div>
+                          {editableRows.has(row.id) ? (
+                            <input
+                              type="text"
+                              className="xml-field-name-input"
+                              value={row.fieldName}
+                              onChange={(e) => handleFieldNameChange(row.id, e.target.value)}
+                              onKeyPress={(e) => handleKeyPress(e, row.id)}
+                              onBlur={() => {
+                                setEditableRows(prev => {
+                                  const newSet = new Set(prev);
+                                  newSet.delete(row.id);
+                                  return newSet;
+                                });
+                              }}
+                              autoFocus
+                            />
+                          ) : (
+                            <div className="xml-field-name">{row.fieldName}</div>
+                          )}
                         </div>
                       </td>
                       <td className="xml-dropdown-column">
