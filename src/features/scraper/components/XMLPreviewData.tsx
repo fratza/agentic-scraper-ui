@@ -53,42 +53,44 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
             <thead>
               <tr>
                 <th className="xml-row-number-column">#</th>
-                <th>Data</th>
+                <th>Field</th>
+                <th>Value</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {xmlData.map((row, index) => (
-                <tr key={row.id}>
-                  <td className="xml-row-number-column">{index + 1}</td>
-                  <td>
-                    <div className="xml-data-cell">
-                      <div>
-                        <div className="xml-data-label">Title</div>
-                        <div className="xml-data-value">{row.title || '-'}</div>
-                      </div>
-                      
-                      <div>
-                        <div className="xml-data-label">Date</div>
-                        <div className="xml-data-value">{row.date || '-'}</div>
-                      </div>
-                      
-                      <div>
-                        <div className="xml-data-label">Image</div>
-                        <div className="xml-data-value">{renderImage(row.image)}</div>
-                      </div>
-                      
-                      <div>
-                        <div className="xml-data-label">Description</div>
-                        <div className="xml-data-value xml-description">{row.description || '-'}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    {/* Empty for now - will be used for future controls like edit/delete */}
-                  </td>
-                </tr>
-              ))}
+              <tr>
+                <td className="xml-row-number-column">1</td>
+                <td className="xml-data-label">Title</td>
+                <td>{xmlData[0]?.title || '-'}</td>
+                <td>
+                  {/* Empty for now - will be used for future controls like edit/delete */}
+                </td>
+              </tr>
+              <tr>
+                <td className="xml-row-number-column">2</td>
+                <td className="xml-data-label">Date</td>
+                <td>{xmlData[0]?.date || '-'}</td>
+                <td>
+                  {/* Empty for now */}
+                </td>
+              </tr>
+              <tr>
+                <td className="xml-row-number-column">3</td>
+                <td className="xml-data-label">Image</td>
+                <td>{renderImage(xmlData[0]?.image || '')}</td>
+                <td>
+                  {/* Empty for now */}
+                </td>
+              </tr>
+              <tr>
+                <td className="xml-row-number-column">4</td>
+                <td className="xml-data-label">Description</td>
+                <td className="xml-description">{xmlData[0]?.description || '-'}</td>
+                <td>
+                  {/* Empty for now */}
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
