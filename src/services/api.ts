@@ -205,7 +205,7 @@ const apiService = {
       // Submit XML parse request to the correct endpoint
       const response = await apiClient.post("/proceed-scrape", {
         ...data,
-        parseType: "xml",
+        action: "approve"
       });
       return response.data;
     } catch (error) {
