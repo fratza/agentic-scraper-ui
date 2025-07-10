@@ -48,11 +48,8 @@ const XmlParseForm: React.FC<XmlParseFormProps> = ({
       // Scrape request submitted successfully
 
       // Pass the response to parent component
-      onSubmit({ url, jobId: response.jobId });
-      // Note: We don't reset isSubmitting here because the form will be replaced by preview
+      onSubmit({ url, jobId: response.jobId, contentType: "xml" });
     } catch (error: any) {
-      // Handle submission error silently
-      // Handle API errors
       setErrors({
         api:
           error.response?.data?.message ||

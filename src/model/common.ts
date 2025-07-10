@@ -25,7 +25,7 @@ export interface FormSubmitData {
   url: string;
   scrapeTarget?: string;
   jobId?: string;
-  parseType?: string;
+  contentType: string;
 }
 
 /**

@@ -61,7 +61,12 @@ const ScraperForm: React.FC<ScraperFormProps> = ({ onSubmit }) => {
       // Scrape request submitted successfully
 
       // Pass the response to parent component
-      onSubmit({ url, scrapeTarget, jobId: response.jobId });
+      onSubmit({
+        url,
+        scrapeTarget,
+        jobId: response.jobId,
+        contentType: "html",
+      });
     } catch (error: any) {
       // Handle submission error silently
       // Handle API errors
