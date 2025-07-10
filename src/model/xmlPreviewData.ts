@@ -9,6 +9,7 @@ export interface XMLPreviewDataProps {
   xmlData: XMLRowData[];
   onAddRow: () => void;
   onActionSelect?: (fieldMappings: {[key: string]: string}) => void;
+  onParse?: () => void;
 }
 
 /**

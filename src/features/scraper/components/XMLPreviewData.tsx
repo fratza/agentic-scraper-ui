@@ -8,7 +8,9 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
   onClose,
   onAddRow,
   onActionSelect,
+  onParse,
 }) => {
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [displayData, setDisplayData] = useState<XMLRowData[]>([]);
   const [availableFields, setAvailableFields] = useState<string[]>([]);
   
@@ -224,14 +226,38 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
     
     setDisplayData(prevData => prevData.filter(row => row.id !== id));
   };
+  
+  // Handle parse button click
+  const handleParse = async () => {
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Call onParse if provided, otherwise fall back to onClose
+      if (onParse) {
+        await onParse();
+      } else {
+        onClose();
+      }
+    } catch (error) {
+      console.error('Error during parsing:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="xml-preview-modal">
       <div className="xml-preview-content">
         <div className="xml-preview-header">
           <h2>Preview XML Data</h2>
-          <button className="xml-close-button" onClick={onClose}>
-            &times;
+          <button 
+            className="btn-parse" 
+            onClick={handleParse} 
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Processing..." : "Parse"}
           </button>
         </div>
 
