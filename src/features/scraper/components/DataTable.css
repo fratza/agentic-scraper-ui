@@ -15,7 +15,7 @@
   width: 100%;
   border-collapse: collapse;
   background-color: #ffffff;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   animation: fadeIn 0.5s ease-in-out;
 }
 
@@ -74,6 +74,23 @@
 
 .data-table td.row-number-column {
   background-color: #f0f0f0;
+}
+
+/* Custom text styles */
+.table-text {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.95rem;
+  color: #ffffff;
+  line-height: 1.5;
+}
+
+.table-header-text {
+  font-family: "Poppins", sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* Animation */

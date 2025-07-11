@@ -1,12 +1,38 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import { useScraperContext } from "../context/ScraperContext";
+import DataTable from "../features/scraper/components/DataTable";
 import "../styles/TemplatePage.css";
 
 const TemplatePage: React.FC = () => {
-  const { resetScraper } = useScraperContext();
+  const { resetScraper, extractedData } = useScraperContext();
+  const [templateData, setTemplateData] = useState<any[] | null>(null);
+  
+  // Define custom headers for better readability
+  const customHeaders: Record<string, string> = {
+    title: "Product Name",
+    description: "Description",
+    price: "Price ($)",
+    rating: "Rating",
+    inStock: "In Stock",
+    category: "Category",
+    tags: "Tags",
+    imageUrl: "Image URL",
+    lastUpdated: "Last Updated",
+    vendor: "Vendor"
+  };
+  
+  // Use extracted data when available
+  useEffect(() => {
+    if (extractedData && Array.isArray(extractedData) && extractedData.length > 0) {
+      setTemplateData(extractedData);
+    } else {
+      // No data available
+      setTemplateData(null);
+    }
+  }, [extractedData]);
 
   // Handle navigation back to main page
   const handleBackToMain = (): void => {
@@ -58,8 +84,22 @@ const TemplatePage: React.FC = () => {
             </h2>
             <Card className="info-card">
               <h3>Template Page</h3>
-              <p>This is a template page. The data table has been removed as requested.</p>
-              <p>You can use this page as a starting point for new features or components.</p>
+              <p>This page displays a preview of the data table with sample data.</p>
+              
+              {templateData && templateData.length > 0 ? (
+                <div className="data-preview-container">
+                  <DataTable 
+                    data={templateData} 
+                    title="Data Preview" 
+                    headers={customHeaders}
+                    cellClassName="table-text"
+                    headerClassName="table-header-text"
+                  />
+                </div>
+              ) : (
+                <p>No data available. Please run a scraper to extract data.</p>
+              )}
+              
               <div className="card-actions">
                 <Button
                   icon="pi pi-search"

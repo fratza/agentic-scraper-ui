@@ -218,6 +218,15 @@
   margin-bottom: 2rem;
 }
 
+/* Data preview container styles */
+.data-preview-container {
+  margin: 1.5rem 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+
 /* Ensure shared table styles take precedence */
 .data-table-wrapper .shared-table-container {
   background-color: #ffffff;
