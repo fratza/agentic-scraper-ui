@@ -8,7 +8,7 @@ import "../styles/TemplatePage.css";
 
 const TemplatePage: React.FC = () => {
   const { resetScraper, extractedData } = useScraperContext();
-  
+
   // Log extracted data for debugging
   useEffect(() => {
     console.log("Extracted data in TemplatePage:", extractedData);
@@ -68,7 +68,7 @@ const TemplatePage: React.FC = () => {
                 This page displays a preview of the data table with sample data.
               </p>
 
-              {extractedData ? (
+              {Array.isArray(extractedData) && extractedData.length > 0 ? (
                 <div className="data-preview-container">
                   <DataTable
                     data={extractedData}
