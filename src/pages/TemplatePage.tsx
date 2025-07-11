@@ -9,25 +9,24 @@ import "../styles/TemplatePage.css";
 const TemplatePage: React.FC = () => {
   const { resetScraper, extractedData } = useScraperContext();
   const [templateData, setTemplateData] = useState<any[] | null>(null);
-  
-  // Define custom headers for better readability
-  const customHeaders: Record<string, string> = {
-    title: "Product Name",
-    description: "Description",
-    price: "Price ($)",
-    rating: "Rating",
-    inStock: "In Stock",
-    category: "Category",
-    tags: "Tags",
-    imageUrl: "Image URL",
-    lastUpdated: "Last Updated",
-    vendor: "Vendor"
-  };
-  
+
   // Use extracted data when available
   useEffect(() => {
-    if (extractedData && Array.isArray(extractedData) && extractedData.length > 0) {
-      setTemplateData(extractedData);
+    console.log("Extracted data in TemplatePage:", extractedData);
+    if (extractedData) {
+      // Handle both array and object formats
+      if (Array.isArray(extractedData)) {
+        setTemplateData(extractedData);
+      } else if (typeof extractedData === 'object') {
+        // If it's an object with data property that's an array
+        const extractedDataObj = extractedData as Record<string, any>;
+        if (extractedDataObj.data && Array.isArray(extractedDataObj.data)) {
+          setTemplateData(extractedDataObj.data);
+        } else {
+          // If it's a single object, wrap it in an array
+          setTemplateData([extractedData]);
+        }
+      }
     } else {
       // No data available
       setTemplateData(null);
@@ -84,14 +83,15 @@ const TemplatePage: React.FC = () => {
             </h2>
             <Card className="info-card">
               <h3>Template Page</h3>
-              <p>This page displays a preview of the data table with sample data.</p>
-              
+              <p>
+                This page displays a preview of the data table with sample data.
+              </p>
+
               {templateData && templateData.length > 0 ? (
                 <div className="data-preview-container">
                   <DataTable 
-                    data={templateData} 
+                    data={templateData as any[]} 
                     title="Data Preview" 
-                    headers={customHeaders}
                     cellClassName="table-text"
                     headerClassName="table-header-text"
                   />
@@ -99,7 +99,7 @@ const TemplatePage: React.FC = () => {
               ) : (
                 <p>No data available. Please run a scraper to extract data.</p>
               )}
-              
+
               <div className="card-actions">
                 <Button
                   icon="pi pi-search"

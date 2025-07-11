@@ -21,8 +21,7 @@ import "primeflex/primeflex.css";
 
 import TableDisplay from "./TableDisplay";
 
-// Import mock data for development/testing
-import { mockTableData } from "../data/mockTableData";
+// No mock data imports for production
 
 // Import interfaces from model folder
 import { ExtractedDataTableProps, ImageWithToggleProps, FilterDisplayOptions } from '../../../model';
@@ -49,12 +48,7 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
   useEffect(() => {
     // Return early if no data is available
     if (!data) {
-      // Use mock data for development/testing when no real data is available
-      console.log("No data available, using mock data for development");
-      const processedMockData = mockTableData.map((item) => {
-        return { ...item };
-      });
-      setTableData(processedMockData);
+      setTableData([]);
       setLoading(false);
       initFilters();
       return;
@@ -71,12 +65,7 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
 
     // Return if the array is empty
     if (dataArray.length === 0) {
-      // Use mock data if the array is empty
-      console.log("Empty data array, using mock data for development");
-      const processedMockData = mockTableData.map((item) => {
-        return { ...item };
-      });
-      setTableData(processedMockData);
+      setTableData([]);
       setLoading(false);
       initFilters();
       return;

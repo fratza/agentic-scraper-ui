@@ -344,9 +344,7 @@ body {
   }
 }
 
-.fade-in {
-  animation: fadeIn 0.8s ease forwards;
-}
+/* Removed .fade-in class to prevent double animations with framer-motion */
 
 .fade-out {
   animation: fadeOut 0.5s ease forwards;
