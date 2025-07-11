@@ -14,16 +14,19 @@ const TemplatePage: React.FC = () => {
   useEffect(() => {
     console.log("Extracted data in TemplatePage:", extractedData);
     if (extractedData) {
-      // Handle both array and object formats
       if (Array.isArray(extractedData)) {
         setTemplateData(extractedData);
-      } else if (typeof extractedData === 'object') {
-        // If it's an object with data property that's an array
-        const extractedDataObj = extractedData as Record<string, any>;
-        if (extractedDataObj.data && Array.isArray(extractedDataObj.data)) {
-          setTemplateData(extractedDataObj.data);
+      } else if (typeof extractedData === "object") {
+        const { extractedData: ed, data } = extractedData as Record<
+          string,
+          any
+        >;
+
+        if (Array.isArray(ed)) {
+          setTemplateData(ed);
+        } else if (Array.isArray(data)) {
+          setTemplateData(data);
         } else {
-          // If it's a single object, wrap it in an array
           setTemplateData([extractedData]);
         }
       }
@@ -31,6 +34,7 @@ const TemplatePage: React.FC = () => {
       // No data available
       setTemplateData(null);
     }
+    console.log("Template data after processing:", templateData);
   }, [extractedData]);
 
   // Handle navigation back to main page
@@ -87,11 +91,11 @@ const TemplatePage: React.FC = () => {
                 This page displays a preview of the data table with sample data.
               </p>
 
-              {templateData && templateData.length > 0 ? (
+              {extractedData ? (
                 <div className="data-preview-container">
-                  <DataTable 
-                    data={templateData as any[]} 
-                    title="Data Preview" 
+                  <DataTable
+                    data={templateData || extractedData}
+                    title="Data Preview"
                     cellClassName="table-text"
                     headerClassName="table-header-text"
                   />
