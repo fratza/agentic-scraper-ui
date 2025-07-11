@@ -8,33 +8,10 @@ import "../styles/TemplatePage.css";
 
 const TemplatePage: React.FC = () => {
   const { resetScraper, extractedData } = useScraperContext();
-  const [templateData, setTemplateData] = useState<any[] | null>(null);
-
-  // Use extracted data when available
+  
+  // Log extracted data for debugging
   useEffect(() => {
     console.log("Extracted data in TemplatePage:", extractedData);
-    if (extractedData) {
-      if (Array.isArray(extractedData)) {
-        setTemplateData(extractedData);
-      } else if (typeof extractedData === "object") {
-        const { extractedData: ed, data } = extractedData as Record<
-          string,
-          any
-        >;
-
-        if (Array.isArray(ed)) {
-          setTemplateData(ed);
-        } else if (Array.isArray(data)) {
-          setTemplateData(data);
-        } else {
-          setTemplateData([extractedData]);
-        }
-      }
-    } else {
-      // No data available
-      setTemplateData(null);
-    }
-    console.log("Template data after processing:", templateData);
   }, [extractedData]);
 
   // Handle navigation back to main page
@@ -94,7 +71,7 @@ const TemplatePage: React.FC = () => {
               {extractedData ? (
                 <div className="data-preview-container">
                   <DataTable
-                    data={templateData || extractedData}
+                    data={extractedData}
                     title="Data Preview"
                     cellClassName="table-text"
                     headerClassName="table-header-text"
