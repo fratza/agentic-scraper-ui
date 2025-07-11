@@ -1,11 +1,20 @@
 /* Preview Styles */
 .preview-container {
-  width: 100%;
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  overflow: auto;
+}
+
+/* Override shared table styles for preview container */
+.preview-container .shared-table-container {
   margin: 0;
   padding: 0;
-  background-color: transparent;
   box-shadow: none;
-  border-radius: 0;
+  background-color: transparent;
 }
 
 .preview-header {

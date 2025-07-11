@@ -1,4 +1,5 @@
 import React, { ReactElement } from 'react';
+import '../../../styles/SharedTable.css';
 import './DataTable.css';
 import { DataTableProps } from '../../../model';
 
@@ -37,22 +38,26 @@ const DataTable: React.FC<DataTableProps> = ({ data, title }) => {
   const tableData = Array.isArray(data) ? data : [data];
 
   return (
-    <div className="data-table-container">
-      {title && <h3>{title}</h3>}
-      <div className="table-responsive">
-        <table className="data-table">
+    <div className="shared-table-container">
+      {title && <h3 className="shared-table-title">{title}</h3>}
+      <div className="shared-table-responsive">
+        <table className="shared-data-table">
           <thead>
             <tr>
-              <th className="row-number-column">#</th>
+              <th className="shared-row-number-column">#</th>
               {getHeaders()}
             </tr>
           </thead>
           <tbody>
             {tableData.map((item, index) => (
               <tr key={index}>
-                <td className="row-number-column">{index + 1}</td>
+                <td className="shared-row-number-column">{index + 1}</td>
                 {Object.keys(item).map((key) => (
-                  <td key={key}>{formatValue(item[key])}</td>
+                  <td key={key}>
+                    <div className="shared-cell-content">
+                      <div className="shared-field-value">{formatValue(item[key])}</div>
+                    </div>
+                  </td>
                 ))}
               </tr>
             ))}

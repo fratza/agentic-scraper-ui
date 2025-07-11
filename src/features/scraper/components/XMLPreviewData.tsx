@@ -1,6 +1,7 @@
 import React, { useState, useEffect, ChangeEvent, KeyboardEvent } from "react";
 import { XMLPreviewDataProps, XMLRowData } from "../../../model/xmlPreviewData";
 import apiService from "../../../services/api";
+import "../../../styles/SharedTable.css";
 import "./XMLPreviewData.css";
 
 const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({

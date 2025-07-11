@@ -1,0 +1,242 @@
+/* Shared Table Styles - Based on XMLPreviewData table design */
+:root {
+  --table-border-color: #e9ecef;
+  --table-header-bg: #f8f9fa;
+  --table-row-hover: #f8f9fa;
+  --table-text-color: #333333;
+  --table-header-text-color: #333333;
+  --table-row-number-bg: #f0f0f0;
+  --table-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  --table-border-radius: 6px;
+}
+
+/* Table Container Styles */
+.shared-table-container {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.shared-table-responsive {
+  overflow-x: auto;
+  border-radius: var(--table-border-radius);
+  box-shadow: var(--table-shadow);
+}
+
+/* Table Styles */
+.shared-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  font-family: "Poppins", sans-serif;
+  animation: fadeIn 0.5s ease-in-out;
+  font-size: 0.85rem;
+}
+
+.shared-data-table .p-datatable-wrapper {
+  border-radius: var(--table-border-radius);
+  overflow: hidden;
+  border: 1px solid var(--table-border-color);
+}
+
+/* Table Header */
+.shared-data-table .p-datatable-thead > tr > th {
+  background-color: var(--table-header-bg);
+  color: var(--table-header-text-color);
+  font-weight: 600;
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--table-border-color);
+  font-size: 0.9rem;
+}
+
+/* Table Body */
+.shared-data-table .p-datatable-tbody > tr > td {
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--table-border-color);
+  color: var(--table-text-color);
+  vertical-align: top;
+  font-size: 0.85rem;
+}
+
+.shared-data-table .p-datatable-tbody > tr:hover {
+  background-color: var(--table-row-hover);
+}
+
+/* Row Number Column */
+.shared-row-number-column {
+  width: 30px;
+  min-width: 30px;
+  max-width: 30px;
+  text-align: center;
+  background-color: var(--table-row-number-bg);
+  font-weight: 600;
+  color: #555;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  box-shadow: 1px 0 3px rgba(0, 0, 0, 0.08);
+}
+
+.shared-data-table .p-datatable-tbody > tr > td.shared-row-number-column {
+  background-color: var(--table-row-number-bg);
+}
+
+/* Cell Content Styles */
+.shared-cell-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.shared-field-name {
+  font-weight: 600;
+  color: #555;
+  font-size: 0.75rem;
+  margin-bottom: 2px;
+}
+
+.shared-field-value {
+  font-size: 0.8rem;
+  color: #333;
+}
+
+/* Image Styles */
+.shared-image-preview {
+  max-width: 80px;
+  max-height: 80px;
+  object-fit: contain;
+  border-radius: 3px;
+  border: 1px solid var(--table-border-color);
+}
+
+/* Text Content Styles */
+.shared-description {
+  max-width: 250px;
+  white-space: pre-wrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Loading and Empty States */
+.shared-loading-container,
+.shared-empty-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #666;
+  text-align: center;
+  gap: 1rem;
+}
+
+.shared-loading-container .p-progress-spinner {
+  width: 50px;
+  height: 50px;
+}
+
+/* Table Controls */
+.shared-table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.shared-search-container {
+  flex: 1;
+  min-width: 200px;
+  max-width: 400px;
+}
+
+.shared-table-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Buttons */
+.shared-table-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color, #3B82F6);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.shared-table-btn:hover {
+  background-color: var(--button-hover, #2563EB);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.shared-table-btn:active {
+  transform: translateY(0);
+}
+
+.shared-table-btn.secondary {
+  background-color: #f8f9fa;
+  color: #333;
+  border: 1px solid #e0e0e0;
+}
+
+.shared-table-btn.secondary:hover {
+  background-color: #e9ecef;
+}
+
+/* Pagination */
+.shared-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .shared-table-controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .shared-search-container {
+    max-width: 100%;
+    width: 100%;
+    margin-bottom: 0.75rem;
+  }
+
+  .shared-table-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

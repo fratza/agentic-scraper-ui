@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
+import "../../../styles/SharedTable.css";
 import "./ExtractedDataTable.css";
 
 // PrimeReact imports
@@ -438,7 +439,8 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
   // If no data is available, show a message instead of returning null
   if (!tableData.length) {
     return (
-      <div className="empty-data-message">
+      <div className="shared-empty-message">
+        <i className="pi pi-info-circle" aria-hidden="true" />
         <p>
           Processing data... If this persists, please check the console for
           errors.
@@ -522,16 +524,16 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
       <Toast ref={toast} position="top-right" />
 
       <motion.div
-        className="outer-container fade-in"
+        className="shared-table-container fade-in"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         role="region"
         aria-label="Data results table"
       >
-        <div className="table-header-container">
+        <div className="shared-table-controls">
           <h3 id="data-results-title">Data Results</h3>
-          <div className="table-info">
+          <div className="shared-table-actions">
             <span className="table-count">{tableData.length} items</span>
             <span className="table-tip">
               Tip: Click on any cell to copy its value
@@ -539,7 +541,7 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
             <Button 
               icon="pi pi-download" 
               label="Download CSV"
-              className="btn btn-primary" 
+              className="shared-table-btn" 
               onClick={exportCSV}
               aria-label="Download as CSV"
             />

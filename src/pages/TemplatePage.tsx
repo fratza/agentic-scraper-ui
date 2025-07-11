@@ -13,13 +13,53 @@ const TemplatePage: React.FC = () => {
   const { extractedData, loading, resetScraper } = useScraperContext();
   const [templateData, setTemplateData] = useState<any>(null);
 
-  // Use mock data when no real data is available
+  // Process and use mock data when no real data is available
   useEffect(() => {
     if (!extractedData || (Array.isArray(extractedData) && extractedData.length === 0)) {
       console.log('Using mock data for template page');
       setTemplateData(mockTableData);
     } else {
-      setTemplateData(extractedData);
+      // Process the extracted data to ensure it's in the right format
+      console.log('Processing extracted data:', extractedData);
+      
+      // Handle different possible data structures
+      let processedData;
+      
+      if (typeof extractedData === 'string') {
+        // If data is a JSON string, parse it
+        try {
+          processedData = JSON.parse(extractedData);
+        } catch (error) {
+          console.error('Error parsing JSON data:', error);
+          processedData = extractedData;
+        }
+      } else {
+        processedData = extractedData;
+      }
+      
+      // Handle nested data structures (data property commonly used in API responses)
+      if (processedData && processedData.data) {
+        processedData = processedData.data;
+      }
+      
+      // Ensure data is an array for the table
+      if (!Array.isArray(processedData)) {
+        if (typeof processedData === 'object' && processedData !== null) {
+          // If it's a single object, wrap it in an array
+          processedData = [processedData];
+        } else {
+          // If it's not an object or array, use mock data
+          console.warn('Extracted data is not in a usable format, using mock data');
+          processedData = mockTableData;
+        }
+      }
+      
+      // Add unique IDs if they don't exist
+      processedData = processedData.map((item: any, index: number) => {
+        return { ...item, id: item.id || item.uuid || `row-${index}` };
+      });
+      
+      setTemplateData(processedData);
     }
   }, [extractedData]);
 
