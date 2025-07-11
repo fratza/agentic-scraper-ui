@@ -1,67 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
-import ExtractedDataTable from "../features/scraper/components/ExtractedDataTable";
 import { useScraperContext } from "../context/ScraperContext";
 import "../styles/TemplatePage.css";
 
-// Import mock data for development/testing
-import { mockTableData } from "../features/scraper/data/mockTableData";
-
 const TemplatePage: React.FC = () => {
-  const { extractedData, loading, resetScraper } = useScraperContext();
-  const [templateData, setTemplateData] = useState<any>(null);
-
-  // Process and use mock data when no real data is available
-  useEffect(() => {
-    if (!extractedData || (Array.isArray(extractedData) && extractedData.length === 0)) {
-      console.log('Using mock data for template page');
-      setTemplateData(mockTableData);
-    } else {
-      // Process the extracted data to ensure it's in the right format
-      console.log('Processing extracted data:', extractedData);
-      
-      // Handle different possible data structures
-      let processedData;
-      
-      if (typeof extractedData === 'string') {
-        // If data is a JSON string, parse it
-        try {
-          processedData = JSON.parse(extractedData);
-        } catch (error) {
-          console.error('Error parsing JSON data:', error);
-          processedData = extractedData;
-        }
-      } else {
-        processedData = extractedData;
-      }
-      
-      // Handle nested data structures (data property commonly used in API responses)
-      if (processedData && processedData.data) {
-        processedData = processedData.data;
-      }
-      
-      // Ensure data is an array for the table
-      if (!Array.isArray(processedData)) {
-        if (typeof processedData === 'object' && processedData !== null) {
-          // If it's a single object, wrap it in an array
-          processedData = [processedData];
-        } else {
-          // If it's not an object or array, use mock data
-          console.warn('Extracted data is not in a usable format, using mock data');
-          processedData = mockTableData;
-        }
-      }
-      
-      // Add unique IDs if they don't exist
-      processedData = processedData.map((item: any, index: number) => {
-        return { ...item, id: item.id || item.uuid || `row-${index}` };
-      });
-      
-      setTemplateData(processedData);
-    }
-  }, [extractedData]);
+  const { resetScraper } = useScraperContext();
 
   // Handle navigation back to main page
   const handleBackToMain = (): void => {
@@ -109,47 +54,22 @@ const TemplatePage: React.FC = () => {
             aria-live="polite"
           >
             <h2 id="data-heading" className="sr-only">
-              Data Results
+              Template Content
             </h2>
-            {loading && !templateData ? (
-              <Card className="info-card">
-                <div
-                  className="loading-indicator"
-                  role="status"
-                  aria-live="assertive"
-                >
-                  <i className="pi pi-spin pi-spinner"></i>
-                  <p>Loading data...</p>
-                </div>
-              </Card>
-            ) : templateData &&
-              (Array.isArray(templateData) ||
-                typeof templateData === "object") ? (
-              <motion.div
-                className="data-table-wrapper"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <ExtractedDataTable
-                  extractedData={templateData}
-                  onBackToMain={handleBackToMain}
+            <Card className="info-card">
+              <h3>Template Page</h3>
+              <p>This is a template page. The data table has been removed as requested.</p>
+              <p>You can use this page as a starting point for new features or components.</p>
+              <div className="card-actions">
+                <Button
+                  icon="pi pi-search"
+                  label="Start New Scrape"
+                  className="btn btn-primary"
+                  onClick={() => (window.location.href = "/")}
+                  aria-label="Start new scrape"
                 />
-              </motion.div>
-            ) : (
-              <Card className="info-card">
-                <p>No data available. Please run a scraper to get data.</p>
-                <div className="card-actions">
-                  <Button
-                    icon="pi pi-search"
-                    label="Start New Scrape"
-                    className="btn btn-primary"
-                    onClick={() => (window.location.href = "/")}
-                    aria-label="Start new scrape"
-                  />
-                </div>
-              </Card>
-            )}
+              </div>
+            </Card>
           </section>
 
           <div className="page-actions">

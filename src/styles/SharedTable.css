@@ -3,8 +3,8 @@
   --table-border-color: #e9ecef;
   --table-header-bg: #f8f9fa;
   --table-row-hover: #f8f9fa;
-  --table-text-color: #000000;
-  --table-header-text-color: #000000;
+  --table-text-color: #c71b1b;
+  --table-header-text-color: #a21091;
   --table-row-number-bg: #f0f0f0;
   --table-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
   --table-border-radius: 6px;
@@ -37,6 +37,7 @@
   border-radius: var(--table-border-radius);
   overflow: hidden;
   border: 1px solid var(--table-border-color);
+  background-color: #ffffff;
 }
 
 /* Table Header */
@@ -170,7 +171,7 @@
   align-items: center;
   justify-content: center;
   padding: 0.5rem 1rem;
-  background-color: var(--primary-color, #3B82F6);
+  background-color: var(--primary-color, #3b82f6);
   color: white;
   border: none;
   border-radius: 4px;
@@ -181,7 +182,7 @@
 }
 
 .shared-table-btn:hover {
-  background-color: var(--button-hover, #2563EB);
+  background-color: var(--button-hover, #2563eb);
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
