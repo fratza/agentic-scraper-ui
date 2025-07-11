@@ -82,7 +82,6 @@
   border-radius: 12px;
   overflow: hidden;
   box-shadow: var(--shadow);
-  background-color: var(--card-background);
   animation: fadeIn 0.5s ease-out;
 }
 
@@ -219,18 +218,14 @@
   margin-bottom: 2rem;
 }
 
-/* Override specific data table styles to ensure they work with dark theme */
-.data-table-wrapper .p-datatable .p-datatable-header,
-.data-table-wrapper .p-datatable .p-datatable-footer {
-  background-color: var(--card-background);
-  color: var(--text-color);
-  border-color: var(--border-color);
+/* Ensure shared table styles take precedence */
+.data-table-wrapper .shared-table-container {
+  background-color: #ffffff;
 }
 
-.data-table-wrapper .p-paginator {
-  background-color: var(--card-background);
-  color: var(--text-color);
-  border-color: var(--border-color);
+.data-table-wrapper .shared-data-table {
+  background-color: #ffffff;
+  color: #000000;
 }
 
 .data-table-wrapper .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
