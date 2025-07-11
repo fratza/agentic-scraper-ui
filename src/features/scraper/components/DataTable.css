@@ -121,6 +121,27 @@
   letter-spacing: 0.5px;
 }
 
+/* Title container with download button */
+.data-title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.data-title-container span {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-color, #ffffff);
+}
+
+.data-title-container .download-btn {
+  margin-left: 1rem;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+}
+
 /* Animation */
 @keyframes fadeIn {
   from {

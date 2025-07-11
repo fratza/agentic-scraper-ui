@@ -178,22 +178,22 @@ const TemplatePage: React.FC = () => {
                         </div>
                       )}
                     </div>
-
-                    {/* Download CSV button on the right */}
-                    <div className="download-csv-container">
-                      <Button
-                        icon="pi pi-download"
-                        label="Download CSV"
-                        className="btn btn-secondary"
-                        onClick={() => downloadCSV(tableData)}
-                        aria-label="Download data as CSV"
-                      />
-                    </div>
                   </div>
 
                   <DataTable
                     data={tableData}
-                    title="Extracted Data Results:"
+                    title={
+                      <div className="data-title-container">
+                        <span>Extracted Data Results:</span>
+                        <Button
+                          icon="pi pi-download"
+                          label="Download CSV"
+                          className="btn btn-secondary download-btn"
+                          onClick={() => downloadCSV(tableData)}
+                          aria-label="Download data as CSV"
+                        />
+                      </div>
+                    }
                     cellClassName="table-text"
                     headerClassName="table-header-text"
                   />
