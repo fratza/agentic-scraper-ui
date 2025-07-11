@@ -280,20 +280,14 @@ const useScraper = (): ScraperHook => {
           try {
             const parsedData = JSON.parse(event.data);
 
-            // Check for content_type in the parsed data
-            const contentType = parsedData.content_type || previewData?.contentType || "html";
-            console.log("Content type in scrapedData:", contentType);
+            console.log("Received scraped data:", parsedData);
             
-            if (parsedData.data.extractedData) {
-              // Store content type with the extracted data
-              const extractedDataWithType = {
-                ...parsedData.data.extractedData,
-                contentType: contentType,
-              };
-              SetExtractedData(extractedDataWithType);
+            if (parsedData.data && parsedData.data.extractedData) {
+              // Set extracted data directly without adding contentType
+              SetExtractedData(parsedData.data.extractedData);
             } else {
               SetExtractedData([
-                { message: "No Data Found", contentType: contentType },
+                { message: "No Data Found" },
               ]);
             }
 

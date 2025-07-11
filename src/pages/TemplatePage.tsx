@@ -13,6 +13,36 @@ const TemplatePage: React.FC = () => {
   useEffect(() => {
     console.log("Extracted data in TemplatePage:", extractedData);
   }, [extractedData]);
+  
+  // Process extracted data for table display
+  const getTableData = () => {
+    if (!extractedData) return null;
+    
+    // If it's already an array, return it
+    if (Array.isArray(extractedData)) {
+      return extractedData.length > 0 ? extractedData : null;
+    }
+    
+    // If it's an object with data property that's an array
+    if (typeof extractedData === 'object' && extractedData !== null) {
+      // Check for data property
+      const dataObj = extractedData as Record<string, any>;
+      
+      if (dataObj.data && Array.isArray(dataObj.data)) {
+        return dataObj.data.length > 0 ? dataObj.data : null;
+      }
+      
+      // Check for extractedData property
+      if (dataObj.extractedData && Array.isArray(dataObj.extractedData)) {
+        return dataObj.extractedData.length > 0 ? dataObj.extractedData : null;
+      }
+    }
+    
+    // If it's a plain object, wrap it in an array
+    return [extractedData];
+  };
+  
+  const tableData = getTableData();
 
   // Handle navigation back to main page
   const handleBackToMain = (): void => {
@@ -68,10 +98,10 @@ const TemplatePage: React.FC = () => {
                 This page displays a preview of the data table with sample data.
               </p>
 
-              {Array.isArray(extractedData) && extractedData.length > 0 ? (
+              {tableData ? (
                 <div className="data-preview-container">
                   <DataTable
-                    data={extractedData}
+                    data={tableData}
                     title="Data Preview"
                     cellClassName="table-text"
                     headerClassName="table-header-text"
