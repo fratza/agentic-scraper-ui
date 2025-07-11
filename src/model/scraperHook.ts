@@ -7,6 +7,7 @@ export interface ScraperHook {
   loading: boolean;
   previewData: PreviewData | null;
   extractedData: any[] | null;
+  originUrl: string | null;
   scraping: boolean;
   progress: number;
   error: string | null;

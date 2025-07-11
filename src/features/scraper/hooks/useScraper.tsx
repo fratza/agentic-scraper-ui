@@ -10,6 +10,7 @@ const useScraper = (): ScraperHook => {
   const [loading, setLoading] = useState<boolean>(false);
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
   const [extractedData, SetExtractedData] = useState<any[] | null>(null);
+  const [originUrl, setOriginUrl] = useState<string | null>(null);
   const [scraping, setScraping] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
   const [jobId, setJobId] = useState<string | null>(null);
@@ -282,9 +283,34 @@ const useScraper = (): ScraperHook => {
 
             console.log("Received scraped data:", parsedData);
             
+            // Check for origin URL in the parsed data
+            if (parsedData.url || parsedData.origin_url || (parsedData.data && parsedData.data.url)) {
+              const url = parsedData.url || parsedData.origin_url || parsedData.data.url;
+              setOriginUrl(url);
+              console.log("Origin URL set:", url);
+            }
+            
             if (parsedData.data && parsedData.data.extractedData) {
-              // Set extracted data directly without adding contentType
-              SetExtractedData(parsedData.data.extractedData);
+              let extractedData = parsedData.data.extractedData;
+              
+              // If extractedData is an array, remove uuid from each item
+              if (Array.isArray(extractedData)) {
+                extractedData = extractedData.map(item => {
+                  if (item && typeof item === 'object') {
+                    const { uuid, ...rest } = item;
+                    return rest;
+                  }
+                  return item;
+                });
+              } 
+              // If extractedData is an object, remove uuid from it
+              else if (extractedData && typeof extractedData === 'object') {
+                const { uuid, ...rest } = extractedData;
+                extractedData = rest;
+              }
+              
+              // Set extracted data without uuid
+              SetExtractedData(extractedData);
             } else {
               SetExtractedData([
                 { message: "No Data Found" },
@@ -378,6 +404,7 @@ const useScraper = (): ScraperHook => {
     loading,
     previewData,
     extractedData, // Keeping for backward compatibility
+    originUrl,
     scraping,
     progress,
     error,

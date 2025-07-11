@@ -60,6 +60,11 @@
   flex-wrap: wrap;
   gap: 1rem;
   margin-top: 1.5rem;
+  justify-content: flex-end;
+}
+
+.spacer {
+  flex-grow: 1;
 }
 
 /* Loading indicator styles */
@@ -227,6 +232,62 @@
   transition: var(--transition);
 }
 
+/* Data table header styles */
+.data-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background-color: #222222;
+  border-bottom: 1px solid #444444;
+}
+
+/* Origin URL container styles */
+.origin-url-container {
+  flex: 1;
+  text-align: left;
+}
+
+.origin-url {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #e0e0e0;
+}
+
+.origin-url span {
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.origin-url a {
+  color: #4dabf7;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+}
+
+.origin-url a:hover {
+  text-decoration: underline;
+}
+
+/* Download CSV container styles */
+.download-csv-container {
+  text-align: right;
+}
+
+.download-csv-container .btn {
+  background-color: #313030;
+  border-color: #444444;
+}
+
+.download-csv-container .btn:hover {
+  background-color: #444444;
+  border-color: #555555;
+}
+
 /* Ensure shared table styles take precedence */
 .data-table-wrapper .shared-table-container {
   background-color: #ffffff;
@@ -250,10 +311,31 @@
   
   .card-actions {
     flex-direction: column;
+    align-items: stretch;
   }
   
   .card-actions .p-button {
     width: 100%;
     margin-bottom: 0.5rem;
+  }
+  
+  .data-table-header {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+  
+  .origin-url-container,
+  .download-csv-container {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .origin-url {
+    justify-content: center;
+  }
+  
+  .origin-url a {
+    max-width: 250px;
   }
 }
