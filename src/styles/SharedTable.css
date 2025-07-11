@@ -3,8 +3,8 @@
   --table-border-color: #e9ecef;
   --table-header-bg: #f8f9fa;
   --table-row-hover: #f8f9fa;
-  --table-text-color: #333333;
-  --table-header-text-color: #333333;
+  --table-text-color: #000000;
+  --table-header-text-color: #000000;
   --table-row-number-bg: #f0f0f0;
   --table-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
   --table-border-radius: 6px;
@@ -71,7 +71,7 @@
   text-align: center;
   background-color: var(--table-row-number-bg);
   font-weight: 600;
-  color: #555;
+  color: #000000;
   position: sticky;
   left: 0;
   z-index: 1;
@@ -91,14 +91,14 @@
 
 .shared-field-name {
   font-weight: 600;
-  color: #555;
+  color: #000000;
   font-size: 0.75rem;
   margin-bottom: 2px;
 }
 
 .shared-field-value {
   font-size: 0.8rem;
-  color: #333;
+  color: #000000;
 }
 
 /* Image Styles */
