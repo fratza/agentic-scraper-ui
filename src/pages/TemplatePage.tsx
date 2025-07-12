@@ -4,6 +4,8 @@ import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import { useScraperContext } from "../context/ScraperContext";
 import DataTable from "../features/scraper/components/DataTable";
+import { useMockData } from "../utils/environment";
+import { mockTemplateData } from "../data/mockTableData";
 import "../styles/TemplatePage.css";
 
 // Helper function to convert data to CSV
@@ -69,6 +71,8 @@ const downloadCSV = (
 
 const TemplatePage: React.FC = () => {
   const { resetScraper, extractedData, originUrl } = useScraperContext();
+  // Check if we should use mock data
+  const shouldUseMockData = useMockData();
 
   // Log extracted data for debugging
   useEffect(() => {
@@ -77,33 +81,47 @@ const TemplatePage: React.FC = () => {
 
   // Process extracted data for table display
   const getTableData = () => {
-    if (!extractedData) return null;
-
-    // If it's already an array, return it
-    if (Array.isArray(extractedData)) {
-      return extractedData.length > 0 ? extractedData : null;
-    }
-
-    // If it's an object with data property that's an array
-    if (typeof extractedData === "object" && extractedData !== null) {
-      // Check for data property
-      const dataObj = extractedData as Record<string, any>;
-
-      if (dataObj.data && Array.isArray(dataObj.data)) {
-        return dataObj.data.length > 0 ? dataObj.data : null;
+    // If we have real extracted data, process it
+    if (extractedData) {
+      // If it's already an array, return it
+      if (Array.isArray(extractedData)) {
+        return extractedData.length > 0 ? extractedData : null;
       }
 
-      // Check for extractedData property
-      if (dataObj.extractedData && Array.isArray(dataObj.extractedData)) {
-        return dataObj.extractedData.length > 0 ? dataObj.extractedData : null;
+      // If it's an object with data property that's an array
+      if (typeof extractedData === "object" && extractedData !== null) {
+        // Check for data property
+        const dataObj = extractedData as Record<string, any>;
+
+        if (dataObj.data && Array.isArray(dataObj.data)) {
+          return dataObj.data.length > 0 ? dataObj.data : null;
+        }
+
+        // Check for extractedData property
+        if (dataObj.extractedData && Array.isArray(dataObj.extractedData)) {
+          return dataObj.extractedData.length > 0
+            ? dataObj.extractedData
+            : null;
+        }
       }
+
+      // If it's a plain object, wrap it in an array
+      return [extractedData];
     }
 
-    // If it's a plain object, wrap it in an array
-    return [extractedData];
+    // If we're in a local environment and have no real data, use mock data
+    if (shouldUseMockData) {
+      console.log("Using mock template data");
+      return mockTemplateData;
+    }
+
+    return null;
   };
 
   const tableData = getTableData();
+  // Use mock URL if in local environment and no real URL is available
+  const displayUrl =
+    originUrl || (shouldUseMockData ? "https://example.com/template" : null);
 
   // Handle navigation back to main page
   const handleBackToMain = (): void => {
@@ -126,17 +144,17 @@ const TemplatePage: React.FC = () => {
       >
         <div className="container">
           <h1 className="page-title" id="main-content" tabIndex={-1}>
-            Data Results Table
+            Scraped Data Results
           </h1>
 
           <section className="content-section" aria-labelledby="intro-heading">
             <Card className="intro-card">
-              <h2 id="intro-heading">Welcome to the Data Results Page</h2>
-              <p>This page displays the data results from the scraper.</p>
+              <h2 id="intro-heading">Scraped Data Results</h2>
+              <p>View and manage the data extracted from your web scraping session.</p>
               <div className="card-actions">
                 <Button
                   icon="pi pi-refresh"
-                  label="Refresh Data"
+                  label="Refresh Results"
                   className="btn btn-primary"
                   onClick={resetScraper}
                   aria-label="Refresh data"
@@ -150,33 +168,39 @@ const TemplatePage: React.FC = () => {
             aria-labelledby="data-heading"
             aria-live="polite"
           >
-            <h2 id="data-heading" className="sr-only">
-              Template Content
-            </h2>
             <Card className="info-card">
-              <h3>Template Page</h3>
+              {/* <h3>Template Page</h3>
               <p>
                 This page displays a preview of the data table with sample data.
-              </p>
+              </p> */}
 
               {tableData ? (
                 <div className="data-preview-container">
                   <div className="data-table-header">
                     {/* Origin URL display on the left */}
                     <div className="origin-url-container">
-                      {originUrl && (
+                      {displayUrl && (
                         <div className="origin-url">
                           <span>URL: </span>
                           <a
-                            href={originUrl}
+                            href={displayUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            title={originUrl}
+                            title={displayUrl}
                           >
-                            {originUrl}
+                            {displayUrl}
                           </a>
                         </div>
                       )}
+                    </div>
+                    <div className="export-btn-container">
+                      <Button
+                        icon="pi pi-download"
+                        label="Export"
+                        className="btn btn-export "
+                        onClick={() => downloadCSV(tableData)}
+                        aria-label="Extract data as CSV"
+                      />
                     </div>
                   </div>
 
@@ -184,14 +208,9 @@ const TemplatePage: React.FC = () => {
                     data={tableData}
                     title={
                       <div className="data-title-container">
-                        <span>Extracted Data Results:</span>
-                        <Button
-                          icon="pi pi-download"
-                          label="Download CSV"
-                          className="btn btn-secondary download-btn"
-                          onClick={() => downloadCSV(tableData)}
-                          aria-label="Download data as CSV"
-                        />
+                        <div className="ed-label">
+                          <span>Extracted Data Results:</span>
+                        </div>
                       </div>
                     }
                     cellClassName="table-text"
@@ -199,14 +218,14 @@ const TemplatePage: React.FC = () => {
                   />
                 </div>
               ) : (
-                <p>No data available. Please run a scraper to extract data.</p>
+                <p>No data found. Please run a new scrape to extract data.</p>
               )}
 
               <div className="card-actions">
                 <div className="spacer"></div>
                 <Button
                   icon="pi pi-search"
-                  label="Start New Scrape"
+                  label="New Scrape"
                   className="btn btn-primary"
                   onClick={() => (window.location.href = "/")}
                   aria-label="Start new scrape"
@@ -218,7 +237,7 @@ const TemplatePage: React.FC = () => {
           <div className="page-actions">
             <Button
               icon="pi pi-arrow-left"
-              label="Back to Home"
+              label="Back to Scraper"
               className="btn btn-secondary"
               onClick={handleBackToMain}
               aria-label="Navigate back to home page"

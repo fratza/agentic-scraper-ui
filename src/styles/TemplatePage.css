@@ -90,6 +90,17 @@
   animation: fadeIn 0.5s ease-out;
 }
 
+.export-btn {
+  margin-left: 2rem;
+}
+
+/* Style for the extracted data results label */
+.ed-label {
+  padding-left: 16px;
+  margin-right: 1rem;
+  margin-top: 1rem;
+}
+
 /* Info card styles */
 .info-card {
   padding: clamp(1.25rem, 4vw, 2rem);
@@ -113,7 +124,7 @@
   .template-page {
     padding: 4rem 0 1.5rem 0;
   }
-  
+
   .page-actions {
     flex-direction: column;
     align-items: center;
@@ -125,7 +136,7 @@
   .template-page {
     padding: 3.5rem 0 1rem 0;
   }
-  
+
   .intro-card {
     padding: 1rem;
   }
@@ -298,7 +309,10 @@
   color: #000000;
 }
 
-.data-table-wrapper .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+.data-table-wrapper
+  .p-paginator
+  .p-paginator-pages
+  .p-paginator-page.p-highlight {
   background-color: var(--primary-color);
   color: white;
 }
@@ -308,33 +322,33 @@
   .grid-layout {
     grid-template-columns: 1fr;
   }
-  
+
   .card-actions {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .card-actions .p-button {
     width: 100%;
     margin-bottom: 0.5rem;
   }
-  
+
   .data-table-header {
     flex-direction: column;
     gap: 0.75rem;
     padding: 1rem;
   }
-  
+
   .origin-url-container,
   .download-csv-container {
     width: 100%;
     text-align: center;
   }
-  
+
   .origin-url {
     justify-content: center;
   }
-  
+
   .origin-url a {
     max-width: 250px;
   }

@@ -21,17 +21,28 @@ import "primeflex/primeflex.css";
 
 import TableDisplay from "./TableDisplay";
 
-// No mock data imports for production
+// Import mock data and environment utilities
+import { useMockData } from "../../../utils/environment";
+import { mockProductData } from "../../../data/mockTableData";
 
 // Import interfaces from model folder
-import { ExtractedDataTableProps, ImageWithToggleProps, FilterDisplayOptions } from '../../../model';
+import {
+  ExtractedDataTableProps,
+  ImageWithToggleProps,
+  FilterDisplayOptions,
+} from "../../../model";
 
 const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
   extractedData,
   onBackToMain,
 }) => {
+  // Check if we should use mock data
+  const shouldUseMockData = useMockData();
+
   // For backward compatibility, use extractedData if provided, otherwise fall back to scrapedData
-  const data = extractedData;
+  // If in local environment and no data is provided, use mock data
+  const data = extractedData || (shouldUseMockData ? mockProductData : null);
+
   const [tableData, setTableData] = useState<Record<string, any>[]>([]);
   const [keys, setKeys] = useState<string[]>([]);
   const [filters, setFilters] = useState<
@@ -296,19 +307,25 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
       return <span className="text-muted">-</span>;
     } else if (typeof value === "object") {
       // Check if this is XML data (often has specific properties or structure)
-      const isXmlData = key.toLowerCase().includes('xml') || 
-                       (typeof value === 'object' && 
-                        (value.contentType === 'xml' || 
-                         (value.toString && value.toString().includes('<') && value.toString().includes('>'))
-                        ));
-      
+      const isXmlData =
+        key.toLowerCase().includes("xml") ||
+        (typeof value === "object" &&
+          (value.contentType === "xml" ||
+            (value.toString &&
+              value.toString().includes("<") &&
+              value.toString().includes(">"))));
+
       if (isXmlData) {
         // Format XML data more nicely
         try {
           // Try to get the actual content if it's in a specific format
-          const xmlContent = value.content || value.data || value.value || value;
-          const displayValue = typeof xmlContent === 'string' ? xmlContent : JSON.stringify(xmlContent);
-          
+          const xmlContent =
+            value.content || value.data || value.value || value;
+          const displayValue =
+            typeof xmlContent === "string"
+              ? xmlContent
+              : JSON.stringify(xmlContent);
+
           return (
             <CopyableCell value={displayValue}>
               <div className="xml-value" title={displayValue}>
@@ -449,40 +466,42 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
       });
       return;
     }
-    
+
     try {
       // Create CSV header row
-      const header = keys.join(',');
-      
+      const header = keys.join(",");
+
       // Create CSV data rows
-      const csvRows = tableData.map(row => {
-        return keys.map(key => {
-          // Handle special cases like objects or arrays
-          let cellValue = row[key];
-          if (typeof cellValue === 'object' && cellValue !== null) {
-            cellValue = JSON.stringify(cellValue);
-          }
-          // Escape quotes and wrap in quotes if contains comma
-          const escaped = String(cellValue ?? '').replace(/"/g, '""');
-          return `"${escaped}"`;
-        }).join(',');
+      const csvRows = tableData.map((row) => {
+        return keys
+          .map((key) => {
+            // Handle special cases like objects or arrays
+            let cellValue = row[key];
+            if (typeof cellValue === "object" && cellValue !== null) {
+              cellValue = JSON.stringify(cellValue);
+            }
+            // Escape quotes and wrap in quotes if contains comma
+            const escaped = String(cellValue ?? "").replace(/"/g, '""');
+            return `"${escaped}"`;
+          })
+          .join(",");
       });
-      
+
       // Combine header and rows
-      const csvContent = [header, ...csvRows].join('\n');
-      
+      const csvContent = [header, ...csvRows].join("\n");
+
       // Create download link
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.setAttribute('href', url);
-      link.setAttribute('download', 'data_export.csv');
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", "data_export.csv");
       document.body.appendChild(link);
-      
+
       // Trigger download and cleanup
       link.click();
       document.body.removeChild(link);
-      
+
       toast.current?.show({
         severity: "success",
         summary: "Export Successful",
@@ -527,10 +546,10 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
             <span className="table-tip">
               Tip: Click on any cell to copy its value
             </span>
-            <Button 
-              icon="pi pi-download" 
+            <Button
+              icon="pi pi-download"
               label="Download CSV"
-              className="shared-table-btn" 
+              className="shared-table-btn"
               onClick={exportCSV}
               aria-label="Download as CSV"
             />

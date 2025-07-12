@@ -1,5 +1,4 @@
-/* Enhanced PrimeReact DataTable Styles */
-/* Removed extracted-data-table-container and moved styles to outer-container */
+/* Material UI Table Styles */
 .outer-container {
   width: 100%;
   max-width: 100%;
@@ -20,15 +19,6 @@
   box-shadow: var(--shadow-hover);
 }
 
-/* PrimeReact DataTable wrapper */
-.prime-datatable-wrapper {
-  overflow-x: auto;
-  border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow);
-  margin-bottom: var(--space-lg);
-  background-color: var(--surface-2, #2a2a2a);
-}
-
 /* Table info section styling */
 .table-info {
   display: flex;
@@ -37,27 +27,22 @@
   gap: 1rem;
 }
 
-.table-count, .table-tip {
+.table-count,
+.table-tip {
   margin-right: 0.5rem;
 }
 
-.prime-datatable-wrapper {
-  color: var(--text-color);
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-hover) var(--surface-2, #2a2a2a);
-}
-
 /* Custom scrollbar for webkit browsers */
-.prime-datatable-wrapper::-webkit-scrollbar {
+::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
-.prime-datatable-wrapper::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background: var(--surface-2, #2a2a2a);
 }
 
-.prime-datatable-wrapper::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   background-color: var(--border-hover);
   border-radius: 20px;
   border: 3px solid var(--surface-2, #2a2a2a);
@@ -94,34 +79,9 @@
   border-color: var(--primary-dark);
 }
 
-/* Custom paginator styling */
-.custom-paginator {
-  margin-top: 1rem;
-  padding: 0.5rem 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.custom-paginator .p-paginator-current {
-  font-weight: 500;
-  color: var(--text-light);
-}
-
-.custom-paginator .p-paginator-page.p-highlight {
-  background-color: var(--primary-color);
-  color: white;
-}
-
-.custom-paginator .p-paginator-page:not(.p-highlight):hover {
-  background-color: var(--surface-1);
-}
-
-.p-button.p-button-danger:hover {
+/* Material UI button danger hover state */
+.MuiButton-containedError:hover {
   background-color: #f87171;
-  border-color: #f87171;
   transform: translateY(-2px);
   box-shadow: var(--shadow-focus);
 }
@@ -296,18 +256,17 @@
   white-space: nowrap;
 }
 
-/* PrimeReact DataTable customizations */
-.p-datatable {
+/* Material UI Table customizations */
+.MuiTable-root {
   font-family: var(--font-family) !important;
 }
 
-.p-datatable .p-datatable-header {
+.MuiTableContainer-root {
   background-color: var(--card-background);
   border-color: var(--border-color);
-  padding: var(--space-md) var(--space-lg);
 }
 
-.p-datatable .p-datatable-thead > tr > th {
+.MuiTableHead-root .MuiTableCell-head {
   background-color: var(--surface-2);
   color: var(--text-color);
   border-color: var(--border-color);
@@ -318,57 +277,35 @@
   letter-spacing: 0.5px;
 }
 
-.p-datatable .p-datatable-tbody > tr {
+.MuiTableBody-root .MuiTableRow-root {
   background-color: var(--card-background);
   color: var(--text-color);
   border-color: var(--border-color);
   transition: var(--transition);
 }
 
-.p-datatable .p-datatable-tbody > tr:nth-child(even) {
+.MuiTableBody-root .MuiTableRow-root:nth-of-type(even) {
   background-color: var(--surface-1);
 }
 
-.p-datatable .p-datatable-tbody > tr:hover {
+.MuiTableBody-root .MuiTableRow-root:hover {
   background-color: var(--surface-2);
 }
 
-.p-datatable .p-datatable-tbody > tr > td {
+.MuiTableBody-root .MuiTableCell-body {
   padding: var(--space-sm) var(--space-md);
   border-color: var(--border-color);
-}
-
-/* Filter and sort icons */
-.p-column-filter-menu-button,
-.p-sortable-column-icon {
-  color: var(--text-light) !important;
-}
-
-.p-column-filter-menu-button:hover,
-.p-sortable-column:hover .p-sortable-column-icon {
-  color: var(--primary-color) !important;
-}
-
-/* Row number column */
-.row-number-column {
-  background-color: var(--surface-2) !important;
-  font-weight: 600;
-}
-
-/* Description column with more width */
-.description-column {
+  word-break: break-word;
   min-width: 250px !important;
 }
 
-.p-button.p-button-success {
+.MuiButton-containedSuccess {
   background-color: var(--success-color);
-  border-color: var(--success-color);
   transition: var(--transition);
 }
 
-.p-button.p-button-success:hover {
+.MuiButton-containedSuccess:hover {
   background-color: #34d399;
-  border-color: #34d399;
   transform: translateY(-2px);
   box-shadow: var(--shadow-focus);
 }
@@ -380,18 +317,18 @@
     padding: var(--space-sm) var(--space-md);
   }
 
-  .p-datatable .p-datatable-thead > tr > th,
-  .p-datatable .p-datatable-tbody > tr > td {
+  .MuiTableHead-root .MuiTableCell-head,
+  .MuiTableBody-root .MuiTableCell-body {
     padding: var(--space-xs) var(--space-sm);
   }
 }
 
 @media (max-width: 768px) {
-  .prime-datatable-wrapper {
+  .MuiTableContainer-root {
     border-radius: var(--border-radius-sm);
   }
 
-  .p-datatable .p-datatable-thead > tr > th {
+  .MuiTableHead-root .MuiTableCell-head {
     font-size: var(--font-size-xs);
   }
 
@@ -565,12 +502,12 @@
   overflow: hidden;
 }
 
-.data-table .p-datatable-wrapper {
+.data-table .MuiTableContainer-root {
   border-radius: 4px;
   overflow: hidden;
 }
 
-.data-table .p-datatable-thead > tr > th {
+.data-table .MuiTableHead-root .MuiTableCell-head {
   background-color: var(--surface-2, #2a2a2a);
   color: var(--text-color);
   font-weight: 600;
@@ -578,12 +515,12 @@
   border-color: var(--border-color);
 }
 
-.data-table .p-datatable-tbody > tr > td {
+.data-table .MuiTableBody-root .MuiTableCell-body {
   padding: 0.75rem 1rem;
   border-color: var(--border-color);
 }
 
-.data-table .p-datatable-tbody > tr:hover {
+.data-table .MuiTableBody-root .MuiTableRow-root:hover {
   background-color: var(--surface-1, #333333);
 }
 

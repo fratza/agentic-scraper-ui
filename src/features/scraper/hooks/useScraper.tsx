@@ -2,19 +2,40 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import apiService from "../../../services/api";
 import { config } from "../../../lib/config";
 import { PreviewData, ScraperHook } from "../../../model";
+import { useMockData } from "../../../utils/environment";
+import { mockProductData, mockXMLData, mockFormData } from "../../../data/mockTableData";
 
 /**
  * Custom hook for managing scraper state and operations
  */
 const useScraper = (): ScraperHook => {
+  // Check if we should use mock data
+  const shouldUseMockData = useMockData();
+  
   const [loading, setLoading] = useState<boolean>(false);
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
-  const [extractedData, SetExtractedData] = useState<any[] | null>(null);
-  const [originUrl, setOriginUrl] = useState<string | null>(null);
+  const [extractedData, SetExtractedData] = useState<any[] | null>(shouldUseMockData ? mockProductData : null);
+  const [originUrl, setOriginUrl] = useState<string | null>(shouldUseMockData ? "https://example.com/products" : null);
   const [scraping, setScraping] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
   const [jobId, setJobId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  
+  // Initialize with mock data if in local environment
+  useEffect(() => {
+    if (shouldUseMockData && !previewData) {
+      // Create mock preview data
+      const mockPreview: PreviewData = {
+        url: "https://example.com/products",
+        title: "Example Products Page",
+        html: "<div class='product-list'>...</div>",
+        screenshot: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...",
+        selectors: [".product-card", ".product-title", ".product-price", ".product-image"]
+      };
+      
+      setPreviewData(mockPreview);
+    }
+  }, [shouldUseMockData]);
 
   // Refs for event sources
   const previewEventSourceRef = useRef<EventSource | null>(null);
@@ -46,6 +67,29 @@ const useScraper = (): ScraperHook => {
     if (previewEventSourceRef.current) {
       apiService.closeEventSource(previewEventSourceRef.current);
       previewEventSourceRef.current = null;
+    }
+    
+    // If we're in a local environment, use mock data instead of making API calls
+    if (shouldUseMockData) {
+      console.log("Using mock data for form submission");
+      
+      // Simulate loading delay
+      setTimeout(() => {
+        // Create mock preview data based on the form input
+        const mockPreview: PreviewData = {
+          url: formData.url || "https://example.com/products",
+          title: "Example Products Page",
+          html: "<div class='product-list'>...</div>",
+          screenshot: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...",
+          selectors: formData.selectors || [".product-card", ".product-title", ".product-price", ".product-image"]
+        };
+        
+        setPreviewData(mockPreview);
+        setOriginUrl(formData.url || "https://example.com/products");
+        setLoading(false);
+      }, 1000);
+      
+      return;
     }
 
     try {
@@ -227,6 +271,35 @@ const useScraper = (): ScraperHook => {
       if (scrapingEventSourceRef.current) {
         apiService.closeEventSource(scrapingEventSourceRef.current);
         scrapingEventSourceRef.current = null;
+      }
+      
+      // If we're in a local environment, use mock data instead of making API calls
+      if (shouldUseMockData) {
+        console.log("Using mock data for scraping");
+        
+        // Simulate progress updates
+        const progressInterval = setInterval(() => {
+          setProgress((prev) => {
+            const newProgress = prev + 10;
+            if (newProgress >= 100) {
+              clearInterval(progressInterval);
+              return 100;
+            }
+            return newProgress;
+          });
+        }, 500);
+        
+        // Simulate loading delay
+        setTimeout(() => {
+          // Use mock product data
+          SetExtractedData(mockProductData);
+          setOriginUrl(previewData?.url || "https://example.com/products");
+          setScraping(false);
+          setProgress(100);
+          clearInterval(progressInterval);
+        }, 2500);
+        
+        return;
       }
 
       // Extract run_id from preview data if available

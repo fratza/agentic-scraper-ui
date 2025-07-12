@@ -1,13 +1,13 @@
-/* Shared Table Styles - Based on XMLPreviewData table design */
+/* Shared Table Styles - Material UI Dark Mode */
 :root {
-  --table-border-color: #e9ecef;
-  --table-header-bg: #f8f9fa;
-  --table-row-hover: #f8f9fa;
-  --table-text-color: #c71b1b;
-  --table-header-text-color: #a21091;
-  --table-row-number-bg: #f0f0f0;
-  --table-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
-  --table-border-radius: 6px;
+  --table-border-color: var(--border-color, #2d2d2d);
+  --table-header-bg: var(--surface-2, #2a2a2a);
+  --table-row-hover: var(--surface-2, #333333);
+  --table-text-color: var(--text-color, #fafafa);
+  --table-header-text-color: var(--text-color, #fafafa);
+  --table-row-number-bg: var(--surface-3, #333333);
+  --table-shadow: var(--shadow, 0 5px 20px rgba(0, 0, 0, 0.3));
+  --table-border-radius: var(--border-radius-md, 8px);
 }
 
 /* Table Container Styles */
@@ -23,25 +23,25 @@
   box-shadow: var(--table-shadow);
 }
 
-/* Table Styles */
-.shared-data-table {
+/* Material UI Table Styles */
+.MuiTable-root {
   width: 100%;
   border-collapse: collapse;
-  background-color: #ffffff;
-  font-family: "Poppins", sans-serif;
+  background-color: var(--card-background, #1e1e1e);
+  font-family: var(--font-family);
   animation: fadeIn 0.5s ease-in-out;
   font-size: 0.85rem;
 }
 
-.shared-data-table .p-datatable-wrapper {
+.MuiTableContainer-root {
   border-radius: var(--table-border-radius);
   overflow: hidden;
   border: 1px solid var(--table-border-color);
-  background-color: #ffffff;
+  background-color: var(--card-background, #1e1e1e);
 }
 
 /* Table Header */
-.shared-data-table .p-datatable-thead > tr > th {
+.MuiTable-root .MuiTableHead-root > tr > th {
   background-color: var(--table-header-bg);
   color: var(--table-header-text-color);
   font-weight: 600;
@@ -52,7 +52,7 @@
 }
 
 /* Table Body */
-.shared-data-table .p-datatable-tbody > tr > td {
+.MuiTableBody-root .MuiTableCell-body {
   padding: 6px 12px;
   border-bottom: 1px solid var(--table-border-color);
   color: var(--table-text-color);
@@ -60,59 +60,60 @@
   font-size: 0.85rem;
 }
 
-.shared-data-table .p-datatable-tbody > tr:hover {
+.MuiTableBody-root .MuiTableRow-root:hover {
   background-color: var(--table-row-hover);
 }
 
 /* Row Number Column */
-.shared-row-number-column {
+.row-number-column {
   width: 30px;
   min-width: 30px;
   max-width: 30px;
   text-align: center;
   background-color: var(--table-row-number-bg);
   font-weight: 600;
-  color: #000000;
+  color: var(--text-color);
   position: sticky;
   left: 0;
   z-index: 1;
-  box-shadow: 1px 0 3px rgba(0, 0, 0, 0.08);
+  box-shadow: 1px 0 3px rgba(0, 0, 0, 0.2);
 }
 
-.shared-data-table .p-datatable-tbody > tr > td.shared-row-number-column {
+.MuiTableBody-root .MuiTableCell-body.row-number-column {
   background-color: var(--table-row-number-bg);
 }
 
 /* Cell Content Styles */
-.shared-cell-content {
+.cell-content {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.shared-field-name {
+.field-name {
   font-weight: 600;
-  color: #000000;
+  color: var(--text-light, #adb5bd);
   font-size: 0.75rem;
   margin-bottom: 2px;
 }
 
-.shared-field-value {
+.field-value {
   font-size: 0.8rem;
-  color: #000000;
+  color: var(--text-color, #fafafa);
 }
 
 /* Image Styles */
-.shared-image-preview {
+.image-preview {
   max-width: 80px;
   max-height: 80px;
   object-fit: contain;
   border-radius: 3px;
   border: 1px solid var(--table-border-color);
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 /* Text Content Styles */
-.shared-description {
+.text-description {
   max-width: 250px;
   white-space: pre-wrap;
   overflow: hidden;
@@ -124,25 +125,26 @@
 }
 
 /* Loading and Empty States */
-.shared-loading-container,
-.shared-empty-message {
+.loading-container,
+.empty-message {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  color: #666;
+  color: var(--text-light, #adb5bd);
   text-align: center;
   gap: 1rem;
 }
 
-.shared-loading-container .p-progress-spinner {
-  width: 50px;
-  height: 50px;
+.loading-container .MuiCircularProgress-root {
+  width: 50px !important;
+  height: 50px !important;
+  color: var(--primary-color, #3b82f6);
 }
 
 /* Table Controls */
-.shared-table-controls {
+.table-controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -152,63 +154,81 @@
   gap: 1rem;
 }
 
-.shared-search-container {
+.search-container {
   flex: 1;
   min-width: 200px;
   max-width: 400px;
 }
 
-.shared-table-actions {
+.table-actions {
   display: flex;
   align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
 }
 
-/* Buttons */
-.shared-table-btn {
+/* Material UI Buttons */
+.MuiButton-root {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0.5rem 1rem;
-  background-color: var(--primary-color, #3b82f6);
-  color: white;
-  border: none;
-  border-radius: 4px;
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.shared-table-btn:hover {
-  background-color: var(--button-hover, #2563eb);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.MuiButton-contained {
+  background-color: var(--primary-color, #3b82f6);
+  color: white;
 }
 
-.shared-table-btn:active {
+.MuiButton-contained:hover {
+  background-color: var(--button-hover, #2563eb);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover, 0 8px 30px rgba(0, 0, 0, 0.4));
+}
+
+.MuiButton-contained:active {
   transform: translateY(0);
 }
 
-.shared-table-btn.secondary {
-  background-color: #f8f9fa;
-  color: #333;
-  border: 1px solid #e0e0e0;
+.MuiButton-outlined {
+  background-color: transparent;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
 }
 
-.shared-table-btn.secondary:hover {
-  background-color: #e9ecef;
+.MuiButton-outlined:hover {
+  background-color: var(--surface-1);
 }
 
-/* Pagination */
-.shared-pagination {
+/* Material UI Pagination */
+.MuiPagination-root {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 1rem;
   flex-wrap: wrap;
   gap: 1rem;
+}
+
+.MuiPagination-ul {
+  color: var(--text-color);
+}
+
+.MuiPaginationItem-root {
+  color: var(--text-color);
+}
+
+.MuiPaginationItem-root.Mui-selected {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.MuiPaginationItem-root:hover {
+  background-color: var(--surface-2);
 }
 
 /* Animation */
@@ -223,21 +243,56 @@
   }
 }
 
+/* Material UI Paper Component */
+.MuiPaper-root {
+  background-color: var(--card-background, #1e1e1e) !important;
+  color: var(--text-color, #fafafa) !important;
+}
+
+/* Input fields in tables */
+.MuiInputBase-root {
+  color: var(--text-color, #fafafa) !important;
+  background-color: var(--surface-1, #252525) !important;
+}
+
+.MuiOutlinedInput-notchedOutline {
+  border-color: var(--border-color, #2d2d2d) !important;
+}
+
+/* Table toolbar and actions */
+.MuiToolbar-root {
+  background-color: var(--card-background, #1e1e1e) !important;
+  color: var(--text-color, #fafafa) !important;
+}
+
+/* Mock data indicator */
+.mock-data-indicator {
+  color: var(--text-light, #adb5bd);
+  font-style: italic;
+  margin-bottom: 0.5rem;
+}
+
 /* Responsive Styles */
 @media (max-width: 768px) {
-  .shared-table-controls {
+  .table-controls {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .shared-search-container {
+  .search-container {
     max-width: 100%;
     width: 100%;
     margin-bottom: 0.75rem;
   }
 
-  .shared-table-actions {
+  .table-actions {
     width: 100%;
     justify-content: space-between;
+  }
+
+  .MuiTableCell-head,
+  .MuiTableCell-body {
+    padding: var(--space-xs, 4px) var(--space-sm, 8px);
+    font-size: var(--font-size-xs, 0.75rem);
   }
 }

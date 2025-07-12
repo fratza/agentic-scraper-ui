@@ -3,11 +3,15 @@ import "./ScraperForm.css";
 import apiService from "../../../services/api";
 import { isValidUrl } from "../../../lib/utils";
 import { XmlParseFormProps, FormSubmitData, FormErrors } from "../../../model";
+import { useMockData } from "../../../utils/environment";
+import { mockFormData } from "../../../data/mockTableData";
 
 const XmlParseForm: React.FC<XmlParseFormProps> = ({
   onSubmit,
   onSwitchToRegular,
 }) => {
+  // Check if we should use mock data
+  const shouldUseMockData = useMockData();
   const [url, setUrl] = useState<string>("");
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -41,6 +45,28 @@ const XmlParseForm: React.FC<XmlParseFormProps> = ({
 
     const formData = { url };
 
+    // If we're in a local environment, use mock data instead of making API calls
+    if (shouldUseMockData) {
+      console.log("Using mock data for XML form submission");
+      
+      // Simulate loading delay
+      setTimeout(() => {
+        // Use mock form data response
+        const mockResponse = {
+          jobId: `mock-job-${Date.now()}`,
+          ...mockFormData
+        };
+        
+        // Pass the mock response to parent component
+        onSubmit({ url, jobId: mockResponse.jobId, contentType: "xml" });
+        
+        // Reset submitting state
+        setIsSubmitting(false);
+      }, 1000);
+      
+      return;
+    }
+    
     // Submit with XML parse type
     try {
       // Send data to backend API using the scrape endpoint

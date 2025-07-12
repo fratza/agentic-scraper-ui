@@ -1,17 +1,26 @@
 import React, { useState, useEffect, ChangeEvent, KeyboardEvent } from "react";
 import { XMLPreviewDataProps, XMLRowData } from "../../../model/xmlPreviewData";
 import apiService from "../../../services/api";
+import { useMockData } from "../../../utils/environment";
+import { mockXMLData } from "../../../data/mockTableData";
 import "../../../styles/SharedTable.css";
 import "./XMLPreviewData.css";
 
 const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
   isOpen,
-  xmlData,
+  xmlData: propXmlData,
   onClose,
   onAddRow,
   onActionSelect,
   onParse,
 }) => {
+  // Check if we should use mock data
+  const shouldUseMockData = useMockData();
+  
+  // Use mock data if in local environment and no real data is provided
+  const xmlData = shouldUseMockData && (!propXmlData || propXmlData.length === 0)
+    ? mockXMLData
+    : propXmlData;
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [displayData, setDisplayData] = useState<XMLRowData[]>([]);
   const [availableFields, setAvailableFields] = useState<string[]>([]);
@@ -299,19 +308,36 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
     setIsSubmitting(true);
 
     try {
-      // First submit the data to the API using the XML-specific endpoint
-      const response = await apiService.submitXmlParseRequest(payload);
-      
-      // No need to send approve action since the XML parse endpoint already handles this
+      // If we're in a local environment, simulate a successful response
+      if (shouldUseMockData) {
+        console.log("Using mock data for XML parsing");
+        
+        // Simulate loading delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // If onParse callback is provided, call it
+        if (onParse) {
+          // Call onParse without arguments as per its interface definition
+          onParse();
+        }
+        
+        // Close the modal
+        onClose();
+      } else {
+        // First submit the data to the API using the XML-specific endpoint
+        const response = await apiService.submitXmlParseRequest(payload);
+        
+        // No need to send approve action since the XML parse endpoint already handles this
 
-      // If onParse callback is provided, call it
-      if (onParse) {
-        // Call onParse without arguments as per its interface definition
-        onParse();
+        // If onParse callback is provided, call it
+        if (onParse) {
+          // Call onParse without arguments as per its interface definition
+          onParse();
+        }
+
+        // Close the modal
+        onClose();
       }
-
-      // Close the modal
-      onClose();
     } catch (error) {
       console.error("Error submitting XML field mappings:", error);
     } finally {

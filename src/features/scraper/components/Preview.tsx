@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import "./Preview.css";
 import DataTable from "./DataTable";
 import apiService from "../../../services/api";
+import { useMockData } from "../../../utils/environment";
+import { mockProductData } from "../../../data/mockTableData";
 import { PreviewProps } from "../../../model";
 
 const Preview: React.FC<PreviewProps> = ({
@@ -14,6 +16,12 @@ const Preview: React.FC<PreviewProps> = ({
   onClose,
   resetScraper,
 }) => {
+  // Check if we should use mock data
+  const shouldUseMockData = useMockData();
+  
+  // Use mock data if in local environment and no real data is available
+  const displayData = shouldUseMockData && !scrapedData ? mockProductData : scrapedData;
+  
   const [copied, setCopied] = useState<boolean>(false);
   const [isScraping, setIsScraping] = useState<boolean>(false);
   const [sessionError, setSessionError] = useState<boolean>(false);
@@ -98,12 +106,15 @@ const Preview: React.FC<PreviewProps> = ({
               </a>
             </div>
           )}
-          {previewData && previewData.sample ? (
+          {previewData && (previewData.sample || shouldUseMockData) ? (
             Array.isArray(previewData.sample) ? (
               <DataTable data={filterUnwantedFields(previewData.sample)} title="Preview Sample Data" />
             ) : typeof previewData.sample === "object" &&
               previewData.sample !== null ? (
               <DataTable data={[filterUnwantedFields(previewData.sample)]} title="Preview Sample Data" />
+            ) : shouldUseMockData ? (
+              // Use mock data when in local environment and no sample data is available
+              <DataTable data={mockProductData.slice(0, 5)} title="Preview Sample Data (Mock)" />
             ) : (
               <pre id="json-preview">
                 {JSON.stringify(
@@ -115,7 +126,7 @@ const Preview: React.FC<PreviewProps> = ({
             )
           ) : (
             <pre id="json-preview">
-              {JSON.stringify(filterUnwantedFields(previewData), null, 2)}
+              {JSON.stringify(filterUnwantedFields(previewData || (shouldUseMockData ? mockProductData[0] : {})), null, 2)}
             </pre>
           )}
           <div className="preview-actions">
@@ -220,7 +231,7 @@ const Preview: React.FC<PreviewProps> = ({
         </div>
       )}
 
-      {scrapedData && (
+      {displayData && (
         <>
           <div className="preview-header">
             <h2>Scraped Data Results</h2>
@@ -228,7 +239,7 @@ const Preview: React.FC<PreviewProps> = ({
               className="btn-icon"
               onClick={() => {
                 // Download CSV functionality
-                const keys = Object.keys(scrapedData[0] || {}).filter(
+                const keys = Object.keys(displayData[0] || {}).filter(
                   (key) => key.toLowerCase() !== "uuid" && key !== "id"
                 );
 
@@ -249,7 +260,7 @@ const Preview: React.FC<PreviewProps> = ({
                   .join(",");
 
                 // Create CSV rows from data
-                const rows = scrapedData
+                const rows = displayData
                   .map((item) => {
                     return keys
                       .map((key) => {
@@ -291,7 +302,7 @@ const Preview: React.FC<PreviewProps> = ({
               <i className="fas fa-download"></i>
             </button>
           </div>
-          <DataTable data={scrapedData} title="Scraped Data Results" />
+          <DataTable data={displayData as any[]} title="Scraped Data Results" />
           <div className="preview-actions">
             <button
               className="btn-cancel"

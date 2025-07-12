@@ -16,7 +16,7 @@ const TableDisplay: React.FC<TableDisplayProps> = ({
 
   // Empty message for when there's no data
   const emptyMessage = (
-    <div className="shared-empty-message" role="status" aria-live="polite">
+    <div className="empty-message" role="status" aria-live="polite">
       <i className="pi pi-info-circle" aria-hidden="true" />
       <p>No data available</p>
     </div>
@@ -24,9 +24,9 @@ const TableDisplay: React.FC<TableDisplayProps> = ({
 
   // Loading indicator
   const loadingTemplate = (
-    <div className="shared-loading-container" role="status" aria-live="polite">
-      <ProgressSpinner aria-label="Loading data" />
-      <span>Loading data...</span>
+    <div className="loading-container" role="status" aria-live="polite">
+      <ProgressSpinner aria-hidden="true" />
+      <p>Loading data...</p>
     </div>
   );
 

@@ -10,6 +10,8 @@ import XMLPreviewData from "../features/scraper/components/XMLPreviewData";
 import ExtractedDataTable from "../features/scraper/components/ExtractedDataTable";
 import Modal from "../components/Modal";
 import Loader from "../components/Loader";
+import { useMockData } from "../utils/environment";
+import { mockXMLData } from "../data/mockTableData";
 import "../styles/App.css";
 import "../styles/preview-loading.css";
 import "../styles/loading-results.css";
@@ -18,6 +20,9 @@ import { PreviewData } from "../model";
 const ScraperPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [showLoadingResults, setShowLoadingResults] = useState<boolean>(false);
+  // Check if we should use mock data
+  const shouldUseMockData = useMockData();
+  
   const {
     loading,
     previewData,
@@ -136,11 +141,14 @@ const ScraperPage: React.FC = () => {
                 <XMLPreviewData
                   isOpen={true}
                   xmlData={
-                    // Extract the items from the RSS data structure
-                    previewData?.sample?.[0]?.items ||
-                    (Array.isArray(extractedData)
-                      ? extractedData
-                      : [extractedData])
+                    // Use mock XML data if in local environment and no real data is available
+                    shouldUseMockData && (!previewData?.sample?.[0]?.items && !extractedData)
+                      ? mockXMLData
+                      : // Otherwise extract the items from the RSS data structure
+                        previewData?.sample?.[0]?.items ||
+                        (Array.isArray(extractedData)
+                          ? extractedData
+                          : [extractedData])
                   }
                   onClose={handleModalClose}
                   onAddRow={() => console.log("Add row clicked")}
