@@ -307,6 +307,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: var(--primary-shadow);
+  margin-top: 1rem;
 }
 
 .btn-add-row:hover {
@@ -349,7 +350,7 @@
 .xml-raw-data pre {
   margin: 0;
   white-space: pre-wrap;
-  font-family: 'Roboto Mono', monospace;
+  font-family: "Roboto Mono", monospace;
   font-size: 0.8rem;
   color: #e0e0e0;
   line-height: 1.5;
@@ -382,7 +383,7 @@
 
 .xml-data-display pre {
   margin: 0;
-  font-family: 'Roboto Mono', monospace;
+  font-family: "Roboto Mono", monospace;
   font-size: 0.8rem;
   color: var(--text-color);
   white-space: pre-wrap;
@@ -552,7 +553,7 @@
     min-width: 250px;
     max-width: 300px;
   }
-  
+
   .xml-raw-data {
     width: 300px;
   }
@@ -564,11 +565,11 @@
     min-width: 220px;
     max-width: 250px;
   }
-  
+
   .xml-raw-data {
     width: 280px;
   }
-  
+
   .xml-data-label {
     width: 100px;
     min-width: 100px;
@@ -580,18 +581,18 @@
   .xml-preview-content {
     max-width: 95vw;
   }
-  
+
   .xml-actions-column {
     width: 200px;
     min-width: 200px;
     max-width: 220px;
   }
-  
+
   .xml-raw-data {
     width: 250px;
     right: -50px;
   }
-  
+
   .xml-data-label {
     width: 80px;
     min-width: 80px;
@@ -599,19 +600,19 @@
     font-size: 0.75rem;
     padding: 0.5rem;
   }
-  
+
   .xml-field-name {
     font-size: 0.75rem;
   }
-  
+
   .xml-field-value {
     font-size: 0.8rem;
   }
-  
+
   .xml-preview-header h2 {
     font-size: 1.25rem;
   }
-  
+
   .btn-submit-xml {
     min-width: 160px;
     padding: 0.6rem 1.2rem;
@@ -626,27 +627,27 @@
     gap: 1rem;
     padding: 1rem;
   }
-  
+
   .xml-preview-actions {
     width: 100%;
     justify-content: space-between;
   }
-  
+
   .xml-table-container {
     padding: 0 1rem 1rem;
   }
-  
+
   .xml-actions-column {
     width: 180px;
     min-width: 180px;
     max-width: 200px;
   }
-  
+
   .xml-raw-data {
     width: 220px;
     right: -80px;
   }
-  
+
   .xml-data-label {
     width: 70px;
     min-width: 70px;
@@ -654,24 +655,24 @@
     font-size: 0.7rem;
     padding: 0.4rem;
   }
-  
+
   .xml-field-name {
     font-size: 0.7rem;
   }
-  
+
   .xml-field-value {
     font-size: 0.75rem;
   }
-  
+
   .xml-preview-header h2 {
     font-size: 1.1rem;
   }
-  
+
   .btn-submit-xml {
     width: 100%;
     min-width: auto;
   }
-  
+
   .btn-add-row {
     width: 100%;
     justify-content: center;
