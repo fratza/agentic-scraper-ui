@@ -66,90 +66,63 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
       // Create structured rows for display
       const rows: XMLRowData[] = [];
 
-      // Add standard fields if they exist
-      if ("title" in firstItem) {
-        rows.push({
-          id: 1,
-          fieldName: "Title",
-          value: firstItem.title || "-",
-          rawXml: JSON.stringify(firstItem.title, null, 2),
-        });
-      }
+      // Always add standard fields, even if they don't exist in the data
+      rows.push({
+        id: 1,
+        fieldName: "Title",
+        value: firstItem.title || firstItem.name || "-",
+        rawXml: JSON.stringify(firstItem.title || firstItem.name || "-", null, 2),
+      });
 
-      if ("pubDate" in firstItem || "date" in firstItem) {
-        rows.push({
-          id: 2,
-          fieldName: "Date",
-          value:
-            ("pubDate" in firstItem ? firstItem.pubDate : "") ||
-            ("date" in firstItem ? firstItem.date : "") ||
-            "-",
-          rawXml: JSON.stringify(
-            "pubDate" in firstItem
-              ? firstItem.pubDate
-              : "date" in firstItem
-              ? firstItem.date
-              : "-",
-            null,
-            2
-          ),
-        });
-      }
+      rows.push({
+        id: 2,
+        fieldName: "Date",
+        value: firstItem.pubDate || firstItem.date || firstItem.published || "-",
+        rawXml: JSON.stringify(
+          firstItem.pubDate || firstItem.date || firstItem.published || "-",
+          null,
+          2
+        ),
+      });
 
-      if ("image" in firstItem || "enclosure" in firstItem) {
-        rows.push({
-          id: 3,
-          fieldName: "Image",
-          value:
-            ("image" in firstItem ? firstItem.image : "") ||
-            ("enclosure" in firstItem && firstItem.enclosure?.url
-              ? firstItem.enclosure.url
-              : "-"),
-          rawXml: JSON.stringify(
-            "image" in firstItem
-              ? firstItem.image
-              : "enclosure" in firstItem
-              ? firstItem.enclosure
-              : "-",
-            null,
-            2
-          ),
-        });
-      }
+      rows.push({
+        id: 3,
+        fieldName: "Image",
+        value: firstItem.image || 
+               (firstItem.enclosure?.url ? firstItem.enclosure.url : "") ||
+               firstItem.thumbnail ||
+               "-",
+        rawXml: JSON.stringify(
+          firstItem.image || firstItem.enclosure || firstItem.thumbnail || "-",
+          null,
+          2
+        ),
+      });
 
-      if ("description" in firstItem || "content" in firstItem) {
-        rows.push({
-          id: 4,
-          fieldName: "Description",
-          value:
-            ("description" in firstItem ? firstItem.description : "") ||
-            ("content" in firstItem ? firstItem.content : "") ||
-            "-",
-          rawXml: JSON.stringify(
-            "description" in firstItem
-              ? firstItem.description
-              : "content" in firstItem
-              ? firstItem.content
-              : "-",
-            null,
-            2
-          ),
-        });
-      }
+      rows.push({
+        id: 4,
+        fieldName: "Description",
+        value: firstItem.description || firstItem.content || firstItem.summary || "-",
+        rawXml: JSON.stringify(
+          firstItem.description || firstItem.content || firstItem.summary || "-",
+          null,
+          2
+        ),
+      });
 
-      // If no standard fields were found, create rows from all available fields
-      if (rows.length === 0) {
-        let id = 1;
-        for (const [key, value] of Object.entries(firstItem)) {
-          if (key !== "contentType") {
-            // Skip the contentType field
-            rows.push({
-              id: id++,
-              fieldName: key.charAt(0).toUpperCase() + key.slice(1),
-              value: value || "-",
-              rawXml: JSON.stringify(value, null, 2),
-            });
-          }
+      // Create rows from all available fields that aren't already included as standard fields
+      const standardFieldNames = ['title', 'name', 'pubDate', 'date', 'published', 'image', 'enclosure', 'thumbnail', 'description', 'content', 'summary'];
+      let id = 5; // Start after standard fields
+      
+      for (const [key, value] of Object.entries(firstItem)) {
+        // Skip contentType and already included standard fields
+        if (key !== "contentType" && !standardFieldNames.includes(key)) {
+          rows.push({
+            id: id++,
+            fieldName: key.charAt(0).toUpperCase() + key.slice(1),
+            value: value || "-",
+            rawXml: JSON.stringify(value, null, 2),
+          });
         }
       }
 
