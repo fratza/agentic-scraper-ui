@@ -1,25 +1,60 @@
 /* XMLPreviewData Styles */
 .xml-preview-container {
   width: 100%;
-  margin: 0;
+  margin: 0 0 2rem 0;
   padding: 0;
   background-color: transparent;
-  box-shadow: none;
-  border-radius: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  max-height: 70vh;
+}
+
+.xml-table-responsive {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 70vh;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  scrollbar-width: thin;
+  scrollbar-color: #444444 #222222;
+  background-color: #222222;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Custom scrollbar styling for WebKit browsers */
+.xml-table-responsive::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.xml-table-responsive::-webkit-scrollbar-track {
+  background: #222222;
+  border-radius: 4px;
+}
+
+.xml-table-responsive::-webkit-scrollbar-thumb {
+  background-color: #444444;
+  border-radius: 4px;
+}
+
+.xml-table-responsive::-webkit-scrollbar-thumb:hover {
+  background-color: #555555;
 }
 
 .xml-preview-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  padding: 0 1rem 1rem;
+  margin-bottom: 0;
 }
 
-.xml-preview-title {
+.xml-preview-header h3 {
   margin: 0;
   font-size: 1.25rem;
-  color: var(--text-color);
+  color: #ffffff;
   font-weight: 600;
+  font-family: "Poppins", sans-serif;
 }
 
 .xml-preview-close {
@@ -138,109 +173,91 @@
 
 .xml-data-table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  font-family: var(--font-family);
-  font-size: 0.875rem;
-  color: var(--text-color);
-  min-width: 800px;
+  border-collapse: collapse;
+  background-color: #222222;
+  font-family: "Poppins", sans-serif;
+  table-layout: fixed;
 }
 
 .xml-data-table th {
-  background-color: var(--surface-50);
-  color: var(--text-color);
+  background-color: #313030;
+  color: #ffffff;
   font-weight: 600;
   text-align: left;
-  padding: 1rem;
-  border-bottom: 1px solid var(--surface-border);
-  white-space: nowrap;
+  padding: 12px 16px;
+  border-bottom: 2px solid #444444;
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 2;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .xml-data-table td {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--surface-border);
-  color: var(--text-color);
+  padding: 10px 16px;
+  border-bottom: 1px solid #444444;
   vertical-align: middle;
+  color: #e0e0e0;
   transition: background-color 0.2s ease;
-  background-color: var(--surface-card);
+  font-family: "Poppins", sans-serif;
+  font-size: 0.9rem;
 }
 
 .xml-data-table tbody tr:last-child td {
   border-bottom: none;
 }
 
-.xml-data-table tbody tr:hover td {
-  background-color: var(--surface-hover);
+.xml-data-table tbody tr:hover {
+  background-color: #2a2a2a;
 }
 
 /* Row Number Column */
 .xml-row-number-column {
-  width: 40px;
-  min-width: 40px;
-  max-width: 40px;
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
   text-align: center;
-  background-color: var(--surface-50);
+  background-color: #31303097;
   font-weight: 600;
-  color: var(--text-color-secondary);
+  color: #ffffff;
   position: sticky;
   left: 0;
   z-index: 1;
-  border-right: 1px solid var(--surface-border);
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+  padding: 10px 0;
 }
 
 /* XML Data Cell Styles */
 .xml-data-label {
-  vertical-align: top;
-  padding: 0.75rem 1rem;
-  width: 120px;
-  min-width: 120px;
+  width: 200px;
+  min-width: 200px;
   max-width: 200px;
   font-weight: 500;
-  color: var(--text-color);
-  background-color: var(--surface-50);
-  border-right: 1px solid var(--surface-border);
-}
-
-.xml-field-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  color: #e0e0e0;
+  padding: 10px 16px;
+  border-right: 1px solid #444444;
+  background-color: #2a2a2a;
+  position: sticky;
+  left: 50px;
+  z-index: 1;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
 }
 
 .xml-field-name {
-  font-weight: 600;
-  color: var(--text-color);
-  font-size: 0.8rem;
-  margin-bottom: 0.25rem;
-}
-
-/* Editable field input */
-.xml-field-name-input {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--surface-border);
-  background-color: var(--surface-card);
-  color: var(--text-color);
-  font-family: inherit;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
+  color: #e0e0e0;
   font-weight: 500;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-}
-
-.xml-field-name-input:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 0.2rem var(--primary-color-10);
+  margin-bottom: 0.25rem;
+  font-family: "Poppins", sans-serif;
 }
 
 .xml-field-value {
   font-size: 0.85rem;
-  color: var(--text-color);
+  color: #e0e0e0;
   line-height: 1.5;
+  font-family: "Poppins", sans-serif;
 }
 
 .xml-image-preview {
@@ -319,10 +336,10 @@
   width: 350px;
   max-height: 400px;
   overflow-y: auto;
-  background-color: var(--surface-card);
-  border: 1px solid var(--surface-border);
-  border-radius: 8px;
-  box-shadow: var(--dialog-shadow);
+  background-color: #2a2a2a;
+  border: 1px solid #444444;
+  border-radius: 6px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   padding: 1rem;
   z-index: 10;
   text-align: left;
@@ -334,12 +351,13 @@
   white-space: pre-wrap;
   font-family: 'Roboto Mono', monospace;
   font-size: 0.8rem;
-  color: var(--text-color);
+  color: #e0e0e0;
   line-height: 1.5;
-  background-color: var(--surface-ground);
+  background-color: #1e1e1e;
   padding: 0.75rem;
   border-radius: 4px;
   overflow-x: auto;
+  border: 1px solid #444444;
 }
 
 /* XML Actions Column */
@@ -347,9 +365,9 @@
   width: 300px;
   min-width: 300px;
   max-width: 350px;
-  padding: 0.75rem 1rem;
+  padding: 10px 16px;
   vertical-align: top;
-  background-color: var(--surface-card);
+  background-color: #222222;
 }
 
 .xml-data-display {
