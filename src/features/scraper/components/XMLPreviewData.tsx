@@ -118,71 +118,57 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
   // Function to render field value based on field name
   const renderFieldValue = (fieldName: string, value: any) => {
     if (
-      fieldName.toLowerCase() === "image" ||
-      fieldName.toLowerCase().includes("image")
+      fieldName.toLowerCase().includes("image") ||
+      fieldName.toLowerCase().includes("thumbnail") ||
+      fieldName.toLowerCase().includes("photo")
     ) {
       return renderImage(value);
-    } else if (
-      fieldName.toLowerCase() === "description" ||
-      fieldName.toLowerCase().includes("content")
-    ) {
-      return <div className="xml-description">{value}</div>;
-    } else {
-      return value;
     }
+    return value;
   };
 
   // Handle adding a new row
   const handleAddRow = () => {
-    const newId =
-      displayData.length > 0
-        ? Math.max(
-            ...displayData.map((row) =>
-              typeof row.id === "number"
-                ? row.id
-                : parseInt(row.id.toString()) || 0
-            )
-          ) + 1
-        : 1;
+    // Generate a unique ID for the new row
+    const maxId = Math.max(
+      ...displayData.map((row) =>
+        typeof row.id === "number" ? row.id : parseInt(row.id.toString()) || 0
+      )
+    );
+    const newId = maxId + 1;
 
-    // Create a new row with empty values and add it to the display data
+    // Create a new row with default values
     const newRow: XMLRowData = {
       id: newId,
-      fieldName: "New Field",
+      fieldName: `Custom Field ${newId - 4}`,
       value: "-",
-      rawXml: "-",
-      selectedAction: "",
+      rawXml: "",
     };
 
-    setDisplayData([...displayData, newRow]);
-
-    // Mark this row as editable
-    setEditableRows((prev) => {
-      const newSet = new Set(prev);
-      newSet.add(newId);
-      return newSet;
-    });
+    // Add the new row to the display data
+    setDisplayData((prevData) => [...prevData, newRow]);
 
     // If onAddRow callback is provided, call it
-    if (onAddRow) onAddRow();
+    if (onAddRow) {
+      onAddRow();
+    }
   };
 
   // Handle removing a row
   const handleRemoveRow = (id: string | number) => {
-    // Convert id to number for comparison if it's a string
-    const numId = typeof id === "number" ? id : parseInt(id.toString()) || 0;
-
-    // Don't allow removing rows with id <= 4 (standard fields)
-    if (numId <= 4) return;
-
+    // Remove the row from the display data
     setDisplayData((prevData) => prevData.filter((row) => row.id !== id));
 
-    // Remove from editable rows if present
-    setEditableRows((prev) => {
-      const newSet = new Set(prev);
-      newSet.delete(id);
-      return newSet;
-    });
+    // If onActionSelect callback is provided, call it with the updated field mappings
+    if (onActionSelect) {
+      const fieldMappings: { [key: string]: string } = {};
+      displayData
+        .filter((row) => row.id !== id && row.selectedAction)
+        .forEach((row) => {
+          fieldMappings[row.fieldName] = row.selectedAction!;
+        });
+      onActionSelect(fieldMappings);
+    }
   };
 
   // Handle field name editing
@@ -200,7 +186,10 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
     id: string | number
   ) => {
     if (e.key === "Enter") {
-      // Remove from editable rows on Enter key
+      // Remove focus from the input field
+      (e.target as HTMLInputElement).blur();
+
+      // Remove the row from the editable rows set
       setEditableRows((prev) => {
         const newSet = new Set(prev);
         newSet.delete(id);
@@ -243,10 +232,10 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
         // Simulate loading delay
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        // If onParse callback is provided, call it
+        // If onParse callback is provided, call it with an empty resume link
+        // This will trigger the same behavior as the Scrape button in Preview.tsx
         if (onParse) {
-          // Call onParse without arguments as per its interface definition
-          onParse();
+          onParse(""); // Pass empty string as resume link for mock data
         }
 
         // Close the modal
@@ -254,13 +243,22 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
       } else {
         // First submit the data to the API using the XML-specific endpoint
         const response = await apiService.submitXmlParseRequest(payload);
+      
+        // Extract jobId from the response
+        const jobId = response?.jobId;
+      
+        // Construct resume link similar to Preview.tsx
+        // For XML parsing, we'll use the jobId in the webhook URL
+        const resumeLink = jobId ? 
+          `${process.env.REACT_APP_API_URL?.replace('/api', '')}/webhook/${jobId}` : 
+          '';
+        
+        console.log("XML parsing response:", response);
+        console.log("Resume link for XML parsing:", resumeLink);
 
-        // No need to send approve action since the XML parse endpoint already handles this
-
-        // If onParse callback is provided, call it
+        // If onParse callback is provided, call it with the resume link
         if (onParse) {
-          // Call onParse without arguments as per its interface definition
-          onParse();
+          onParse(resumeLink);
         }
 
         // Close the modal
@@ -274,130 +272,150 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
   };
 
   return (
-    <div className="xml-preview-container">
-      <div className="xml-table-responsive">
-        <div className="xml-preview-header">
-          <h3>Please set the data:</h3>
+    <div className="xml-preview-modal">
+      {/* Loading overlay */}
+      {isSubmitting && (
+        <div className="xml-loading-overlay">
+          <div className="xml-loading-spinner">
+            <i className="fas fa-spinner fa-spin fa-2x"></i>
+            <p>Processing XML data...</p>
+          </div>
         </div>
-        
-        <table className="xml-data-table">
-          <thead>
-            <tr>
-              <th className="xml-row-number-column">#</th>
-              <th>Field</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {displayData.map((row) => {
-              // Convert id to number for comparison if it's a string
-              const numId =
-                typeof row.id === "number"
-                  ? row.id
-                  : parseInt(row.id.toString()) || 0;
-              const canRemove = numId > 4;
+      )}
+      <div className="xml-preview-content">
+        <div className="xml-preview-container">
+          <div className="xml-table-responsive">
+            <div className="xml-preview-header">
+              <h3>Please set the data:</h3>
+            </div>
+            
+            <table className="xml-data-table">
+              <thead>
+                <tr>
+                  <th className="xml-row-number-column">#</th>
+                  <th>Field</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {displayData.map((row) => {
+                  // Convert id to number for comparison if it's a string
+                  const numId =
+                    typeof row.id === "number"
+                      ? row.id
+                      : parseInt(row.id.toString()) || 0;
+                  const canRemove = numId > 4;
 
-              return (
-                <tr key={row.id}>
-                  <td className="xml-row-number-column">{row.id}</td>
-                  <td className="xml-data-label">
-                    <div className="xml-field-content">
-                      <div className="xml-field-name">
-                        {editableRows.has(row.id) ? (
-                          <input
-                            type="text"
-                            className="xml-field-name-input"
-                            value={row.fieldName}
-                            onChange={(e) =>
-                              handleFieldNameChange(row.id, e.target.value)
-                            }
-                            onKeyPress={(e) => handleKeyPress(e, row.id)}
-                            onBlur={() => {
-                              setEditableRows((prev) => {
-                                const newSet = new Set(prev);
-                                newSet.delete(row.id);
-                                return newSet;
-                              });
-                            }}
-                            autoFocus
-                          />
-                        ) : (
-                          <span
-                            onClick={() =>
-                              setEditableRows((prev) => new Set(prev).add(row.id))
+                  return (
+                    <tr key={row.id}>
+                      <td className="xml-row-number-column">{row.id}</td>
+                      <td className="xml-data-label">
+                        <div className="xml-field-content">
+                          <div className="xml-field-name">
+                            {editableRows.has(row.id) ? (
+                              <input
+                                type="text"
+                                className="xml-field-name-input"
+                                value={row.fieldName}
+                                onChange={(e) =>
+                                  handleFieldNameChange(row.id, e.target.value)
+                                }
+                                onKeyPress={(e) => handleKeyPress(e, row.id)}
+                                onBlur={() => {
+                                  setEditableRows((prev) => {
+                                    const newSet = new Set(prev);
+                                    newSet.delete(row.id);
+                                    return newSet;
+                                  });
+                                }}
+                                autoFocus
+                              />
+                            ) : (
+                              <span
+                                onClick={() =>
+                                  setEditableRows((prev) => new Set(prev).add(row.id))
+                                }
+                              >
+                                {row.fieldName}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="xml-actions-column">
+                        <div className="xml-dropdown-container">
+                          <select
+                            className="xml-action-dropdown"
+                            value={row.selectedAction || ""}
+                            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                              handleActionChange(row.id, e.target.value)
                             }
                           >
-                            {row.fieldName}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="xml-actions-column">
-                    <div className="xml-dropdown-container">
-                      <select
-                        className="xml-action-dropdown"
-                        value={row.selectedAction || ""}
-                        onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                          handleActionChange(row.id, e.target.value)
-                        }
-                      >
-                        <option value="">Select XML data</option>
-                        {xmlData &&
-                          xmlData.length > 0 &&
-                          Object.entries(xmlData[0] as Record<string, any>)
-                            .filter(([key]) => key !== "contentType")
-                            .map(([key, value]) => (
-                              <option key={key} value={key}>
-                                {key}:{" "}
-                                {typeof value === "string"
-                                  ? value.length > 30
-                                    ? `${value.substring(0, 30)}...`
-                                    : value
-                                  : `${JSON.stringify(value).substring(0, 30)}${
-                                      JSON.stringify(value).length > 30 ? "..." : ""
-                                    }`}
-                              </option>
-                            ))}
-                      </select>
-                      {canRemove && (
-                        <button
-                          className="btn-remove-row"
-                          onClick={() => handleRemoveRow(row.id)}
-                          title="Remove row"
-                        >
-                          &times;
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        
-        <div className="xml-preview-actions">
-          <button
-            className="btn-add-row"
-            onClick={handleAddRow}
-            disabled={isSubmitting}
-          >
-            <span>+</span> Add New Row
-          </button>
-        </div>
+                            <option value="">Select XML data</option>
+                            {xmlData &&
+                              xmlData.length > 0 &&
+                              Object.entries(xmlData[0] as Record<string, any>)
+                                .filter(([key]) => key !== "contentType")
+                                .map(([key, value]) => (
+                                  <option key={key} value={key}>
+                                    {key}{" "}
+                                    {typeof value === "string"
+                                      ? value.length > 30
+                                        ? `${value.substring(0, 30)}...`
+                                        : value
+                                      : `${JSON.stringify(value).substring(0, 30)}${
+                                          JSON.stringify(value).length > 30 ? "..." : ""
+                                        }`}
+                                  </option>
+                                ))}
+                          </select>
+                          {canRemove && (
+                            <button
+                              className="btn-remove-row"
+                              onClick={() => handleRemoveRow(row.id)}
+                              title="Remove row"
+                            >
+                              &times;
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            
+            <div className="xml-preview-actions">
+              <button
+                className="btn-add-row"
+                onClick={handleAddRow}
+                disabled={isSubmitting}
+              >
+                <span>+</span> Add New Row
+              </button>
+            </div>
 
-        <div className="xml-buttons-container">
-          <button className="btn-cancel-xml" onClick={onClose}>
-            Cancel
-          </button>
-          <button
-            className="btn-submit-xml"
-            onClick={handleParse}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Saving..." : "Save Changes"}
-          </button>
+            <div className="xml-buttons-container">
+              <button className="btn-cancel-xml" onClick={onClose}>
+                Cancel
+              </button>
+              <button
+                className="btn-submit-xml"
+                onClick={handleParse}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <i className="fas fa-spinner fa-spin" style={{ marginRight: '8px' }}></i>
+                    Processing...
+                  </>
+                ) : (
+                  "Submit"
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
