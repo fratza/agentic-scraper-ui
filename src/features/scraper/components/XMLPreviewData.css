@@ -15,47 +15,74 @@
   margin-bottom: 1.5rem;
 }
 
-.xml-preview-header h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
+.xml-preview-title {
   margin: 0;
+  font-size: 1.25rem;
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.xml-preview-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.xml-preview-close:hover {
+  background-color: var(--surface-hover);
+  color: var(--text-color);
+  transform: scale(1.05);
 }
 
 /* Close Button */
 .xml-preview-actions {
   display: flex;
   align-items: center;
+  gap: 0.75rem;
 }
 
 .btn-close {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 2.25rem;
+  height: 2.25rem;
   border-radius: 50%;
-  background-color: #e0e0e0;
-  color: #333;
-  border: none;
+  background-color: var(--surface-card);
+  color: var(--text-color-secondary);
+  border: 1px solid var(--surface-border);
   font-size: 1.25rem;
-  font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .btn-close:hover {
-  background-color: #d0d0d0;
+  background-color: var(--surface-hover);
+  color: var(--text-color);
+  transform: translateY(-1px);
 }
 
 .btn-close:active {
-  background-color: #c0c0c0;
+  transform: translateY(0);
+  background-color: var(--surface-200);
 }
 
 /* Submit XML Mapping Button */
 .xml-preview-submit {
   display: flex;
-  justify-content: center;
-  margin-bottom: 1.5rem;
+  justify-content: flex-end;
+  padding: 0 1.5rem 1.5rem;
+  background-color: var(--surface-card);
+  border-top: 1px solid var(--surface-border);
 }
 
 .btn-submit-xml {
@@ -66,27 +93,29 @@
   background-color: var(--primary-color);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   min-width: 200px;
+  box-shadow: var(--primary-shadow);
 }
 
 .btn-submit-xml:hover {
-  background-color: var(--button-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--primary-color-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .btn-submit-xml:active {
   transform: translateY(0);
+  box-shadow: none;
 }
 
 .btn-submit-xml:disabled {
-  background-color: #cccccc;
-  color: #999999;
+  background-color: var(--surface-300);
+  color: var(--text-color-secondary);
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -94,184 +123,207 @@
 
 /* XML Preview Table Styles */
 .xml-table-container {
-  margin-bottom: 1.5rem;
   width: 100%;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-  overflow: hidden;
+  margin: 0 auto;
+  padding: 0 1.5rem 1.5rem;
 }
 
 .xml-table-responsive {
   overflow-x: auto;
-  border-radius: 6px;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  border: 1px solid var(--surface-border);
+  background-color: var(--surface-card);
+  box-shadow: var(--card-shadow);
 }
 
 .xml-data-table {
   width: 100%;
-  border-collapse: collapse;
-  background-color: #ffffff;
-  font-family: "Poppins", sans-serif;
-  animation: fadeIn 0.5s ease-in-out;
-  font-size: 0.85rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: var(--font-family);
+  font-size: 0.875rem;
+  color: var(--text-color);
+  min-width: 800px;
 }
 
 .xml-data-table th {
-  background-color: #f8f9fa;
-  color: #333333;
+  background-color: var(--surface-50);
+  color: var(--text-color);
   font-weight: 600;
   text-align: left;
-  padding: 8px 12px;
-  border-bottom: 1px solid #e9ecef;
+  padding: 1rem;
+  border-bottom: 1px solid var(--surface-border);
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .xml-data-table td {
-  padding: 6px 12px;
-  border-bottom: 1px solid #e9ecef;
-  color: #333333;
-  vertical-align: top;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--surface-border);
+  color: var(--text-color);
+  vertical-align: middle;
+  transition: background-color 0.2s ease;
+  background-color: var(--surface-card);
 }
 
-.xml-data-table tbody tr:hover {
-  background-color: #f8f9fa;
+.xml-data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.xml-data-table tbody tr:hover td {
+  background-color: var(--surface-hover);
 }
 
 /* Row Number Column */
 .xml-row-number-column {
-  width: 30px;
-  min-width: 30px;
-  max-width: 30px;
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
   text-align: center;
-  background-color: #f0f0f0;
+  background-color: var(--surface-50);
   font-weight: 600;
-  color: #555;
+  color: var(--text-color-secondary);
   position: sticky;
   left: 0;
   z-index: 1;
-  box-shadow: 1px 0 3px rgba(0, 0, 0, 0.08);
-}
-
-.xml-data-table td.xml-row-number-column {
-  background-color: #f0f0f0;
+  border-right: 1px solid var(--surface-border);
 }
 
 /* XML Data Cell Styles */
 .xml-data-label {
   vertical-align: top;
-  padding: 8px;
-  width: 80px;
-  min-width: 80px;
-  max-width: 80px;
+  padding: 0.75rem 1rem;
+  width: 120px;
+  min-width: 120px;
+  max-width: 200px;
+  font-weight: 500;
+  color: var(--text-color);
+  background-color: var(--surface-50);
+  border-right: 1px solid var(--surface-border);
 }
 
 .xml-field-content {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.5rem;
 }
 
 .xml-field-name {
   font-weight: 600;
-  color: #555;
-  font-size: 0.75rem;
-  margin-bottom: 2px;
+  color: var(--text-color);
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
 }
 
 /* Editable field input */
 .xml-field-name-input {
   width: 100%;
-  padding: 0;
-  border: none;
-  background-color: transparent;
-  color: #555;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--surface-border);
+  background-color: var(--surface-card);
+  color: var(--text-color);
   font-family: inherit;
-  font-size: 0.75rem;
-  font-weight: 600;
-  margin-bottom: 2px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: 4px;
+  transition: all 0.2s ease;
 }
 
 .xml-field-name-input:focus {
   outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem var(--primary-color-10);
 }
 
 .xml-field-value {
-  font-size: 0.8rem;
-  color: #333;
+  font-size: 0.85rem;
+  color: var(--text-color);
+  line-height: 1.5;
 }
 
 .xml-image-preview {
   max-width: 80px;
   max-height: 80px;
   object-fit: contain;
-  border-radius: 3px;
-  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  border: 1px solid var(--surface-border);
+  background-color: var(--surface-card);
+  padding: 0.25rem;
 }
 
 .xml-description {
-  max-width: 250px;
+  max-width: 300px;
   white-space: pre-wrap;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
+  color: var(--text-color-secondary);
+  font-size: 0.85rem;
+  line-height: 1.5;
 }
 
 /* Add Row Button */
 .xml-add-row-container {
   display: flex;
   justify-content: flex-start;
-  margin-top: 0.75rem;
-  margin-bottom: 1.5rem;
-  padding-left: 8px; /* Match the table cell padding */
+  padding: 1rem 1.5rem;
+  background-color: var(--surface-card);
+  border-top: 1px solid var(--surface-border);
 }
 
 .btn-add-row {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 0.5rem;
   padding: 0.5rem 1rem;
   background-color: var(--primary-color);
   color: white;
   border: none;
-  border-radius: 3px;
-  font-size: 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.2s ease;
+  box-shadow: var(--primary-shadow);
 }
 
 .btn-add-row:hover {
-  background-color: var(--button-hover);
-  transform: translateY(-2px);
+  background-color: var(--primary-color-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .btn-add-row:active {
   transform: translateY(0);
+  box-shadow: none;
 }
 
 /* XML Actions Button Column */
 .xml-actions-button-column {
-  width: 120px;
-  min-width: 120px;
+  width: 150px;
+  min-width: 150px;
   text-align: center;
   position: relative;
 }
 
+/* Raw Data Display */
 .xml-raw-data {
   position: absolute;
   top: 100%;
   right: 0;
-  width: 300px;
-  max-height: 300px;
+  width: 350px;
+  max-height: 400px;
   overflow-y: auto;
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  padding: 8px;
+  background-color: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  box-shadow: var(--dialog-shadow);
+  padding: 1rem;
   z-index: 10;
   text-align: left;
   animation: fadeIn 0.2s ease-in-out;
@@ -280,36 +332,84 @@
 .xml-raw-data pre {
   margin: 0;
   white-space: pre-wrap;
-  font-family: monospace;
-  font-size: 0.75rem;
-  color: #333;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-color);
+  line-height: 1.5;
+  background-color: var(--surface-ground);
+  padding: 0.75rem;
+  border-radius: 4px;
+  overflow-x: auto;
 }
 
 /* XML Actions Column */
 .xml-actions-column {
-  width: 350px;
-  min-width: 350px;
+  width: 300px;
+  min-width: 300px;
   max-width: 350px;
-  padding: 8px;
+  padding: 0.75rem 1rem;
   vertical-align: top;
+  background-color: var(--surface-card);
 }
 
 .xml-data-display {
-  max-height: 120px;
+  max-height: 150px;
   overflow-y: auto;
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 4px;
-  padding: 8px;
+  background-color: var(--surface-ground);
+  border: 1px solid var(--surface-border);
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
 }
 
-.xml-code {
+.xml-data-display pre {
   margin: 0;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-color);
   white-space: pre-wrap;
-  font-family: monospace;
-  font-size: 0.75rem;
-  line-height: 1.4;
-  color: #333;
+  word-wrap: break-word;
+  line-height: 1.5;
+}
+
+/* Action Buttons */
+.xml-action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.xml-action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.75rem;
+  background-color: var(--surface-card);
+  color: var(--text-color);
+  border: 1px solid var(--surface-border);
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.xml-action-button:hover {
+  background-color: var(--surface-hover);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.xml-action-button.primary {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.xml-action-button.primary:hover {
+  background-color: var(--primary-color-dark);
+  border-color: var(--primary-color-dark);
+  color: white;
 }
 
 /* XML Dropdown Column */
@@ -424,5 +524,138 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 1200px) {
+  .xml-actions-column {
+    width: 250px;
+    min-width: 250px;
+    max-width: 300px;
+  }
+  
+  .xml-raw-data {
+    width: 300px;
+  }
+}
+
+@media (max-width: 992px) {
+  .xml-actions-column {
+    width: 220px;
+    min-width: 220px;
+    max-width: 250px;
+  }
+  
+  .xml-raw-data {
+    width: 280px;
+  }
+  
+  .xml-data-label {
+    width: 100px;
+    min-width: 100px;
+    max-width: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .xml-preview-content {
+    max-width: 95vw;
+  }
+  
+  .xml-actions-column {
+    width: 200px;
+    min-width: 200px;
+    max-width: 220px;
+  }
+  
+  .xml-raw-data {
+    width: 250px;
+    right: -50px;
+  }
+  
+  .xml-data-label {
+    width: 80px;
+    min-width: 80px;
+    max-width: 120px;
+    font-size: 0.75rem;
+    padding: 0.5rem;
+  }
+  
+  .xml-field-name {
+    font-size: 0.75rem;
+  }
+  
+  .xml-field-value {
+    font-size: 0.8rem;
+  }
+  
+  .xml-preview-header h2 {
+    font-size: 1.25rem;
+  }
+  
+  .btn-submit-xml {
+    min-width: 160px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .xml-preview-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .xml-preview-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .xml-table-container {
+    padding: 0 1rem 1rem;
+  }
+  
+  .xml-actions-column {
+    width: 180px;
+    min-width: 180px;
+    max-width: 200px;
+  }
+  
+  .xml-raw-data {
+    width: 220px;
+    right: -80px;
+  }
+  
+  .xml-data-label {
+    width: 70px;
+    min-width: 70px;
+    max-width: 100px;
+    font-size: 0.7rem;
+    padding: 0.4rem;
+  }
+  
+  .xml-field-name {
+    font-size: 0.7rem;
+  }
+  
+  .xml-field-value {
+    font-size: 0.75rem;
+  }
+  
+  .xml-preview-header h2 {
+    font-size: 1.1rem;
+  }
+  
+  .btn-submit-xml {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .btn-add-row {
+    width: 100%;
+    justify-content: center;
   }
 }
