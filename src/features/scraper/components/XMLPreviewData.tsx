@@ -63,70 +63,24 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
       );
       setAvailableFields(fields);
 
-      // Create structured rows for display
-      const rows: XMLRowData[] = [];
+      // Always show the four standard fields with empty values
+      // These will be mapped from the XML data based on user actions
+      const standardFields: XMLRowData[] = [
+        { id: 1, fieldName: 'Title', value: '-', rawXml: '' },
+        { id: 2, fieldName: 'Date', value: '-', rawXml: '' },
+        { id: 3, fieldName: 'Image', value: '-', rawXml: '' },
+        { id: 4, fieldName: 'Description', value: '-', rawXml: '' }
+      ];
 
-      // Always add standard fields, even if they don't exist in the data
-      rows.push({
-        id: 1,
-        fieldName: "Title",
-        value: firstItem.title || firstItem.name || "-",
-        rawXml: JSON.stringify(firstItem.title || firstItem.name || "-", null, 2),
-      });
-
-      rows.push({
-        id: 2,
-        fieldName: "Date",
-        value: firstItem.pubDate || firstItem.date || firstItem.published || "-",
-        rawXml: JSON.stringify(
-          firstItem.pubDate || firstItem.date || firstItem.published || "-",
-          null,
-          2
-        ),
-      });
-
-      rows.push({
-        id: 3,
-        fieldName: "Image",
-        value: firstItem.image || 
-               (firstItem.enclosure?.url ? firstItem.enclosure.url : "") ||
-               firstItem.thumbnail ||
-               "-",
-        rawXml: JSON.stringify(
-          firstItem.image || firstItem.enclosure || firstItem.thumbnail || "-",
-          null,
-          2
-        ),
-      });
-
-      rows.push({
-        id: 4,
-        fieldName: "Description",
-        value: firstItem.description || firstItem.content || firstItem.summary || "-",
-        rawXml: JSON.stringify(
-          firstItem.description || firstItem.content || firstItem.summary || "-",
-          null,
-          2
-        ),
-      });
-
-      // Create rows from all available fields that aren't already included as standard fields
-      const standardFieldNames = ['title', 'name', 'pubDate', 'date', 'published', 'image', 'enclosure', 'thumbnail', 'description', 'content', 'summary'];
-      let id = 5; // Start after standard fields
-      
-      for (const [key, value] of Object.entries(firstItem)) {
-        // Skip contentType and already included standard fields
-        if (key !== "contentType" && !standardFieldNames.includes(key)) {
-          rows.push({
-            id: id++,
-            fieldName: key.charAt(0).toUpperCase() + key.slice(1),
-            value: value || "-",
-            rawXml: JSON.stringify(value, null, 2),
-          });
-        }
-      }
-
-      setDisplayData(rows);
+      setDisplayData(standardFields);
+    } else {
+      // If no XML data, still show the standard fields
+      setDisplayData([
+        { id: 1, fieldName: 'Title', value: '-', rawXml: '' },
+        { id: 2, fieldName: 'Date', value: '-', rawXml: '' },
+        { id: 3, fieldName: 'Image', value: '-', rawXml: '' },
+        { id: 4, fieldName: 'Description', value: '-', rawXml: '' }
+      ]);
     }
   }, [xmlData]);
 
