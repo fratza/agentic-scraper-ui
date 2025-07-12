@@ -3,7 +3,7 @@
   width: 100%;
   margin: 1rem 0;
   padding: 0.5rem;
-  background-color: var(--card-background, #ffffff);
+  background-color: var(--card-background);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   border-radius: 8px;
   overflow: hidden;
