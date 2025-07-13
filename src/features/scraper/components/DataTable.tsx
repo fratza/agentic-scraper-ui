@@ -53,7 +53,7 @@ const DataTable: React.FC<DataTableProps> = ({
   let keys: string[] = [];
   
   if (headers) {
-    // Use the order of keys as defined in the headers object
+    // Always use the exact order of keys as defined in the headers object
     keys = Object.keys(headers);
   } else if (firstItem) {
     // Fall back to object keys if no headers provided
@@ -97,39 +97,30 @@ const DataTable: React.FC<DataTableProps> = ({
           </TableHead>
           
           <TableBody>
-            {tableData.map((row, index) => {
-              // Create a new object with keys in the desired order
-              const orderedRow = headers 
-                ? Object.fromEntries(
-                    Object.keys(headers).map(key => [key, row[key]])
-                  )
-                : row;
-                
-              return (
-                <TableRow
-                  key={index}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:hover': { backgroundColor: '#f8f9fa' } }}
+            {tableData.map((row, index) => (
+              <TableRow
+                key={index}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:hover': { backgroundColor: '#f8f9fa' } }}
+              >
+                <TableCell 
+                  component="th" 
+                  scope="row" 
+                  sx={{ width: '40px', padding: '4px 8px', fontSize: '0.75rem' }}
                 >
+                  {index + 1}
+                </TableCell>
+                
+                {keys.map((key) => (
                   <TableCell 
-                    component="th" 
-                    scope="row" 
-                    sx={{ width: '40px', padding: '4px 8px', fontSize: '0.75rem' }}
+                    key={key} 
+                    className={cellClassName}
+                    sx={{ padding: '4px 8px', fontSize: '0.75rem' }}
                   >
-                    {index + 1}
+                    {formatValue(row[key])}
                   </TableCell>
-                  
-                  {Object.entries(orderedRow).map(([key, value]) => (
-                    <TableCell 
-                      key={key} 
-                      className={cellClassName}
-                      sx={{ padding: '4px 8px', fontSize: '0.75rem' }}
-                    >
-                      {formatValue(value)}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              );
-            })}
+                ))}
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
