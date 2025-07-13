@@ -138,7 +138,7 @@ const Preview: React.FC<PreviewProps> = ({
                   setActionInProgress(true);
 
                   // Send cancel action to backend - only passing the action
-                  await apiService.handleScrapeAction("cancel");
+                  await apiService.submitPreviewData("cancel");
 
                   // Reset scraper state and close SSE connections
                   if (resetScraper) {
@@ -169,7 +169,7 @@ const Preview: React.FC<PreviewProps> = ({
                   setSessionError(false);
 
                   // Send approve action to backend - only passing the action
-                  await apiService.handleScrapeAction("approve");
+                  await apiService.submitPreviewData("approve");
 
                   // Start the scraping process in the UI
                   // This will open the loading modal and set up SSE connection

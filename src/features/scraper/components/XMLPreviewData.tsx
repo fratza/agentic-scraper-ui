@@ -198,6 +198,20 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
     }
   };
 
+  // Handle cancel button click
+  const handleCancel = async () => {
+    try {
+      // Send cancel action to backend
+      if (!shouldUseMockData) {
+        await apiService.submitPreviewData("cancel");
+      }
+      // Close the modal
+      onClose();
+    } catch (error) {
+      console.error("Error canceling XML parsing:", error);
+    }
+  };
+
   // Handle parse button click
   const handleParse = async () => {
     if (isSubmitting) return;
@@ -241,7 +255,10 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
         // Close the modal
         onClose();
       } else {
-        // First submit the data to the API using the XML-specific endpoint
+        // First submit the approve action to the backend
+        await apiService.submitPreviewData("approve");
+        
+        // Then submit the data to the API using the XML-specific endpoint
         const response = await apiService.submitXmlParseRequest(payload);
       
         // Extract jobId from the response
@@ -397,7 +414,7 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
             </div>
 
             <div className="xml-buttons-container">
-              <button className="btn-cancel-xml" onClick={onClose}>
+              <button className="btn-cancel-xml" onClick={handleCancel}>
                 Cancel
               </button>
               <button

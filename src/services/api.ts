@@ -214,8 +214,8 @@ const apiService = {
     }
   },
 
-  // Handle approve or cancel action for scraping
-  handleScrapeAction: async (action: "approve" | "cancel"): Promise<any> => {
+  // Submit preview data with approve or cancel action
+  submitPreviewData: async (action: "approve" | "cancel"): Promise<any> => {
     try {
       // Send action to backend
       const response = await fetch(API_URL + "/proceed-scrape", {
