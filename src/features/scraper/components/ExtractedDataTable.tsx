@@ -82,9 +82,11 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
       return;
     }
 
-    // Process the data to ensure it's in the right format
+    // Process the data to ensure it's in the right format and remove UUIDs
     const processedData = dataArray.map((item, index) => {
-      return { ...item, id: item.uuid || `row-${index}` };
+      // Create a new object without the uuid field
+      const { uuid, ...itemWithoutUuid } = item;
+      return { ...itemWithoutUuid, id: `row-${index}` };
     });
 
     setTableData(processedData);
