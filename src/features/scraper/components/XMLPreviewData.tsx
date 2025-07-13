@@ -66,20 +66,20 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
       // Always show the four standard fields with empty values
       // These will be mapped from the XML data based on user actions
       const standardFields: XMLRowData[] = [
-        { id: 1, fieldName: 'Title', value: '-', rawXml: '' },
-        { id: 2, fieldName: 'Date', value: '-', rawXml: '' },
-        { id: 3, fieldName: 'Image', value: '-', rawXml: '' },
-        { id: 4, fieldName: 'Description', value: '-', rawXml: '' }
+        { id: 1, fieldName: "Title", value: "-", rawXml: "" },
+        { id: 2, fieldName: "Date", value: "-", rawXml: "" },
+        { id: 3, fieldName: "Image", value: "-", rawXml: "" },
+        { id: 4, fieldName: "Description", value: "-", rawXml: "" },
       ];
 
       setDisplayData(standardFields);
     } else {
       // If no XML data, still show the standard fields
       setDisplayData([
-        { id: 1, fieldName: 'Title', value: '-', rawXml: '' },
-        { id: 2, fieldName: 'Date', value: '-', rawXml: '' },
-        { id: 3, fieldName: 'Image', value: '-', rawXml: '' },
-        { id: 4, fieldName: 'Description', value: '-', rawXml: '' }
+        { id: 1, fieldName: "Title", value: "-", rawXml: "" },
+        { id: 2, fieldName: "Date", value: "-", rawXml: "" },
+        { id: 3, fieldName: "Image", value: "-", rawXml: "" },
+        { id: 4, fieldName: "Description", value: "-", rawXml: "" },
       ]);
     }
   }, [xmlData]);
@@ -246,36 +246,25 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
         // Simulate loading delay
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        // If onParse callback is provided, call it with an empty resume link
-        // This will trigger the same behavior as the Scrape button in Preview.tsx
+        // If onParse callback is provided, call it without parameters
+        // The backend will handle the resume link
         if (onParse) {
-          onParse(""); // Pass empty string as resume link for mock data
+          onParse();
         }
 
         // Close the modal
         onClose();
       } else {
-        // First submit the approve action to the backend
+        // Submit the approve action to the backend
         await apiService.submitPreviewData("approve");
-        
-        // Then submit the data to the API using the XML-specific endpoint
-        const response = await apiService.submitXmlParseRequest(payload);
-      
-        // Extract jobId from the response
-        const jobId = response?.jobId;
-      
-        // Construct resume link similar to Preview.tsx
-        // For XML parsing, we'll use the jobId in the webhook URL
-        const resumeLink = jobId ? 
-          `${process.env.REACT_APP_API_URL?.replace('/api', '')}/webhook/${jobId}` : 
-          '';
-        
-        console.log("XML parsing response:", response);
-        console.log("Resume link for XML parsing:", resumeLink);
 
-        // If onParse callback is provided, call it with the resume link
+        // Submit the data to the API using the XML-specific endpoint
+        // The backend will handle the resume link
+        await apiService.submitXmlParseRequest(payload);
+
+        // Notify parent component that parsing has started
         if (onParse) {
-          onParse(resumeLink);
+          onParse();
         }
 
         // Close the modal
@@ -305,7 +294,7 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
             <div className="xml-preview-header">
               <h3>Please set the data:</h3>
             </div>
-            
+
             <table className="xml-data-table">
               <thead>
                 <tr>
@@ -350,7 +339,9 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                             ) : (
                               <span
                                 onClick={() =>
-                                  setEditableRows((prev) => new Set(prev).add(row.id))
+                                  setEditableRows((prev) =>
+                                    new Set(prev).add(row.id)
+                                  )
                                 }
                               >
                                 {row.fieldName}
@@ -380,8 +371,13 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                                       ? value.length > 30
                                         ? `${value.substring(0, 30)}...`
                                         : value
-                                      : `${JSON.stringify(value).substring(0, 30)}${
-                                          JSON.stringify(value).length > 30 ? "..." : ""
+                                      : `${JSON.stringify(value).substring(
+                                          0,
+                                          30
+                                        )}${
+                                          JSON.stringify(value).length > 30
+                                            ? "..."
+                                            : ""
                                         }`}
                                   </option>
                                 ))}
@@ -402,7 +398,7 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                 })}
               </tbody>
             </table>
-            
+
             <div className="xml-preview-actions">
               <button
                 className="btn-add-row"
@@ -424,7 +420,10 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
               >
                 {isSubmitting ? (
                   <>
-                    <i className="fas fa-spinner fa-spin" style={{ marginRight: '8px' }}></i>
+                    <i
+                      className="fas fa-spinner fa-spin"
+                      style={{ marginRight: "8px" }}
+                    ></i>
                     Processing...
                   </>
                 ) : (
