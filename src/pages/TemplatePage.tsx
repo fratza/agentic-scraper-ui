@@ -88,13 +88,37 @@ const TemplatePage: React.FC = () => {
     console.log("Extracted data in TemplatePage:", extractedData);
   }, [extractedData]);
 
-  // Process extracted data for table display
+  // Process extracted data for table display and remove UUIDs
   const getTableData = () => {
+    // Helper function to remove UUID from a single item
+    const removeUuid = (item: any): any => {
+      if (item === null || typeof item !== 'object') {
+        return item;
+      }
+      
+      // Create a new object without the uuid field
+      const { uuid, ...rest } = item;
+      
+      // Recursively process nested objects and arrays
+      const result: Record<string, any> = {};
+      for (const [key, value] of Object.entries(rest)) {
+        if (Array.isArray(value)) {
+          result[key] = value.map(item => removeUuid(item));
+        } else if (value !== null && typeof value === 'object') {
+          result[key] = removeUuid(value);
+        } else {
+          result[key] = value;
+        }
+      }
+      
+      return result;
+    };
+
     // If we have real extracted data, process it
     if (extractedData) {
-      // If it's already an array, return it
+      // If it's already an array, process each item
       if (Array.isArray(extractedData)) {
-        return extractedData.length > 0 ? extractedData : null;
+        return extractedData.length > 0 ? extractedData.map(removeUuid) : null;
       }
 
       // If it's an object with data property that's an array
@@ -103,19 +127,19 @@ const TemplatePage: React.FC = () => {
         const dataObj = extractedData as Record<string, any>;
 
         if (dataObj.data && Array.isArray(dataObj.data)) {
-          return dataObj.data.length > 0 ? dataObj.data : null;
+          return dataObj.data.length > 0 ? dataObj.data.map(removeUuid) : null;
         }
 
         // Check for extractedData property
         if (dataObj.extractedData && Array.isArray(dataObj.extractedData)) {
           return dataObj.extractedData.length > 0
-            ? dataObj.extractedData
+            ? dataObj.extractedData.map(removeUuid)
             : null;
         }
       }
 
-      // If it's a plain object, wrap it in an array
-      return [extractedData];
+      // If it's a plain object, wrap it in an array and remove UUID
+      return [removeUuid(extractedData)];
     }
 
     // If we're in a local environment and have no real data, use mock data
