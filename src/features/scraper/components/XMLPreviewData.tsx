@@ -244,16 +244,13 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
         console.log("Using mock data for XML parsing");
 
         // Simulate loading delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
 
         // If onParse callback is provided, call it without parameters
         // The backend will handle the resume link
         if (onParse) {
           onParse();
         }
-
-        // Close the modal
-        onClose();
       } else {
         // Submit the data to the API using submitPreviewData with approve action
         // Include the XML payload in the request
@@ -263,15 +260,15 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
         if (onParse) {
           onParse();
         }
-
-        // Close the modal
-        onClose();
       }
     } catch (error) {
       console.error("Error submitting XML field mappings:", error);
-    } finally {
       setIsSubmitting(false);
+      // Re-throw the error to be handled by the parent component if needed
+      throw error;
     }
+    // Note: We don't close the modal here to allow the parent component to handle the navigation
+    // The parent component will close the modal when the data is ready
   };
 
   return (
@@ -280,8 +277,9 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
       {isSubmitting && (
         <div className="xml-loading-overlay">
           <div className="xml-loading-spinner">
-            <i className="fas fa-spinner fa-spin fa-2x"></i>
+            <div className="spinner"></div>
             <p>Processing XML data...</p>
+            <p className="loading-subtext">This may take a few moments</p>
           </div>
         </div>
       )}
@@ -424,7 +422,10 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                     Processing...
                   </>
                 ) : (
-                  "Submit"
+                  <>
+                    <i className="fas fa-check" style={{ marginRight: "8px" }}></i>
+                    Submit
+                  </>
                 )}
               </button>
             </div>

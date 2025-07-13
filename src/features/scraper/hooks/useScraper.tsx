@@ -3,7 +3,11 @@ import apiService from "../../../services/api";
 import { config } from "../../../lib/config";
 import { PreviewData, ScraperHook } from "../../../model";
 import { useMockData } from "../../../utils/environment";
-import { mockProductData, mockXMLData, mockFormData } from "../../../data/mockTableData";
+import {
+  mockProductData,
+  mockXMLData,
+  mockFormData,
+} from "../../../data/mockTableData";
 
 /**
  * Custom hook for managing scraper state and operations
@@ -11,16 +15,20 @@ import { mockProductData, mockXMLData, mockFormData } from "../../../data/mockTa
 const useScraper = (): ScraperHook => {
   // Check if we should use mock data
   const shouldUseMockData = useMockData();
-  
+
   const [loading, setLoading] = useState<boolean>(false);
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
-  const [extractedData, SetExtractedData] = useState<any[] | null>(shouldUseMockData ? mockProductData : null);
-  const [originUrl, setOriginUrl] = useState<string | null>(shouldUseMockData ? "https://example.com/products" : null);
+  const [extractedData, SetExtractedData] = useState<any[] | null>(
+    shouldUseMockData ? mockProductData : null
+  );
+  const [originUrl, setOriginUrl] = useState<string | null>(
+    shouldUseMockData ? "https://example.com/products" : null
+  );
   const [scraping, setScraping] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
   const [jobId, setJobId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Initialize with mock data if in local environment
   useEffect(() => {
     if (shouldUseMockData && !previewData) {
@@ -30,9 +38,14 @@ const useScraper = (): ScraperHook => {
         title: "Example Products Page",
         html: "<div class='product-list'>...</div>",
         screenshot: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...",
-        selectors: [".product-card", ".product-title", ".product-price", ".product-image"]
+        selectors: [
+          ".product-card",
+          ".product-title",
+          ".product-price",
+          ".product-image",
+        ],
       };
-      
+
       setPreviewData(mockPreview);
     }
   }, [shouldUseMockData]);
@@ -68,11 +81,11 @@ const useScraper = (): ScraperHook => {
       apiService.closeEventSource(previewEventSourceRef.current);
       previewEventSourceRef.current = null;
     }
-    
+
     // If we're in a local environment, use mock data instead of making API calls
     if (shouldUseMockData) {
       console.log("Using mock data for form submission");
-      
+
       // Simulate loading delay
       setTimeout(() => {
         // Create mock preview data based on the form input
@@ -81,14 +94,19 @@ const useScraper = (): ScraperHook => {
           title: "Example Products Page",
           html: "<div class='product-list'>...</div>",
           screenshot: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...",
-          selectors: formData.selectors || [".product-card", ".product-title", ".product-price", ".product-image"]
+          selectors: formData.selectors || [
+            ".product-card",
+            ".product-title",
+            ".product-price",
+            ".product-image",
+          ],
         };
-        
+
         setPreviewData(mockPreview);
         setOriginUrl(formData.url || "https://example.com/products");
         setLoading(false);
       }, 1000);
-      
+
       return;
     }
 
@@ -272,11 +290,11 @@ const useScraper = (): ScraperHook => {
         apiService.closeEventSource(scrapingEventSourceRef.current);
         scrapingEventSourceRef.current = null;
       }
-      
+
       // If we're in a local environment, use mock data instead of making API calls
       if (shouldUseMockData) {
         console.log("Using mock data for scraping");
-        
+
         // Simulate progress updates
         const progressInterval = setInterval(() => {
           setProgress((prev) => {
@@ -288,7 +306,7 @@ const useScraper = (): ScraperHook => {
             return newProgress;
           });
         }, 500);
-        
+
         // Simulate loading delay
         setTimeout(() => {
           // Use mock product data
@@ -298,7 +316,7 @@ const useScraper = (): ScraperHook => {
           setProgress(100);
           clearInterval(progressInterval);
         }, 2500);
-        
+
         return;
       }
 
@@ -356,39 +374,42 @@ const useScraper = (): ScraperHook => {
             const parsedData = JSON.parse(event.data);
 
             console.log("Received scraped data:", parsedData);
-            
+
             // Check for origin URL in the parsed data
-            if (parsedData.url || parsedData.origin_url || (parsedData.data && parsedData.data.url)) {
-              const url = parsedData.url || parsedData.origin_url || parsedData.data.url;
+            if (
+              parsedData.url ||
+              parsedData.origin_url ||
+              (parsedData.data && parsedData.data.url)
+            ) {
+              const url =
+                parsedData.url || parsedData.origin_url || parsedData.data.url;
               setOriginUrl(url);
               console.log("Origin URL set:", url);
             }
-            
+
             if (parsedData.data && parsedData.data.extractedData) {
               let extractedData = parsedData.data.extractedData;
-              
+
               // If extractedData is an array, remove uuid from each item
               if (Array.isArray(extractedData)) {
-                extractedData = extractedData.map(item => {
-                  if (item && typeof item === 'object') {
+                extractedData = extractedData.map((item) => {
+                  if (item && typeof item === "object") {
                     const { uuid, ...rest } = item;
                     return rest;
                   }
                   return item;
                 });
-              } 
+              }
               // If extractedData is an object, remove uuid from it
-              else if (extractedData && typeof extractedData === 'object') {
+              else if (extractedData && typeof extractedData === "object") {
                 const { uuid, ...rest } = extractedData;
                 extractedData = rest;
               }
-              
+
               // Set extracted data without uuid
               SetExtractedData(extractedData);
             } else {
-              SetExtractedData([
-                { message: "No Data Found" },
-              ]);
+              SetExtractedData([{ message: "No Data Found" }]);
             }
 
             setScraping(false);
@@ -404,9 +425,8 @@ const useScraper = (): ScraperHook => {
           }
         };
 
-        // Listen for both event types: 'scrapedData' and 'Scraped'
+        // Listen for both event types: 'scrapedData'
         eventSource.addEventListener("scrapedData", handleScrapedData);
-        eventSource.addEventListener("Scraped", handleScrapedData);
 
         // Handle progress events if available
         eventSource.addEventListener("message", (event: MessageEvent) => {

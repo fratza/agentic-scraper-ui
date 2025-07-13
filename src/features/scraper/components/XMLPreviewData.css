@@ -536,17 +536,17 @@
 
 /* Loading Overlay */
 .xml-loading-overlay {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  border-radius: 8px;
   animation: fadeIn 0.3s ease;
 }
 
@@ -555,18 +555,45 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  background: #2a2a2a;
+  padding: 2.5rem 3rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  max-width: 90%;
+  width: 400px;
+  text-align: center;
+  border: 1px solid #444444;
 }
 
-.xml-loading-spinner i {
-  margin-bottom: 1rem;
+.xml-loading-spinner .spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  border-top-color: var(--primary-color);
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 1.5rem;
 }
 
 .xml-loading-spinner p {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 500;
-  margin: 0;
+  color: #ffffff;
+  margin: 0 0 0.5rem 0;
   font-family: "Poppins", sans-serif;
+}
+
+.xml-loading-spinner .loading-subtext {
+  font-size: 0.9rem;
+  color: #a0a0a0;
+  margin: 0.5rem 0 0 0;
+  font-weight: 400;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Animation */
