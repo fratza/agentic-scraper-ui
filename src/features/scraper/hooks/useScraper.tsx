@@ -156,7 +156,6 @@ const useScraper = (): ScraperHook => {
               const parsedData = JSON.parse(event.data);
 
               // Extract the actual data from the structure
-              // The SSE data structure is: { timestamp: "...", data: { ... } }
               let previewData: PreviewData = parsedData;
 
               // Check if the data is nested inside a data property
@@ -303,140 +302,7 @@ const useScraper = (): ScraperHook => {
         return;
       }
 
-      // Extract run_id from preview data if available
-      let runId: string | null = null;
-      try {
-        // Check different possible locations for run_id
-        if (previewData?.data?.run_id) {
-          runId = previewData.data.run_id;
-        } else if (previewData?.run_id) {
-          runId = previewData.run_id;
-        } else if (previewData?.sample?.[0]?.run_id) {
-          runId = previewData.sample[0].run_id;
-        }
-
-        if (runId) {
-          // Found run_id in preview data
-        }
-      } catch (err) {
-        console.error("Error extracting run_id from preview data:", err);
-      }
-
       // The backend will handle the workflow triggering
-
-      // Set up SSE for scraped data
-      try {
-        // Create SSE connection to listen for extractedData events
-        const eventSource = apiService.createScrapingEventSource(
-          `direct-${Date.now()}`,
-          runId
-        );
-        scrapingEventSourceRef.current = eventSource;
-
-        // Handle connection open
-        eventSource.onopen = () => {
-          // Scraping SSE connection established
-        };
-
-        // Handler function for processing scraped data
-        const handleScrapedData = (event: MessageEvent) => {
-          try {
-            const parsedData = JSON.parse(event.data);
-
-            console.log("Received scraped data:", parsedData);
-
-            // Check for origin URL in the parsed data
-            if (
-              parsedData.url ||
-              parsedData.origin_url ||
-              (parsedData.data && parsedData.data.url)
-            ) {
-              const url =
-                parsedData.url || parsedData.origin_url || parsedData.data.url;
-              setOriginUrl(url);
-              console.log("Origin URL set:", url);
-            }
-
-            if (parsedData.data && parsedData.data.extractedData) {
-              let extractedData = parsedData.data.extractedData;
-
-              // If extractedData is an array, remove uuid from each item
-              if (Array.isArray(extractedData)) {
-                extractedData = extractedData.map((item) => {
-                  if (item && typeof item === "object") {
-                    const { uuid, ...rest } = item;
-                    return rest;
-                  }
-                  return item;
-                });
-              }
-              // If extractedData is an object, remove uuid from it
-              else if (extractedData && typeof extractedData === "object") {
-                const { uuid, ...rest } = extractedData;
-                extractedData = rest;
-              }
-
-              // Set extracted data without uuid
-              SetExtractedData(extractedData);
-            } else {
-              SetExtractedData([{ message: "No Data Found" }]);
-            }
-
-            setScraping(false);
-            setProgress(100);
-
-            // Close the SSE connection
-            apiService.closeEventSource(eventSource);
-            scrapingEventSourceRef.current = null;
-          } catch (err) {
-            console.error("Error parsing extractedData:", err);
-            setError("Error processing extracted data");
-            setScraping(false);
-          }
-        };
-
-        // Handle progress events if available
-        eventSource.addEventListener("message", (event: MessageEvent) => {
-          try {
-            const parsedData = JSON.parse(event.data);
-            // Received progress message
-
-            if (parsedData.progress !== undefined) {
-              setProgress(parsedData.progress);
-            }
-          } catch (err) {
-            console.error("Error parsing progress data:", err);
-          }
-        });
-
-        // Handle errors
-        eventSource.addEventListener("error", (event) => {
-          // SSE connection error
-          console.error("Scraping SSE error:", event);
-          setError("Error receiving extracted data");
-          setScraping(false);
-
-          // Close the connection
-          apiService.closeEventSource(eventSource);
-          scrapingEventSourceRef.current = null;
-        });
-
-        // Safety timeout
-        setTimeout(() => {
-          if (scrapingEventSourceRef.current === eventSource) {
-            setError("Scraping timed out. Please try again.");
-            setScraping(false);
-
-            // Close the connection
-            apiService.closeEventSource(eventSource);
-            scrapingEventSourceRef.current = null;
-          }
-        }, config.ui.progressTimeout || 240000);
-      } catch (err) {
-        console.error("Error setting up direct scraping SSE:", err);
-        setError("Failed to connect to extracted data stream");
-        setScraping(false);
-      }
     },
     [previewData]
   );
