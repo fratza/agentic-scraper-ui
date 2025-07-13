@@ -70,7 +70,10 @@ const downloadCSV = (
 };
 
 const TemplatePage: React.FC = () => {
-  const { resetScraper, extractedData, originUrl } = useScraperContext();
+  const { resetScraper, extractedData: rawExtractedData, originUrl } = useScraperContext();
+  
+  // Type the extracted data to include _contentType
+  const extractedData = rawExtractedData as (any & { _contentType?: string }) | null;
   // Check if we should use mock data
   const shouldUseMockData = useMockData();
 
@@ -122,6 +125,17 @@ const TemplatePage: React.FC = () => {
   // Use mock URL if in local environment and no real URL is available
   const displayUrl =
     originUrl || (shouldUseMockData ? "https://example.com/template" : null);
+
+  // Check if the content type is XML
+  const isXmlContent = extractedData?._contentType === 'xml';
+  
+  // Define fixed headers for XML content
+  const xmlHeaders = {
+    title: 'Title',
+    date: 'Date',
+    image: 'Image',
+    description: 'Description'
+  };
 
   // Handle navigation back to main page
   const handleBackToMain = (): void => {
@@ -213,6 +227,7 @@ const TemplatePage: React.FC = () => {
                         </div>
                       </div>
                     }
+                    headers={isXmlContent ? xmlHeaders : undefined}
                     cellClassName="table-text"
                     headerClassName="table-header-text"
                   />

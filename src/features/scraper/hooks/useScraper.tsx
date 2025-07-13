@@ -390,14 +390,18 @@ const useScraper = (): ScraperHook => {
 
           console.log("Received scraped data:", parsedData);
 
+          // Extract content type if available
+          const contentType = parsedData.data?.content_type;
+          console.log("Content type:", contentType);
+
           // Check for origin URL in the parsed data
-          if (parsedData.data.origin_url) {
+          if (parsedData.data?.origin_url) {
             const url = parsedData.data.origin_url;
             setOriginUrl(url);
             console.log("Origin URL set:", url);
           }
 
-          if (parsedData.data && parsedData.data.extractedData) {
+          if (parsedData.data?.extractedData) {
             // Handle extracted data
             let extractedData = parsedData.data.extractedData;
 
