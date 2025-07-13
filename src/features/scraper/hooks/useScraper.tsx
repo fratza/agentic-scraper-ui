@@ -391,13 +391,8 @@ const useScraper = (): ScraperHook => {
           console.log("Received scraped data:", parsedData);
 
           // Check for origin URL in the parsed data
-          if (
-            parsedData.url ||
-            parsedData.origin_url ||
-            (parsedData.data && parsedData.data.url)
-          ) {
-            const url =
-              parsedData.url || parsedData.origin_url || parsedData.data.url;
+          if (parsedData.data.origin_url) {
+            const url = parsedData.data.origin_url;
             setOriginUrl(url);
             console.log("Origin URL set:", url);
           }
@@ -405,11 +400,6 @@ const useScraper = (): ScraperHook => {
           if (parsedData.data && parsedData.data.extractedData) {
             // Handle extracted data
             let extractedData = parsedData.data.extractedData;
-
-            // If the data is an object with a 'data' property, use that
-            if (extractedData.data) {
-              extractedData = extractedData.data;
-            }
 
             // If the data is an array with one item, extract it
             if (Array.isArray(extractedData) && extractedData.length === 1) {
