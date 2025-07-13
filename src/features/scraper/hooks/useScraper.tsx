@@ -272,25 +272,6 @@ const useScraper = (): ScraperHook => {
     } finally {
       setLoading(false);
     }
-  }, []);
-
-  /**
-   * Start the scraping process using the resume_link and run_id from the preview data
-   */
-  const startScraping = useCallback(
-    async (resume_link: string) => {
-      // Reset any previous scraping state
-      SetExtractedData(null);
-      setError(null);
-      setScraping(true); // Open the loading modal
-      setProgress(0);
-
-      // Close any existing scraping event source
-      if (scrapingEventSourceRef.current) {
-        apiService.closeEventSource(scrapingEventSourceRef.current);
-        scrapingEventSourceRef.current = null;
-      }
-
       // If we're in a local environment, use mock data instead of making API calls
       if (shouldUseMockData) {
         console.log("Using mock data for scraping");
@@ -339,20 +320,7 @@ const useScraper = (): ScraperHook => {
         console.error("Error extracting run_id from preview data:", err);
       }
 
-      // Trigger the workflow if resume_link is provided
-      if (resume_link) {
-        console.log(
-          "Triggering scraping workflow with resume_link:",
-          resume_link
-        );
-        const triggered = apiService.triggerN8nWorkflow(resume_link);
-
-        if (!triggered) {
-          setError("Failed to trigger scraping workflow");
-          setScraping(false);
-          return;
-        }
-      }
+      // The backend will handle the workflow triggering
 
       // Set up SSE for scraped data
       try {
@@ -425,7 +393,6 @@ const useScraper = (): ScraperHook => {
           }
         };
 
-        // Listen for both event types: 'scrapedData'
         eventSource.addEventListener("scrapedData", handleScrapedData);
 
         // Handle progress events if available
@@ -473,6 +440,187 @@ const useScraper = (): ScraperHook => {
     },
     [previewData]
   );
+
+  /**
+   * Start the scraping process
+   */
+  const startScraping = useCallback(async () => {
+    // Reset any previous scraping state
+    SetExtractedData(null);
+    setError(null);
+    setScraping(true);
+    setProgress(0);
+
+    // Close any existing scraping event source
+    if (scrapingEventSourceRef.current) {
+      apiService.closeEventSource(scrapingEventSourceRef.current);
+      scrapingEventSourceRef.current = null;
+    }
+
+    // If we're in a local environment, use mock data instead of making API calls
+    if (shouldUseMockData) {
+      console.log("Using mock data for scraping");
+
+      // Simulate progress updates
+      const progressInterval = setInterval(() => {
+        setProgress((prev) => {
+          const newProgress = prev + 10;
+          if (newProgress >= 100) {
+            clearInterval(progressInterval);
+            return 100;
+          }
+          return newProgress;
+        });
+      }, 500);
+
+      // Simulate loading delay
+      setTimeout(() => {
+        // Use mock product data
+        SetExtractedData(mockProductData);
+        setOriginUrl(previewData?.url || "https://example.com/products");
+        setScraping(false);
+        setProgress(100);
+        clearInterval(progressInterval);
+      }, 2500);
+
+      return;
+    }
+
+    // Extract run_id from preview data if available
+    let runId: string | null = null;
+    try {
+      // Check different possible locations for run_id
+      if (previewData?.data?.run_id) {
+        runId = previewData.data.run_id;
+      } else if (previewData?.run_id) {
+        runId = previewData.run_id;
+      } else if (previewData?.sample?.[0]?.run_id) {
+        runId = previewData.sample[0].run_id;
+      }
+    } catch (err) {
+      console.error("Error extracting run_id from preview data:", err);
+    }
+
+    // The backend will handle the workflow triggering
+
+    // Set up SSE for scraped data
+    try {
+      // Create SSE connection to listen for extractedData events
+      const eventSource = apiService.createScrapingEventSource(
+        `direct-${Date.now()}`,
+        runId
+      );
+      scrapingEventSourceRef.current = eventSource;
+
+      // Handle connection open
+      eventSource.onopen = () => {
+        // Scraping SSE connection established
+      };
+
+      // Handler function for processing scraped data
+      const handleScrapedData = (event: MessageEvent) => {
+        try {
+          const parsedData = JSON.parse(event.data);
+
+          console.log("Received scraped data:", parsedData);
+
+          // Check for origin URL in the parsed data
+          if (
+            parsedData.url ||
+            parsedData.origin_url ||
+            (parsedData.data && parsedData.data.url)
+          ) {
+            const url =
+              parsedData.url || parsedData.origin_url || parsedData.data.url;
+            setOriginUrl(url);
+            console.log("Origin URL set:", url);
+          }
+
+          if (parsedData.data && parsedData.data.extractedData) {
+            // Handle extracted data
+            let extractedData = parsedData.data.extractedData;
+
+            // If the data is an object with a 'data' property, use that
+            if (extractedData.data) {
+              extractedData = extractedData.data;
+            }
+
+            // If the data is an array with one item, extract it
+            if (Array.isArray(extractedData) && extractedData.length === 1) {
+              extractedData = extractedData[0];
+            }
+
+            // Remove uuid from the data if it exists
+            if (extractedData.uuid) {
+              const { uuid, ...rest } = extractedData;
+              extractedData = rest;
+            }
+
+            // Set extracted data without uuid
+            SetExtractedData(extractedData);
+          } else {
+            SetExtractedData([{ message: "No Data Found" }]);
+          }
+
+          setScraping(false);
+          setProgress(100);
+
+          // Close the SSE connection
+          apiService.closeEventSource(eventSource);
+          scrapingEventSourceRef.current = null;
+        } catch (err) {
+          console.error("Error parsing extractedData:", err);
+          setError("Error processing extracted data");
+          setScraping(false);
+        }
+      };
+
+      // Add event listener for extracted data
+      eventSource.addEventListener("extractedData", handleScrapedData);
+
+      // Handle progress updates
+      eventSource.addEventListener("progress", (event: MessageEvent) => {
+        try {
+          const parsedData = JSON.parse(event.data);
+          // Received progress message
+
+          if (parsedData.progress !== undefined) {
+            setProgress(parsedData.progress);
+          }
+        } catch (err) {
+          console.error("Error parsing progress data:", err);
+        }
+      });
+
+      // Handle errors
+      eventSource.addEventListener("error", (event) => {
+        // SSE connection error
+        console.error("Scraping SSE error:", event);
+        setError("Error receiving extracted data");
+        setScraping(false);
+
+        // Close the connection
+        apiService.closeEventSource(eventSource);
+        scrapingEventSourceRef.current = null;
+      });
+
+      // Safety timeout
+      setTimeout(() => {
+        if (scrapingEventSourceRef.current === eventSource) {
+          setError("Scraping timed out. Please try again.");
+          setScraping(false);
+
+          // Close the connection
+          apiService.closeEventSource(eventSource);
+          scrapingEventSourceRef.current = null;
+        }
+      }, config.ui.progressTimeout || 240000);
+    } catch (err) {
+      console.error("Error setting up direct scraping SSE:", err);
+      setError("Failed to connect to extracted data stream");
+      setScraping(false);
+    }
+  }, [previewData, shouldUseMockData]);
 
   /**
    * Reset the scraper state and close any active connections

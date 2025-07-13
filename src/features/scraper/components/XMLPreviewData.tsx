@@ -423,7 +423,10 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                   </>
                 ) : (
                   <>
-                    <i className="fas fa-check" style={{ marginRight: "8px" }}></i>
+                    <i
+                      className="fas fa-check"
+                      style={{ marginRight: "8px" }}
+                    ></i>
                     Submit
                   </>
                 )}

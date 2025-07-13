@@ -12,6 +12,6 @@ export interface ScraperHook {
   progress: number;
   error: string | null;
   handleFormSubmit: (formData: any) => Promise<void>;
-  startScraping: (resume_link: string) => Promise<void>;
+  startScraping: () => Promise<void>;
   resetScraper: () => void;
 }

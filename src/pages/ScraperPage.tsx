@@ -22,7 +22,7 @@ const ScraperPage: React.FC = () => {
   const [showLoadingResults, setShowLoadingResults] = useState<boolean>(false);
   // Check if we should use mock data
   const shouldUseMockData = useMockData();
-  
+
   const {
     loading,
     previewData,
@@ -37,15 +37,10 @@ const ScraperPage: React.FC = () => {
 
   // Removed duplicate loading effect that was causing double refresh
 
-  const handleStartScraping = (resumeLink?: string): void => {
+  const handleStartScraping = (): void => {
     setIsModalOpen(false);
     setShowLoadingResults(true);
-    // Only call startScraping if resumeLink is provided
-    if (resumeLink) {
-      startScraping(resumeLink);
-    } else {
-      console.warn('No resume link provided to handleStartScraping');
-    }
+    startScraping();
   };
 
   const handleModalClose = (): void => {
@@ -147,7 +142,9 @@ const ScraperPage: React.FC = () => {
                   isOpen={true}
                   xmlData={
                     // Use mock XML data if in local environment and no real data is available
-                    shouldUseMockData && (!previewData?.sample?.[0]?.items && !extractedData)
+                    shouldUseMockData &&
+                    !previewData?.sample?.[0]?.items &&
+                    !extractedData
                       ? mockXMLData
                       : // Otherwise extract the items from the RSS data structure
                         previewData?.sample?.[0]?.items ||
@@ -158,7 +155,9 @@ const ScraperPage: React.FC = () => {
                   onClose={handleModalClose}
                   onAddRow={() => console.log("Add row clicked")}
                   onParse={handleStartScraping}
-                  onActionSelect={(fieldMappings) => console.log("Field mappings updated:", fieldMappings)}
+                  onActionSelect={(fieldMappings) =>
+                    console.log("Field mappings updated:", fieldMappings)
+                  }
                 />
               ) : (
                 <Preview
