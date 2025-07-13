@@ -48,9 +48,9 @@ const DataTable: React.FC<DataTableProps> = ({
   // Prepare data for the table
   const tableData = Array.isArray(data) ? data : [data];
   
-  // Get all keys from the first item
+  // Get all keys from the first item or use provided headers
   const firstItem = tableData[0];
-  const keys = Object.keys(firstItem);
+  const keys = headers ? Object.keys(headers) : Object.keys(firstItem);
 
   return (
     <Box sx={{ width: '100%', mb: 2 }}>
