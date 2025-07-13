@@ -70,10 +70,16 @@ const downloadCSV = (
 };
 
 const TemplatePage: React.FC = () => {
-  const { resetScraper, extractedData: rawExtractedData, originUrl } = useScraperContext();
-  
+  const {
+    resetScraper,
+    extractedData: rawExtractedData,
+    originUrl,
+  } = useScraperContext();
+
   // Type the extracted data to include _contentType
-  const extractedData = rawExtractedData as (any & { _contentType?: string }) | null;
+  const extractedData = rawExtractedData as
+    | (any & { _contentType?: string })
+    | null;
   // Check if we should use mock data
   const shouldUseMockData = useMockData();
 
@@ -127,14 +133,16 @@ const TemplatePage: React.FC = () => {
     originUrl || (shouldUseMockData ? "https://example.com/template" : null);
 
   // Check if the content type is XML
-  const isXmlContent = extractedData?._contentType === 'xml';
-  
+  const isXmlContent =
+    extractedData?._contentType === "xml" ||
+    extractedData?._contentType === "rss";
+
   // Define fixed headers for XML content
   const xmlHeaders = {
-    title: 'Title',
-    date: 'Date',
-    image: 'Image',
-    description: 'Description'
+    title: "Title",
+    date: "Date",
+    image: "Image",
+    description: "Description",
   };
 
   // Handle navigation back to main page
@@ -164,7 +172,10 @@ const TemplatePage: React.FC = () => {
           <section className="content-section" aria-labelledby="intro-heading">
             <Card className="intro-card">
               <h2 id="intro-heading">Scraped Data Results</h2>
-              <p>View and manage the data extracted from your web scraping session.</p>
+              <p>
+                View and manage the data extracted from your web scraping
+                session.
+              </p>
               <div className="card-actions">
                 <Button
                   icon="pi pi-refresh"
