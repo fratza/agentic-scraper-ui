@@ -197,19 +197,20 @@ const apiService = {
     }
   },
 
-  // Submit XML parsing request
+  // Submit XML parsing request with optional action
   submitXmlParseRequest: async (
-    data: ScrapeRequestData
+    data: ScrapeRequestData,
+    action: "approve" | "parse" = "parse"
   ): Promise<ScrapeResponse> => {
     try {
       // Submit XML parse request to the correct endpoint
       const response = await apiClient.post("/proceed-scrape", {
         ...data,
-        action: "approve"
+        action: action
       });
       return response.data;
     } catch (error) {
-      console.error("Error submitting XML parse request:", error);
+      console.error(`Error submitting XML parse request (action: ${action}):`, error);
       throw error;
     }
   },

@@ -255,12 +255,12 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
         // Close the modal
         onClose();
       } else {
-        // Submit the approve action to the backend
-        await apiService.submitPreviewData("approve");
-
-        // Submit the data to the API using the XML-specific endpoint
-        // The backend will handle the resume link
-        await apiService.submitXmlParseRequest(payload);
+        // Submit the data to the API using the XML-specific endpoint with approve action
+        // This combines both approve and parse into a single API call
+        await apiService.submitXmlParseRequest({
+          ...payload,
+          action: "approve"  // Explicitly set action to approve
+        });
 
         // Notify parent component that parsing has started
         if (onParse) {
