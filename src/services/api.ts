@@ -197,33 +197,19 @@ const apiService = {
     }
   },
 
-  // Submit XML parsing request with optional action
-  submitXmlParseRequest: async (
-    data: ScrapeRequestData,
-    action: "approve" | "parse" = "parse"
-  ): Promise<ScrapeResponse> => {
+  // Submit preview data with approve or cancel action and optional payload
+  submitPreviewData: async (
+    action: "approve" | "cancel",
+    payload: Record<string, any> = {}
+  ): Promise<any> => {
     try {
-      // Submit XML parse request to the correct endpoint
-      const response = await apiClient.post("/proceed-scrape", {
-        ...data,
-        action: action
-      });
-      return response.data;
-    } catch (error) {
-      console.error(`Error submitting XML parse request (action: ${action}):`, error);
-      throw error;
-    }
-  },
-
-  // Submit preview data with approve or cancel action
-  submitPreviewData: async (action: "approve" | "cancel"): Promise<any> => {
-    try {
-      // Send action to backend
+      // Send action to backend with optional payload
       const response = await fetch(API_URL + "/proceed-scrape", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: action,
+          ...payload,
         }),
       });
 
@@ -232,7 +218,6 @@ const apiService = {
       }
 
       const data = await response.json();
-      // Action response received
       return data;
     } catch (error) {
       console.error(`Error in ${action} action:`, error);
