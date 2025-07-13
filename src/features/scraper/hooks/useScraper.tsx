@@ -69,209 +69,211 @@ const useScraper = (): ScraperHook => {
   /**
    * Handle form submission and fetch preview data from the backend using SSE
    */
-  const handleFormSubmit = useCallback(async (formData: any) => {
-    // Reset states
-    setLoading(true);
-    setError(null);
-    setPreviewData(null); // Clear any previous preview data
-    SetExtractedData(null);
+  const handleFormSubmit = useCallback(
+    async (formData: any) => {
+      // Reset states
+      setLoading(true);
+      setError(null);
+      setPreviewData(null); // Clear any previous preview data
+      SetExtractedData(null);
 
-    // Close any existing event source
-    if (previewEventSourceRef.current) {
-      apiService.closeEventSource(previewEventSourceRef.current);
-      previewEventSourceRef.current = null;
-    }
+      // Close any existing event source
+      if (previewEventSourceRef.current) {
+        apiService.closeEventSource(previewEventSourceRef.current);
+        previewEventSourceRef.current = null;
+      }
 
-    // If we're in a local environment, use mock data instead of making API calls
-    if (shouldUseMockData) {
-      console.log("Using mock data for form submission");
+      // If we're in a local environment, use mock data instead of making API calls
+      if (shouldUseMockData) {
+        console.log("Using mock data for form submission");
 
-      // Simulate loading delay
-      setTimeout(() => {
-        // Create mock preview data based on the form input
-        const mockPreview: PreviewData = {
-          url: formData.url || "https://example.com/products",
-          title: "Example Products Page",
-          html: "<div class='product-list'>...</div>",
-          screenshot: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...",
-          selectors: formData.selectors || [
-            ".product-card",
-            ".product-title",
-            ".product-price",
-            ".product-image",
-          ],
-        };
-
-        setPreviewData(mockPreview);
-        setOriginUrl(formData.url || "https://example.com/products");
-        setLoading(false);
-      }, 1000);
-
-      return;
-    }
-
-    try {
-      // Set up timeout for preview data
-      const timeoutPromise = new Promise<never>((_, reject) => {
+        // Simulate loading delay
         setTimeout(() => {
-          reject(new Error("Preview request timed out"));
-        }, 120000); // 2 minutes timeout (increased from 30 seconds)
-      });
+          // Create mock preview data based on the form input
+          const mockPreview: PreviewData = {
+            url: formData.url || "https://example.com/products",
+            title: "Example Products Page",
+            html: "<div class='product-list'>...</div>",
+            screenshot: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...",
+            selectors: formData.selectors || [
+              ".product-card",
+              ".product-title",
+              ".product-price",
+              ".product-image",
+            ],
+          };
 
-      // Create a new promise for SSE connection
-      const ssePromise = new Promise<PreviewData>((resolve, reject) => {
-        const eventSource = apiService.createPreviewEventSource(formData);
-        previewEventSourceRef.current = eventSource;
+          setPreviewData(mockPreview);
+          setOriginUrl(formData.url || "https://example.com/products");
+          setLoading(false);
+        }, 1000);
 
-        eventSource.onopen = () => {
-          setTimeout(() => {
-            if (loading && !previewData) {
-              apiService
-                .getSamplePreview()
-                .then((data) => {
-                  if (data) {
-                    console.log("Setting preview data from fallback:", data);
-                    setPreviewData(data);
-                    setLoading(false);
-                    apiService.closeEventSource(eventSource);
-                    previewEventSourceRef.current = null;
-                  }
-                })
-                .catch((err) =>
-                  console.error("Fallback preview request failed:", err)
-                );
-            }
-          }, 10000);
-        };
-
-        eventSource.addEventListener("connect", (event) => {
-          // SSE connection established
-          // This just confirms the connection, we still need to wait for data
-        });
-
-        // Handle message events (contains the actual preview data)
-        eventSource.addEventListener("preview", (event: MessageEvent) => {
-          try {
-            const parsedData = JSON.parse(event.data);
-
-            // Extract the actual data from the structure
-            // The SSE data structure is: { timestamp: "...", data: { ... } }
-            let previewData: PreviewData = parsedData;
-
-            // Check if the data is nested inside a data property
-            if (parsedData && parsedData.data) {
-              previewData = parsedData.data;
-            }
-
-            // Check content type from the parsed data
-            console.log("Preview data received:", parsedData);
-            // The content_type is at the root level of the parsed data
-            const contentType = parsedData.content_type || "html";
-            console.log("Content type detected in preview:", contentType);
-
-            // Store content type with the preview data
-            // Handle both "rss" and "xml" content types
-            const isXmlContent = contentType === "rss" || contentType === "xml";
-            previewData = {
-              ...previewData,
-              contentType: isXmlContent ? "xml" : "html",
-            };
-
-            if (
-              previewData &&
-              !previewData.sample &&
-              typeof previewData === "object"
-            ) {
-              previewData = {
-                ...previewData,
-                sample: Array.isArray(previewData)
-                  ? previewData
-                  : [previewData],
-              };
-            }
-
-            setPreviewData(previewData);
-            setLoading(false);
-
-            // Close the SSE connection immediately after receiving the preview event
-            console.log(
-              "Closing preview SSE connection after receiving preview event"
-            );
-            apiService.closeEventSource(eventSource);
-            previewEventSourceRef.current = null;
-            resolve(previewData);
-          } catch (err) {
-            console.error("Error parsing preview data:", err);
-            reject(err);
-          }
-        });
-
-        // Handle errors
-        eventSource.onerror = (err) => {
-          // SSE connection error
-          console.error("Preview SSE error:", err);
-          apiService.closeEventSource(eventSource);
-          previewEventSourceRef.current = null;
-
-          // Instead of rejecting, let's try a fallback approach
-          apiService
-            .getSamplePreview()
-            .then((data) => {
-              if (data) {
-                // Use raw data directly without enrichment
-                setPreviewData(data);
-                setLoading(false);
-                resolve(data);
-              }
-            })
-            .catch((err) => {
-              console.error("Fallback preview request failed:", err);
-              reject(
-                new Error("Error in preview data stream and fallback failed")
-              );
-            });
-        };
-      });
-
-      // Set up a status update for long-running requests
-      const statusUpdateInterval = setInterval(() => {
-        // Still waiting for preview data
-        // You could update UI here to show waiting time or a more detailed status
-      }, 10000); // Update every 10 seconds
+        return;
+      }
 
       try {
-        // Race between SSE and timeout
-        await Promise.race([ssePromise, timeoutPromise]);
+        // Set up timeout for preview data
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          setTimeout(() => {
+            reject(new Error("Preview request timed out"));
+          }, 120000); // 2 minutes timeout (increased from 30 seconds)
+        });
+
+        // Create a new promise for SSE connection
+        const ssePromise = new Promise<PreviewData>((resolve, reject) => {
+          const eventSource = apiService.createPreviewEventSource(formData);
+          previewEventSourceRef.current = eventSource;
+
+          eventSource.onopen = () => {
+            setTimeout(() => {
+              if (loading && !previewData) {
+                apiService
+                  .getSamplePreview()
+                  .then((data) => {
+                    if (data) {
+                      console.log("Setting preview data from fallback:", data);
+                      setPreviewData(data);
+                      setLoading(false);
+                      apiService.closeEventSource(eventSource);
+                      previewEventSourceRef.current = null;
+                    }
+                  })
+                  .catch((err) =>
+                    console.error("Fallback preview request failed:", err)
+                  );
+              }
+            }, 10000);
+          };
+
+          eventSource.addEventListener("connect", (event) => {
+            // SSE connection established
+            // This just confirms the connection, we still need to wait for data
+          });
+
+          // Handle message events (contains the actual preview data)
+          eventSource.addEventListener("preview", (event: MessageEvent) => {
+            try {
+              const parsedData = JSON.parse(event.data);
+
+              // Extract the actual data from the structure
+              // The SSE data structure is: { timestamp: "...", data: { ... } }
+              let previewData: PreviewData = parsedData;
+
+              // Check if the data is nested inside a data property
+              if (parsedData && parsedData.data) {
+                previewData = parsedData.data;
+              }
+
+              // Check content type from the parsed data
+              console.log("Preview data received:", parsedData);
+              // The content_type is at the root level of the parsed data
+              const contentType = parsedData.content_type || "html";
+              console.log("Content type detected in preview:", contentType);
+
+              // Store content type with the preview data
+              // Handle both "rss" and "xml" content types
+              const isXmlContent =
+                contentType === "rss" || contentType === "xml";
+              previewData = {
+                ...previewData,
+                contentType: isXmlContent ? "xml" : "html",
+              };
+
+              if (
+                previewData &&
+                !previewData.sample &&
+                typeof previewData === "object"
+              ) {
+                previewData = {
+                  ...previewData,
+                  sample: Array.isArray(previewData)
+                    ? previewData
+                    : [previewData],
+                };
+              }
+
+              setPreviewData(previewData);
+              setLoading(false);
+
+              // Close the SSE connection immediately after receiving the preview event
+              console.log(
+                "Closing preview SSE connection after receiving preview event"
+              );
+              apiService.closeEventSource(eventSource);
+              previewEventSourceRef.current = null;
+              resolve(previewData);
+            } catch (err) {
+              console.error("Error parsing preview data:", err);
+              reject(err);
+            }
+          });
+
+          // Handle errors
+          eventSource.onerror = (err) => {
+            // SSE connection error
+            console.error("Preview SSE error:", err);
+            apiService.closeEventSource(eventSource);
+            previewEventSourceRef.current = null;
+
+            // Instead of rejecting, let's try a fallback approach
+            apiService
+              .getSamplePreview()
+              .then((data) => {
+                if (data) {
+                  // Use raw data directly without enrichment
+                  setPreviewData(data);
+                  setLoading(false);
+                  resolve(data);
+                }
+              })
+              .catch((err) => {
+                console.error("Fallback preview request failed:", err);
+                reject(
+                  new Error("Error in preview data stream and fallback failed")
+                );
+              });
+          };
+        });
+
+        // Set up a status update for long-running requests
+        const statusUpdateInterval = setInterval(() => {
+          // Still waiting for preview data
+          // You could update UI here to show waiting time or a more detailed status
+        }, 10000); // Update every 10 seconds
+
+        try {
+          // Race between SSE and timeout
+          await Promise.race([ssePromise, timeoutPromise]);
+        } finally {
+          // Clear the status update interval
+          clearInterval(statusUpdateInterval);
+        }
+      } catch (err: any) {
+        console.error("Error fetching preview data:", err);
+
+        if (err.message === "Preview request timed out") {
+          // Instead of showing error, we could continue waiting or show a more friendly message
+          setError(
+            "The backend is still processing. You can continue waiting or try again later."
+          );
+        } else {
+          // Fallback to creating minimal data structure if API fails
+          const fallbackPreviewData: PreviewData = {
+            data: {
+              message: "No data available",
+              error: "API connection failed",
+            },
+            timestamp: new Date().toISOString(),
+          };
+
+          setPreviewData(fallbackPreviewData);
+          setError(
+            "Could not fetch preview data from server. Using fallback data."
+          );
+        }
       } finally {
-        // Clear the status update interval
-        clearInterval(statusUpdateInterval);
+        setLoading(false);
       }
-    } catch (err: any) {
-      console.error("Error fetching preview data:", err);
-
-      if (err.message === "Preview request timed out") {
-        // Instead of showing error, we could continue waiting or show a more friendly message
-        setError(
-          "The backend is still processing. You can continue waiting or try again later."
-        );
-      } else {
-        // Fallback to creating minimal data structure if API fails
-        const fallbackPreviewData: PreviewData = {
-          data: {
-            message: "No data available",
-            error: "API connection failed",
-          },
-          timestamp: new Date().toISOString(),
-        };
-
-        setPreviewData(fallbackPreviewData);
-        setError(
-          "Could not fetch preview data from server. Using fallback data."
-        );
-      }
-    } finally {
-      setLoading(false);
-    }
       // If we're in a local environment, use mock data instead of making API calls
       if (shouldUseMockData) {
         console.log("Using mock data for scraping");
@@ -392,8 +394,6 @@ const useScraper = (): ScraperHook => {
             setScraping(false);
           }
         };
-
-        eventSource.addEventListener("scrapedData", handleScrapedData);
 
         // Handle progress events if available
         eventSource.addEventListener("message", (event: MessageEvent) => {
@@ -569,14 +569,14 @@ const useScraper = (): ScraperHook => {
           apiService.closeEventSource(eventSource);
           scrapingEventSourceRef.current = null;
         } catch (err) {
-          console.error("Error parsing extractedData:", err);
-          setError("Error processing extracted data");
+          console.error("Error parsing scraped data:", err);
+          setError("Error processing scraped data");
           setScraping(false);
         }
       };
 
-      // Add event listener for extracted data
-      eventSource.addEventListener("extractedData", handleScrapedData);
+      // Add event listener for scraped data
+      eventSource.addEventListener("scrapedData", handleScrapedData);
 
       // Handle progress updates
       eventSource.addEventListener("progress", (event: MessageEvent) => {
