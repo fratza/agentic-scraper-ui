@@ -350,7 +350,8 @@ const useScraper = (): ScraperHook => {
           // Scraping SSE connection established
         };
 
-        eventSource.addEventListener("scrapedData", (event: MessageEvent) => {
+        // Handler function for processing scraped data
+        const handleScrapedData = (event: MessageEvent) => {
           try {
             const parsedData = JSON.parse(event.data);
 
@@ -401,7 +402,11 @@ const useScraper = (): ScraperHook => {
             setError("Error processing extracted data");
             setScraping(false);
           }
-        });
+        };
+
+        // Listen for both event types: 'scrapedData' and 'Scraped'
+        eventSource.addEventListener("scrapedData", handleScrapedData);
+        eventSource.addEventListener("Scraped", handleScrapedData);
 
         // Handle progress events if available
         eventSource.addEventListener("message", (event: MessageEvent) => {

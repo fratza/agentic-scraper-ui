@@ -37,10 +37,15 @@ const ScraperPage: React.FC = () => {
 
   // Removed duplicate loading effect that was causing double refresh
 
-  const handleStartScraping = (resumeLink: string): void => {
+  const handleStartScraping = (resumeLink?: string): void => {
     setIsModalOpen(false);
     setShowLoadingResults(true);
-    startScraping(resumeLink);
+    // Only call startScraping if resumeLink is provided
+    if (resumeLink) {
+      startScraping(resumeLink);
+    } else {
+      console.warn('No resume link provided to handleStartScraping');
+    }
   };
 
   const handleModalClose = (): void => {
@@ -152,6 +157,8 @@ const ScraperPage: React.FC = () => {
                   }
                   onClose={handleModalClose}
                   onAddRow={() => console.log("Add row clicked")}
+                  onParse={handleStartScraping}
+                  onActionSelect={(fieldMappings) => console.log("Field mappings updated:", fieldMappings)}
                 />
               ) : (
                 <Preview
