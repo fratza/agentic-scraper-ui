@@ -55,6 +55,25 @@ const DataTable: React.FC<DataTableProps> = ({
   if (headers) {
     // Always use the exact order of keys as defined in the headers object
     keys = Object.keys(headers);
+    
+    // Ensure all data has the same structure as headers
+    tableData.forEach(item => {
+      if (item) {
+        // Add any missing keys from headers to the data
+        Object.keys(headers).forEach(key => {
+          if (!(key in item)) {
+            item[key] = ''; // Initialize missing keys with empty string
+          }
+        });
+        
+        // Remove any keys not in headers
+        Object.keys(item).forEach(key => {
+          if (!(key in headers) && key !== '_contentType') {
+            delete item[key];
+          }
+        });
+      }
+    });
   } else if (firstItem) {
     // Fall back to object keys if no headers provided
     keys = Object.keys(firstItem);
