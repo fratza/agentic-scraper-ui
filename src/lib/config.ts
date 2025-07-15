@@ -32,7 +32,7 @@ export const config: AppConfig = {
       scrape: "/scrape",
       status: "/scrape/status",
       results: "/scrape/results",
-      urlList: "/api/supabase/url-list",
+      urlList: "/supabase/url-list",
     },
     timeout: 30000, // 30 seconds
   },
