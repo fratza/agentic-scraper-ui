@@ -145,10 +145,10 @@ const apiService = {
   // URL List API
   async getUrlList(): Promise<UrlListResponse> {
     try {
-      const response = await axiosInstance.get('/api/supabase/url-list');
+      const response = await axiosInstance.get("/api/supabase/url-list");
       return response.data;
     } catch (error) {
-      console.error('Error fetching URL list:', error);
+      console.error("Error fetching URL list:", error);
       throw error;
     }
   },

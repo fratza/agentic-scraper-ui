@@ -12,12 +12,20 @@ import {
   TaskStatus,
 } from "../features/monitoring/types";
 import TaskTable from "../features/monitoring/TaskTable";
-
 import { useScraperContext } from "../context/ScraperContext";
 import DataTable from "../features/scraper/components/DataTable";
+import DataResultsTable from "../features/dashboard/DataResultsTable";
+import OriginUrlsTable from "../features/dashboard/OriginUrlsTable";
 import { useMockData } from "../utils/environment";
 import { mockTemplateData } from "../data/mockTableData";
+import { fetchUrlList } from "../api/urls";
 import "../styles/Dashboard.css";
+
+// Type for URL list response
+interface UrlListResponse {
+  status: 'success' | 'error';
+  data: string[];
+}
 
 // Helper function to convert data to CSV
 const convertToCSV = (data: any[]): string => {
@@ -94,6 +102,8 @@ const Dashboard: React.FC = () => {
     []
   );
   const [showApiData, setShowApiData] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const intervalTypes = [
     { label: "Hours", value: "hours" },
@@ -123,6 +133,32 @@ const Dashboard: React.FC = () => {
 
   const handleTabClick = (tabId: string) => {
     setActiveTab(tabId);
+  };
+
+  // Fetch URL list when "Okay, Looks good" button is clicked
+  const handleOkClick = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetchUrlList();
+      
+      if (response.status === 'success') {
+        // Map URLs to the expected format
+        const formattedUrls = response.data.map((url, index) => ({
+          id: `url-${index + 1}`,
+          origin_url: url
+        }));
+        
+        setApiData(formattedUrls);
+        setShowApiData(true);
+      } else {
+        setError('Failed to fetch URL list. Server returned error.');
+      }
+    } catch (err) {
+      setError('Failed to fetch URL list. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleRunTask = (taskId: string) => {
@@ -370,64 +406,23 @@ const Dashboard: React.FC = () => {
                             </div>
                           </div>
                         </div>
-                        <DataTable
-                          data={apiData.map((item) => ({
-                            url: item.origin_url,
-                          }))}
-                          title={
-                            <div className="data-title-container">
-                              <div className="ed-label">
-                                <span>URL Results:</span>
-                              </div>
-                            </div>
-                          }
-                          headers={{ url: "URL" }}
-                          cellClassName="table-text"
-                          headerClassName="table-header-text"
+                        <OriginUrlsTable
+                          data={apiData}
+                          onViewResult={(url) => {
+                            // TODO: Implement view result functionality
+                            console.log("Viewing result for:", url);
+                          }}
+                          title="URL Results"
                         />
                       </div>
                     ) : tableData ? (
-                      <div className="data-preview-container">
-                        <div className="data-table-header">
-                          <div className="origin-url-container">
-                            {displayUrl && (
-                              <div className="origin-url">
-                                <span>URL: </span>
-                                <a
-                                  href={displayUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  title={displayUrl}
-                                >
-                                  {displayUrl}
-                                </a>
-                              </div>
-                            )}
-                          </div>
-                          <div className="export-btn-container">
-                            <Button
-                              icon="pi pi-download"
-                              label="Export"
-                              className="btn btn-export"
-                              onClick={() => downloadCSV(tableData)}
-                              aria-label="Extract data as CSV"
-                            />
-                          </div>
-                        </div>
-                        <DataTable
-                          data={tableData}
-                          title={
-                            <div className="data-title-container">
-                              <div className="ed-label">
-                                <span>Extracted Data Results:</span>
-                              </div>
-                            </div>
-                          }
-                          headers={isXmlContent ? xmlHeaders : undefined}
-                          cellClassName="table-text"
-                          headerClassName="table-header-text"
-                        />
-                      </div>
+                      <DataResultsTable
+                        data={tableData}
+                        originUrl={displayUrl}
+                        onBackToMain={handleBackToMain}
+                        onDownloadCSV={downloadCSV}
+                        isXmlContent={isXmlContent}
+                      />
                     ) : (
                       <p>
                         No data found. Please run a new scrape to extract data.
@@ -471,17 +466,26 @@ const Dashboard: React.FC = () => {
 
               <div className="card-actions mt-4">
                 <Button
+                  icon="pi pi-check"
+                  label="Okay, Looks good!"
+                  className="btn btn-primary"
+                  onClick={() => handleOkClick()}
+                  aria-label="Fetch URL list"
+                  loading={loading}
+                />
+                {error && (
+                  <div className="p-error mt-2">
+                    {error}
+                  </div>
+                )}
+                <div className="spacer"></div>
+                <Button
                   icon="pi pi-search"
                   label="New Scrape"
                   className="btn btn-primary"
                   onClick={() => (window.location.href = "/")}
                   aria-label="Start new scrape"
                 />
-                <div className="spacer"></div>
-                <Button
-                  icon="pi pi-check"
-                  label="Okay, Looks good!"
-                  className="btn btn-success"
                   onClick={fetchApiData}
                   aria-label="Confirm data looks good"
                 />
