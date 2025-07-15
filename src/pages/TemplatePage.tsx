@@ -2,6 +2,16 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
+import { SquareMenu, CirclePlus } from "lucide-react";
+import { NewTaskModal } from "../features/monitoring/components/NewTaskModal";
+import { InputText } from "primereact/inputtext";
+import { InputTextarea } from "primereact/inputtextarea";
+import {
+  mockTasks,
+  ScrapingTask,
+  TaskStatus,
+} from "../features/monitoring/types";
+import TaskTable from "../features/monitoring/TaskTable";
 
 import { useScraperContext } from "../context/ScraperContext";
 import DataTable from "../features/scraper/components/DataTable";
@@ -72,9 +82,95 @@ const downloadCSV = (
 
 const TemplatePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("data");
+  const [tasks, setTasks] = useState<ScrapingTask[]>(mockTasks);
+  const [showNewTaskDialog, setShowNewTaskDialog] = useState(false);
+  const [newTask, setNewTask] = useState<Partial<ScrapingTask>>({
+    name: "",
+    url: "",
+    intervalValue: 1,
+    intervalType: "hours" as const,
+  });
+
+  const intervalTypes = [
+    { label: "Hours", value: "hours" },
+    { label: "Minutes", value: "minutes" },
+    { label: "Days", value: "days" },
+    { label: "Weeks", value: "weeks" },
+  ];
+
+  // Simulated API call to fetch URLs
+  const [urls, setUrls] = useState<string[]>([]);
+  useEffect(() => {
+    const fetchUrls = async () => {
+      try {
+        // In a real app, this would be an API call
+        const mockUrls = [
+          "https://example.com/page1",
+          "https://example.com/page2",
+          "https://example.com/page3",
+        ];
+        setUrls(mockUrls);
+      } catch (error) {
+        console.error("Failed to fetch URLs:", error);
+      }
+    };
+    fetchUrls();
+  }, []);
 
   const handleTabClick = (tabId: string) => {
     setActiveTab(tabId);
+  };
+
+  const handleRunTask = (taskId: string) => {
+    // In a real app, this would trigger the task via API
+    const task = tasks.find((t) => t.id === taskId);
+    if (task) {
+      // Simulate task running
+      const status: TaskStatus = Math.random() > 0.8 ? "error" : "active";
+      const updatedTask: ScrapingTask = {
+        ...task,
+        lastRun: new Date(),
+        nextRun: new Date(Date.now() + 3 * 60 * 60 * 1000), // 3 hours later
+        status,
+        lastError: status === "error" ? "Failed to fetch data" : undefined,
+      };
+
+      setTasks(tasks.map((t) => (t.id === taskId ? updatedTask : t)));
+    }
+  };
+
+  const handleCreateTask = () => {
+    if (
+      newTask.name &&
+      newTask.url &&
+      newTask.intervalValue &&
+      newTask.intervalType
+    ) {
+      const newTaskObj: ScrapingTask = {
+        id: `task-${Date.now()}`,
+        name: newTask.name,
+        url: newTask.url,
+        intervalValue: newTask.intervalValue,
+        intervalType: newTask.intervalType as
+          | "hours"
+          | "minutes"
+          | "days"
+          | "weeks",
+        lastRun: null,
+        nextRun: new Date(), // Would be calculated based on schedule in a real app
+        status: "inactive",
+        description: newTask.description || "",
+      };
+
+      setTasks([...tasks, newTaskObj]);
+      setShowNewTaskDialog(false);
+      setNewTask({
+        name: "",
+        url: "",
+        intervalValue: 1,
+        intervalType: "hours" as const,
+      });
+    }
   };
   const {
     resetScraper,
@@ -90,9 +186,7 @@ const TemplatePage: React.FC = () => {
   const shouldUseMockData = useMockData();
 
   // Log extracted data for debugging
-  useEffect(() => {
-    console.log("Extracted data in TemplatePage:", extractedData);
-  }, [extractedData]);
+  useEffect(() => {}, [extractedData]);
 
   // Process extracted data for table display and remove UUIDs
   const getTableData = () => {
@@ -304,20 +398,31 @@ const TemplatePage: React.FC = () => {
                       activeTab === "monitoring" ? "active" : ""
                     }`}
                   >
-                    <div className="monitoring-placeholder">
-                      <i
-                        className="pi pi-chart-line"
-                        style={{
-                          fontSize: "2.5rem",
-                          color: "var(--primary-color)",
-                        }}
-                      ></i>
-                      <h3>Monitoring Dashboard</h3>
-                      <p>
-                        Monitoring features and analytics will be displayed
-                        here.
-                      </p>
+                    <div className="monitoring-dashboard">
+                      <div className="dashboard-header">
+                        <h3>Scheduled Tasks</h3>
+                        <Button
+                          className="btn btn-primary"
+                          onClick={() => setShowNewTaskDialog(true)}
+                          aria-label="Create new task"
+                        >
+                          <CirclePlus size={18} />
+                          New Task
+                        </Button>
+                      </div>
+
+                      <div className="task-table-container">
+                        <TaskTable tasks={tasks} onRunTask={handleRunTask} />
+                      </div>
                     </div>
+
+                    <NewTaskModal
+                      isOpen={showNewTaskDialog}
+                      onClose={() => setShowNewTaskDialog(false)}
+                      onSubmit={handleCreateTask}
+                      initialData={newTask}
+                      urls={urls}
+                    />
                   </div>
                 </div>
               </div>
@@ -334,16 +439,6 @@ const TemplatePage: React.FC = () => {
               </div>
             </Card>
           </section>
-
-          <div className="page-actions">
-            <Button
-              icon="pi pi-arrow-left"
-              label="Back to Scraper"
-              className="btn btn-secondary"
-              onClick={handleBackToMain}
-              aria-label="Navigate back to home page"
-            />
-          </div>
         </div>
       </motion.div>
     </>

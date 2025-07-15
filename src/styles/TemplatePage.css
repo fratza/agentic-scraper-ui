@@ -327,6 +327,229 @@
   display: block;
 }
 
+/* Monitoring Dashboard Styles */
+.monitoring-dashboard {
+  padding: 1rem 0;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-header h3 {
+  margin: 0;
+  color: var(--text-color);
+}
+
+.task-table-container {
+  background: var(--card-background);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  width: 100%;
+}
+
+.monitoring-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.monitoring-table th,
+.monitoring-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  word-wrap: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.monitoring-table th {
+  background-color: var(--surface-50);
+  white-space: nowrap;
+}
+
+/* Set column widths */
+.monitoring-table th:nth-child(1),
+.monitoring-table td:nth-child(1) {
+  width: 20%;
+}
+
+.monitoring-table th:nth-child(2),
+.monitoring-table td:nth-child(2) {
+  width: 15%;
+}
+
+.monitoring-table th:nth-child(3),
+.monitoring-table td:nth-child(3) {
+  width: 15%;
+}
+
+.monitoring-table th:nth-child(4),
+.monitoring-table td:nth-child(4) {
+  width: 10%;
+}
+
+.monitoring-table th:nth-child(5),
+.monitoring-table td:nth-child(5) {
+  width: 10%;
+}
+
+.monitoring-table th:nth-child(6),
+.monitoring-table td:nth-child(6) {
+  width: 15%;
+}
+
+.monitoring-table th:last-child,
+.monitoring-table td:last-child {
+  width: 15%;
+  text-align: center;
+  padding: 1rem 0.5rem;
+}
+
+.actions-cell {
+  text-align: center;
+}
+
+.actions-cell .p-button {
+  margin: 0 0.25rem;
+  padding: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actions-cell .p-button .icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actions-cell .p-button .lucide {
+  vertical-align: middle;
+}
+
+.actions-cell .p-button.p-button-text:not(:disabled):hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.actions-cell .p-button.p-button-text.p-button-danger:not(:disabled):hover {
+  background: rgba(220, 53, 69, 0.04);
+  color: #dc3545;
+}
+
+.actions-cell .p-button.p-button-text.p-button-primary:not(:disabled):hover {
+  background: rgba(13, 110, 253, 0.04);
+  color: #0d6efd;
+}
+
+/* Make table responsive */
+@media (max-width: 992px) {
+  .monitoring-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  .monitoring-table th,
+  .monitoring-table td {
+    min-width: 150px;
+  }
+}
+
+.monitoring-table tr:hover {
+  background-color: var(--surface-50);
+}
+
+.monitoring-table tr.error-row {
+  background-color: rgba(255, 193, 193, 0.1);
+}
+
+.monitoring-table tr.error-row:hover {
+  background-color: rgba(255, 193, 193, 0.2);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-badge.active {
+  background-color: rgba(25, 135, 84, 0.1);
+  color: #198754;
+}
+
+.status-badge.inactive {
+  background-color: rgba(108, 117, 125, 0.1);
+  color: #6c757d;
+}
+
+.status-badge.error {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.status-toggle {
+  transform: scale(0.8);
+}
+
+.schedule-help {
+  cursor: help;
+  border-bottom: 1px dashed var(--text-light);
+}
+
+/* Dialog styles */
+.task-dialog .p-dialog-content {
+  padding: 1.5rem;
+}
+
+.task-dialog .p-field {
+  margin-bottom: 1.5rem;
+}
+
+.task-dialog .p-field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.task-dialog .p-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  margin-top: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .monitoring-table th,
+  .monitoring-table td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .dashboard-header .p-button {
+    width: 100%;
+  }
+}
+
 .origin-url a {
   color: #4dabf7;
   text-decoration: none;
