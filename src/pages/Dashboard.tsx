@@ -486,9 +486,19 @@ const Dashboard: React.FC = () => {
                   onClick={() => (window.location.href = "/")}
                   aria-label="Start new scrape"
                 />
-                  onClick={fetchApiData}
-                  aria-label="Confirm data looks good"
+                <Button
+                  icon="pi pi-check"
+                  label="Okay, Looks good!"
+                  className="btn btn-primary"
+                  onClick={handleOkClick}
+                  aria-label="Fetch URL list"
+                  loading={loading}
                 />
+                {error && (
+                  <div className="p-error mt-2">
+                    {error}
+                  </div>
+                )}
               </div>
             </Card>
           </section>
