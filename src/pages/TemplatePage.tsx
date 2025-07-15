@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
+
 import { useScraperContext } from "../context/ScraperContext";
 import DataTable from "../features/scraper/components/DataTable";
 import { useMockData } from "../utils/environment";
@@ -70,6 +71,11 @@ const downloadCSV = (
 };
 
 const TemplatePage: React.FC = () => {
+  const [activeTab, setActiveTab] = useState("data");
+
+  const handleTabClick = (tabId: string) => {
+    setActiveTab(tabId);
+  };
   const {
     resetScraper,
     extractedData: rawExtractedData,
@@ -92,25 +98,25 @@ const TemplatePage: React.FC = () => {
   const getTableData = () => {
     // Helper function to remove UUID from a single item
     const removeUuid = (item: any): any => {
-      if (item === null || typeof item !== 'object') {
+      if (item === null || typeof item !== "object") {
         return item;
       }
-      
+
       // Create a new object without the uuid field
       const { uuid, ...rest } = item;
-      
+
       // Recursively process nested objects and arrays
       const result: Record<string, any> = {};
       for (const [key, value] of Object.entries(rest)) {
         if (Array.isArray(value)) {
-          result[key] = value.map(item => removeUuid(item));
-        } else if (value !== null && typeof value === 'object') {
+          result[key] = value.map((item) => removeUuid(item));
+        } else if (value !== null && typeof value === "object") {
           result[key] = removeUuid(value);
         } else {
           result[key] = value;
         }
       }
-      
+
       return result;
     };
 
@@ -218,60 +224,105 @@ const TemplatePage: React.FC = () => {
             aria-live="polite"
           >
             <Card className="info-card">
-              {/* <h3>Template Page</h3>
-              <p>
-                This page displays a preview of the data table with sample data.
-              </p> */}
-
-              {tableData ? (
-                <div className="data-preview-container">
-                  <div className="data-table-header">
-                    {/* Origin URL display on the left */}
-                    <div className="origin-url-container">
-                      {displayUrl && (
-                        <div className="origin-url">
-                          <span>URL: </span>
-                          <a
-                            href={displayUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title={displayUrl}
-                          >
-                            {displayUrl}
-                          </a>
+              <div className="card-tabs">
+                <div className="tab-header">
+                  <button
+                    className={`tab-button ${
+                      activeTab === "data" ? "active" : ""
+                    }`}
+                    onClick={() => handleTabClick("data")}
+                  >
+                    Data Results
+                  </button>
+                  <button
+                    className={`tab-button ${
+                      activeTab === "monitoring" ? "active" : ""
+                    }`}
+                    onClick={() => handleTabClick("monitoring")}
+                  >
+                    Monitoring
+                  </button>
+                </div>
+                <div className="tab-content">
+                  <div
+                    className={`tab-pane ${
+                      activeTab === "data" ? "active" : ""
+                    }`}
+                  >
+                    {tableData ? (
+                      <div className="data-preview-container">
+                        <div className="data-table-header">
+                          <div className="origin-url-container">
+                            {displayUrl && (
+                              <div className="origin-url">
+                                <span>URL: </span>
+                                <a
+                                  href={displayUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  title={displayUrl}
+                                >
+                                  {displayUrl}
+                                </a>
+                              </div>
+                            )}
+                          </div>
+                          <div className="export-btn-container">
+                            <Button
+                              icon="pi pi-download"
+                              label="Export"
+                              className="btn btn-export"
+                              onClick={() => downloadCSV(tableData)}
+                              aria-label="Extract data as CSV"
+                            />
+                          </div>
                         </div>
-                      )}
-                    </div>
-                    <div className="export-btn-container">
-                      <Button
-                        icon="pi pi-download"
-                        label="Export"
-                        className="btn btn-export "
-                        onClick={() => downloadCSV(tableData)}
-                        aria-label="Extract data as CSV"
-                      />
-                    </div>
+
+                        <DataTable
+                          data={tableData}
+                          title={
+                            <div className="data-title-container">
+                              <div className="ed-label">
+                                <span>Extracted Data Results:</span>
+                              </div>
+                            </div>
+                          }
+                          headers={isXmlContent ? xmlHeaders : undefined}
+                          cellClassName="table-text"
+                          headerClassName="table-header-text"
+                        />
+                      </div>
+                    ) : (
+                      <p>
+                        No data found. Please run a new scrape to extract data.
+                      </p>
+                    )}
                   </div>
 
-                  <DataTable
-                    data={tableData}
-                    title={
-                      <div className="data-title-container">
-                        <div className="ed-label">
-                          <span>Extracted Data Results:</span>
-                        </div>
-                      </div>
-                    }
-                    headers={isXmlContent ? xmlHeaders : undefined}
-                    cellClassName="table-text"
-                    headerClassName="table-header-text"
-                  />
+                  <div
+                    className={`tab-pane ${
+                      activeTab === "monitoring" ? "active" : ""
+                    }`}
+                  >
+                    <div className="monitoring-placeholder">
+                      <i
+                        className="pi pi-chart-line"
+                        style={{
+                          fontSize: "2.5rem",
+                          color: "var(--primary-color)",
+                        }}
+                      ></i>
+                      <h3>Monitoring Dashboard</h3>
+                      <p>
+                        Monitoring features and analytics will be displayed
+                        here.
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              ) : (
-                <p>No data found. Please run a new scrape to extract data.</p>
-              )}
+              </div>
 
-              <div className="card-actions">
+              <div className="card-actions mt-4">
                 <div className="spacer"></div>
                 <Button
                   icon="pi pi-search"

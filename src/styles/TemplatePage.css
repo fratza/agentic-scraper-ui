@@ -271,6 +271,62 @@
   margin-right: 0.5rem;
 }
 
+/* Tab styles */
+.card-tabs {
+  margin-bottom: 1.5rem;
+}
+
+.tab-header {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1.5rem;
+}
+
+.tab-button {
+  background: none;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-light);
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease;
+  outline: none;
+}
+
+.tab-button:hover {
+  color: var(--primary-color);
+}
+
+.tab-button.active {
+  color: var(--primary-color);
+}
+
+.tab-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--primary-color);
+}
+
+.tab-content {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Hide all tab content by default */
+.tab-pane {
+  display: none;
+}
+
+/* Show active tab content */
+.tab-pane.active {
+  display: block;
+}
+
 .origin-url a {
   color: #4dabf7;
   text-decoration: none;
