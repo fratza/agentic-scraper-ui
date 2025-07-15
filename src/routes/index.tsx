@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ScraperPage from "../pages/ScraperPage";
-import TemplatePage from "../pages/TemplatePage";
+import Dashboard from "../pages/Dashboard";
 import { Route, LocationChangeEvent } from "../model";
 
 /**
@@ -14,8 +14,8 @@ const routes: Route[] = [
     exact: true,
   },
   {
-    path: "/template",
-    component: TemplatePage,
+    path: "/dashboard",
+    component: Dashboard,
     exact: true,
   },
 ];

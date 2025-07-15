@@ -30,9 +30,25 @@ interface ScrapeResults {
   timestamp: string;
 }
 
+// URL List API types
+interface UrlListItem {
+  id: string;
+  origin_url: string;
+}
+
+interface UrlListResponse {
+  data: UrlListItem[];
+}
+
 // Set the base URL for API calls
 // Replace with your actual backend URL when deploying
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001/api";
+const API_URL = process.env.REACT_APP_API_URL || "";
+
+// Initialize axios instance
+const axiosInstance: AxiosInstance = axios.create({
+  baseURL: API_URL,
+  timeout: 10000,
+});
 
 // Create axios instance with default config
 const apiClient: AxiosInstance = axios.create({
@@ -122,6 +138,17 @@ const apiService = {
       return response.data;
     } catch (error) {
       console.error("Error getting scrape results:", error);
+      throw error;
+    }
+  },
+
+  // URL List API
+  async getUrlList(): Promise<UrlListResponse> {
+    try {
+      const response = await axiosInstance.get('/api/supabase/url-list');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching URL list:', error);
       throw error;
     }
   },

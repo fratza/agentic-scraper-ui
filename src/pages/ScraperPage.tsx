@@ -55,10 +55,10 @@ const ScraperPage: React.FC = () => {
     if (extractedData) {
       setShowLoadingResults(false);
       // Use history API for client-side navigation instead of full page reload
-      window.history.pushState({}, "", "/template");
+      window.history.pushState({}, "", "/dashboard");
       // Dispatch a custom event to notify the router of the navigation
       window.dispatchEvent(
-        new CustomEvent("locationchange", { detail: "/template" })
+        new CustomEvent("locationchange", { detail: "/dashboard" })
       );
     } else if (error) {
       setShowLoadingResults(false);

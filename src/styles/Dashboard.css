@@ -60,7 +60,8 @@
   flex-wrap: wrap;
   gap: 1rem;
   margin-top: 1.5rem;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .spacer {

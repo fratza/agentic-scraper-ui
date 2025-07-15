@@ -17,7 +17,7 @@ import { useScraperContext } from "../context/ScraperContext";
 import DataTable from "../features/scraper/components/DataTable";
 import { useMockData } from "../utils/environment";
 import { mockTemplateData } from "../data/mockTableData";
-import "../styles/TemplatePage.css";
+import "../styles/Dashboard.css";
 
 // Helper function to convert data to CSV
 const convertToCSV = (data: any[]): string => {
@@ -80,7 +80,7 @@ const downloadCSV = (
   document.body.removeChild(link);
 };
 
-const TemplatePage: React.FC = () => {
+const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState("data");
   const [tasks, setTasks] = useState<ScrapingTask[]>(mockTasks);
   const [showNewTaskDialog, setShowNewTaskDialog] = useState(false);
@@ -90,6 +90,10 @@ const TemplatePage: React.FC = () => {
     intervalValue: 1,
     intervalType: "hours" as const,
   });
+  const [apiData, setApiData] = useState<{ id: string; origin_url: string }[]>(
+    []
+  );
+  const [showApiData, setShowApiData] = useState(false);
 
   const intervalTypes = [
     { label: "Hours", value: "hours" },
@@ -275,6 +279,20 @@ const TemplatePage: React.FC = () => {
     window.location.href = "/";
   };
 
+  // Fetch API data
+  const fetchApiData = async () => {
+    try {
+      // Simulated API call - in production, replace with actual API endpoint
+      const response = await fetch("/api/supabase/url-list");
+      const data = await response.json();
+      setApiData(data.data || []);
+      setShowApiData(true);
+    } catch (error) {
+      console.error("Failed to fetch API data:", error);
+      // Show error message to user
+    }
+  };
+
   return (
     <>
       {/* Skip link for keyboard accessibility */}
@@ -343,7 +361,32 @@ const TemplatePage: React.FC = () => {
                       activeTab === "data" ? "active" : ""
                     }`}
                   >
-                    {tableData ? (
+                    {showApiData ? (
+                      <div className="data-preview-container">
+                        <div className="data-table-header">
+                          <div className="origin-url-container">
+                            <div className="origin-url">
+                              <span>Data URLs:</span>
+                            </div>
+                          </div>
+                        </div>
+                        <DataTable
+                          data={apiData.map((item) => ({
+                            url: item.origin_url,
+                          }))}
+                          title={
+                            <div className="data-title-container">
+                              <div className="ed-label">
+                                <span>URL Results:</span>
+                              </div>
+                            </div>
+                          }
+                          headers={{ url: "URL" }}
+                          cellClassName="table-text"
+                          headerClassName="table-header-text"
+                        />
+                      </div>
+                    ) : tableData ? (
                       <div className="data-preview-container">
                         <div className="data-table-header">
                           <div className="origin-url-container">
@@ -371,7 +414,6 @@ const TemplatePage: React.FC = () => {
                             />
                           </div>
                         </div>
-
                         <DataTable
                           data={tableData}
                           title={
@@ -428,13 +470,20 @@ const TemplatePage: React.FC = () => {
               </div>
 
               <div className="card-actions mt-4">
-                <div className="spacer"></div>
                 <Button
                   icon="pi pi-search"
                   label="New Scrape"
                   className="btn btn-primary"
                   onClick={() => (window.location.href = "/")}
                   aria-label="Start new scrape"
+                />
+                <div className="spacer"></div>
+                <Button
+                  icon="pi pi-check"
+                  label="Okay, Looks good!"
+                  className="btn btn-success"
+                  onClick={fetchApiData}
+                  aria-label="Confirm data looks good"
                 />
               </div>
             </Card>
@@ -445,4 +494,4 @@ const TemplatePage: React.FC = () => {
   );
 };
 
-export default TemplatePage;
+export default Dashboard;
