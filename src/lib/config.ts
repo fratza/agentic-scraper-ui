@@ -8,6 +8,7 @@ interface ApiConfig {
     scrape: string;
     status: string;
     results: string;
+    urlList: string;
   };
   timeout: number;
 }
@@ -31,6 +32,7 @@ export const config: AppConfig = {
       scrape: "/scrape",
       status: "/scrape/status",
       results: "/scrape/results",
+      urlList: "/api/supabase/url-list",
     },
     timeout: 30000, // 30 seconds
   },

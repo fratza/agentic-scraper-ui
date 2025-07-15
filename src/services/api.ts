@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from "axios";
+import { config } from "../lib/config";
 
 // Define types for API responses and parameters
 interface ScrapeRequestData {
@@ -36,31 +37,23 @@ interface UrlListItem {
   origin_url: string;
 }
 
-interface UrlListResponse {
+export interface UrlListResponse {
+  status: 'success' | 'error';
   data: UrlListItem[];
 }
 
-// Set the base URL for API calls
-// Replace with your actual backend URL when deploying
-const API_URL = process.env.REACT_APP_API_URL || "";
-
-// Initialize axios instance
-const axiosInstance: AxiosInstance = axios.create({
-  baseURL: API_URL,
-  timeout: 10000,
-});
-
-// Create axios instance with default config
-const apiClient: AxiosInstance = axios.create({
-  baseURL: API_URL,
+// Initialize axios instance with centralized config
+export const apiClient: AxiosInstance = axios.create({
+  baseURL: config.api.baseUrl,
+  timeout: config.api.timeout,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
 // SSE endpoint URLs
-const PREVIEW_SSE_URL = `${API_URL.replace("/api", "")}/api/preview/events`;
-const EXTRACTED_DATA_SSE_URL = `${API_URL.replace(
+const PREVIEW_SSE_URL = `${config.api.baseUrl.replace("/api", "")}/api/preview/events`;
+const EXTRACTED_DATA_SSE_URL = `${config.api.baseUrl.replace(
   "/api",
   ""
 )}/api/scraped-data/events`;
@@ -145,7 +138,7 @@ const apiService = {
   // URL List API
   async getUrlList(): Promise<UrlListResponse> {
     try {
-      const response = await axiosInstance.get("/api/supabase/url-list");
+      const response = await apiClient.get(config.api.endpoints.urlList);
       return response.data;
     } catch (error) {
       console.error("Error fetching URL list:", error);
@@ -231,21 +224,12 @@ const apiService = {
   ): Promise<any> => {
     try {
       // Send action to backend with optional payload
-      const response = await fetch(API_URL + "/proceed-scrape", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: action,
-          ...payload,
-        }),
+      const response = await apiClient.post("/proceed-scrape", {
+        action: action,
+        ...payload,
       });
 
-      if (!response.ok) {
-        throw new Error(`Failed to ${action} scrape: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      return data;
+      return response.data;
     } catch (error) {
       console.error(`Error in ${action} action:`, error);
       throw error;

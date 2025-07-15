@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import apiService from "../services/api";
 import { motion } from "framer-motion";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
@@ -23,7 +24,7 @@ import "../styles/Dashboard.css";
 
 // Type for URL list response
 interface UrlListResponse {
-  status: 'success' | 'error';
+  status: "success" | "error";
   data: string[];
 }
 
@@ -141,21 +142,21 @@ const Dashboard: React.FC = () => {
       setLoading(true);
       setError(null);
       const response = await fetchUrlList();
-      
-      if (response.status === 'success') {
+
+      if (response.status === "success") {
         // Map URLs to the expected format
         const formattedUrls = response.data.map((url, index) => ({
           id: `url-${index + 1}`,
-          origin_url: url
+          origin_url: url.origin_url,
         }));
-        
+
         setApiData(formattedUrls);
         setShowApiData(true);
       } else {
-        setError('Failed to fetch URL list. Server returned error.');
+        setError("Failed to fetch URL list. Server returned error.");
       }
     } catch (err) {
-      setError('Failed to fetch URL list. Please try again.');
+      setError("Failed to fetch URL list. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -315,20 +316,6 @@ const Dashboard: React.FC = () => {
     window.location.href = "/";
   };
 
-  // Fetch API data
-  const fetchApiData = async () => {
-    try {
-      // Simulated API call - in production, replace with actual API endpoint
-      const response = await fetch("/api/supabase/url-list");
-      const data = await response.json();
-      setApiData(data.data || []);
-      setShowApiData(true);
-    } catch (error) {
-      console.error("Failed to fetch API data:", error);
-      // Show error message to user
-    }
-  };
-
   return (
     <>
       {/* Skip link for keyboard accessibility */}
@@ -465,19 +452,6 @@ const Dashboard: React.FC = () => {
               </div>
 
               <div className="card-actions mt-4">
-                <Button
-                  icon="pi pi-check"
-                  label="Okay, Looks good!"
-                  className="btn btn-primary"
-                  onClick={() => handleOkClick()}
-                  aria-label="Fetch URL list"
-                  loading={loading}
-                />
-                {error && (
-                  <div className="p-error mt-2">
-                    {error}
-                  </div>
-                )}
                 <div className="spacer"></div>
                 <Button
                   icon="pi pi-search"
@@ -494,11 +468,7 @@ const Dashboard: React.FC = () => {
                   aria-label="Fetch URL list"
                   loading={loading}
                 />
-                {error && (
-                  <div className="p-error mt-2">
-                    {error}
-                  </div>
-                )}
+                {error && <div className="p-error mt-2">{error}</div>}
               </div>
             </Card>
           </section>
