@@ -42,6 +42,16 @@ export interface UrlListResponse {
   data: UrlListItem[];
 }
 
+export interface MonitorTaskResponse {
+  status: 'success' | 'error';
+  message?: string;
+  data?: {
+    task_id: string;
+    task_name: string;
+    next_run_at: string;
+  };
+}
+
 // Initialize axios instance with centralized config
 export const apiClient: AxiosInstance = axios.create({
   baseURL: config.api.baseUrl,
@@ -232,6 +242,24 @@ const apiService = {
       return response.data;
     } catch (error) {
       console.error(`Error in ${action} action:`, error);
+      throw error;
+    }
+  },
+
+  // Submit a new monitoring task
+  submitMonitorTask: async (taskData: {
+    task_name: string;
+    url: string;
+    frequency: {
+      value: number;
+      unit: 'minutes' | 'hours' | 'days' | 'weeks';
+    };
+  }): Promise<MonitorTaskResponse> => {
+    try {
+      const response = await apiClient.post('/supabase/submit-monitor-task', taskData);
+      return response.data;
+    } catch (error) {
+      console.error('Error submitting monitoring task:', error);
       throw error;
     }
   },

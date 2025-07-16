@@ -7,8 +7,10 @@ export interface NewTaskModalProps {
 }
 
 export interface NewTaskFormData {
-  name: string;
+  task_name: string;
   url: string;
-  intervalValue: number;
-  intervalType: "minutes" | "hours" | "days" | "weeks";
+  frequency: {
+    value: number;
+    unit: 'minutes' | 'hours' | 'days' | 'weeks';
+  };
 }

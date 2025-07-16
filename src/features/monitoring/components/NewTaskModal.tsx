@@ -5,6 +5,7 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { Dropdown } from 'primereact/dropdown';
 import { classNames } from 'primereact/utils';
 import { NewTaskModalProps, NewTaskFormData } from './types';
+import apiService from '../../../services/api';
 import './NewTaskModal.css';
 
 export const NewTaskModal: React.FC<NewTaskModalProps> = ({
@@ -15,23 +16,60 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   urls,
 }) => {
   const [formData, setFormData] = useState<NewTaskFormData>({
-    name: initialData?.name || '',
+    task_name: initialData?.task_name || '',
     url: initialData?.url || '',
-    intervalValue: initialData?.intervalValue || 1,
-    intervalType: initialData?.intervalType || 'hours',
+    frequency: {
+      value: initialData?.frequency?.value || 1,
+      unit: initialData?.frequency?.unit || 'hours'
+    }
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
-    onClose(); // Close the modal after submission
+    try {
+      // Call the API to submit the task
+      const response = await apiService.submitMonitorTask({
+        task_name: formData.task_name,
+        url: formData.url,
+        frequency: {
+          value: formData.frequency.value,
+          unit: formData.frequency.unit
+        }
+      });
+      
+      // Call the parent's onSubmit with the form data
+      onSubmit(formData);
+      
+      // Show success message (you might want to use a toast notification here)
+      console.log('Task created successfully:', response);
+      
+      // Close the modal after successful submission
+      onClose();
+    } catch (error) {
+      console.error('Failed to create task:', error);
+      // You might want to show an error message to the user here
+    }
   };
 
-  const handleInputChange = (field: keyof NewTaskFormData, value: string | number) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: field === 'intervalValue' ? parseInt(value as string) : value,
-    }));
+  const handleInputChange = (
+    field: 'task_name' | 'url' | 'frequency',
+    value: string | number | { value: number; unit: 'minutes' | 'hours' | 'days' | 'weeks' }
+  ) => {
+    setFormData(prev => {
+      if (field === 'frequency' && typeof value === 'object') {
+        return {
+          ...prev,
+          frequency: {
+            ...prev.frequency,
+            ...value
+          }
+        };
+      }
+      return {
+        ...prev,
+        [field]: value
+      } as NewTaskFormData;
+    });
   };
 
   const intervalTypes = [
@@ -61,10 +99,10 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
             <label htmlFor="taskName">Task Name</label>
             <InputText
               id="taskName"
-              value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
+              value={formData.task_name}
+              onChange={(e) => handleInputChange('task_name', e.target.value)}
               className={classNames('form-control', {
-                'p-invalid': !formData.name,
+                'p-invalid': !formData.task_name,
               })}
               required
               placeholder="Enter task name"
@@ -94,9 +132,12 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
             <div className="interval-inputs">
               <InputText
                 id="intervalValue"
-                value={formData.intervalValue.toString()}
+                value={formData.frequency.value.toString()}
                 onChange={(e) =>
-                  handleInputChange('intervalValue', e.target.value)
+                  handleInputChange('frequency', {
+                    ...formData.frequency,
+                    value: parseInt(e.target.value) || 1
+                  })
                 }
                 className="form-control w-20"
                 type="number"
@@ -105,10 +146,13 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
               />
               <Dropdown
                 id="intervalType"
-                value={formData.intervalType}
+                value={formData.frequency.unit}
                 options={intervalTypes}
                 onChange={(e) =>
-                  handleInputChange('intervalType', e.value)
+                  handleInputChange('frequency', {
+                    ...formData.frequency,
+                    unit: e.value as 'minutes' | 'hours' | 'days' | 'weeks'
+                  })
                 }
                 className="form-control"
                 placeholder="Select interval"
@@ -132,7 +176,7 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
     label="Create Task"
     className="modal-submit-button"
     type="submit"
-    disabled={!formData.name || !formData.url || !formData.intervalValue}
+    disabled={!formData.task_name || !formData.url || !formData.frequency.value}
   />
 </div>
         </form>
