@@ -99,11 +99,10 @@ const Dashboard: React.FC = () => {
     intervalValue: 1,
     intervalType: "hours" as const,
   });
-  const [apiData, setApiData] = useState<{ id: string; origin_url: string }[]>(
-    []
-  );
+  const [apiData, setApiData] = useState<{ id: string; origin_url: string }[]>([]);
   const [showApiData, setShowApiData] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showUrlTable, setShowUrlTable] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const intervalTypes = [
@@ -138,25 +137,16 @@ const Dashboard: React.FC = () => {
 
   // Fetch URL list when "Okay, Looks good" button is clicked
   const handleOkClick = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      setError(null);
       const response = await fetchUrlList();
-
-      if (response.status === "success") {
-        // Map URLs to the expected format
-        const formattedUrls = response.data.map((url, index) => ({
-          id: `url-${index + 1}`,
-          origin_url: url.origin_url,
-        }));
-
-        setApiData(formattedUrls);
-        setShowApiData(true);
-      } else {
-        setError("Failed to fetch URL list. Server returned error.");
+      if (response.status === 'success') {
+        setApiData(response.data);
+        setShowUrlTable(true);
       }
-    } catch (err) {
-      setError("Failed to fetch URL list. Please try again.");
+    } catch (error) {
+      setError('Failed to fetch URL list');
+      console.error('Error fetching URL list:', error);
     } finally {
       setLoading(false);
     }
@@ -384,12 +374,12 @@ const Dashboard: React.FC = () => {
                       activeTab === "data" ? "active" : ""
                     }`}
                   >
-                    {showApiData ? (
+                    {showUrlTable ? (
                       <div className="data-preview-container">
                         <div className="data-table-header">
                           <div className="origin-url-container">
                             <div className="origin-url">
-                              <span>Data URLs:</span>
+                              <span>Origin URLs:</span>
                             </div>
                           </div>
                         </div>
@@ -399,7 +389,7 @@ const Dashboard: React.FC = () => {
                             // TODO: Implement view result functionality
                             console.log("Viewing result for:", url);
                           }}
-                          title="URL Results"
+                          title="Origin URLs"
                         />
                       </div>
                     ) : tableData ? (
@@ -462,11 +452,12 @@ const Dashboard: React.FC = () => {
                 />
                 <Button
                   icon="pi pi-check"
-                  label="Okay, Looks good!"
+                  label={showUrlTable ? "Back to Results" : "Okay, Looks good!"}
                   className="btn btn-primary"
-                  onClick={handleOkClick}
-                  aria-label="Fetch URL list"
+                  onClick={showUrlTable ? () => setShowUrlTable(false) : handleOkClick}
+                  aria-label={showUrlTable ? "Back to results" : "Fetch URL list"}
                   loading={loading}
+                  disabled={!tableData}
                 />
                 {error && <div className="p-error mt-2">{error}</div>}
               </div>

@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from "primereact/button";
 import DataTable from "./DataTable";
 import { useMockData } from "../../../utils/environment";
 import { mockTemplateData } from "../../../data/mockTableData";
+import { fetchUrlList } from '../../../api/urls';
+import { UrlListResponse } from '../../../services/api';
 
 interface DataResultsTableProps {
   data: any[];
@@ -19,6 +21,10 @@ const DataResultsTable: React.FC<DataResultsTableProps> = ({
   onDownloadCSV,
   isXmlContent
 }) => {
+  const [showUrlTable, setShowUrlTable] = useState(false);
+  const [urlList, setUrlList] = useState<UrlListResponse['data']>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  
   // Check if we should use mock data
   const shouldUseMockData = useMockData();
 
@@ -32,6 +38,21 @@ const DataResultsTable: React.FC<DataResultsTableProps> = ({
     date: "Date",
     image: "Image",
     description: "Description",
+  };
+
+  const handleOkClick = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetchUrlList();
+      if (response.status === 'success') {
+        setUrlList(response.data);
+        setShowUrlTable(true);
+      }
+    } catch (error) {
+      console.error('Error fetching URL list:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -52,7 +73,18 @@ const DataResultsTable: React.FC<DataResultsTableProps> = ({
             </div>
           )}
         </div>
-        <div className="export-btn-container">
+        <div className="action-buttons" style={{ display: 'flex', gap: '1rem' }}>
+          {!showUrlTable && (
+            <Button
+              icon="pi pi-check"
+              label="Okay looks good"
+              className="btn btn-primary"
+              onClick={handleOkClick}
+              loading={isLoading}
+              disabled={isLoading}
+              aria-label="Confirm and show URL list"
+            />
+          )}
           <Button
             icon="pi pi-download"
             label="Export"
@@ -62,7 +94,23 @@ const DataResultsTable: React.FC<DataResultsTableProps> = ({
           />
         </div>
       </div>
-      {data ? (
+      {showUrlTable ? (
+        <div className="url-table-container">
+          <DataTable
+            data={urlList}
+            title={
+              <div className="data-title-container">
+                <div className="ed-label">
+                  <span>Origin URLs:</span>
+                </div>
+              </div>
+            }
+            headers={{ origin_url: 'URL' }}
+            cellClassName="table-text"
+            headerClassName="table-header-text"
+          />
+        </div>
+      ) : data ? (
         <DataTable
           data={Array.isArray(data) ? data : [data]}
           title={
