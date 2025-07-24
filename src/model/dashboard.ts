@@ -6,7 +6,6 @@ import { ReactElement } from 'react';
 export interface UrlRow {
   id: string;
   origin_url: string;
-  lastExtract?: string | Date;
   status?: string;
 }
 
@@ -18,6 +17,7 @@ export interface OriginUrlsTableProps {
   onViewResult: (url: string) => void;
   title?: string | ReactElement;
   originUrl?: string;
+  loading?: boolean;
 }
 
 /**

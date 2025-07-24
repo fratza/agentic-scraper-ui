@@ -12,7 +12,7 @@ export interface EnvironmentConfig {
  * Default environment configuration
  */
 export const baseEnvironment: EnvironmentConfig = {
-  apiBaseUrl: '',  // Default to relative URL for production
+  apiBaseUrl: "", // Default to relative URL for production
   useMockData: false,
 };
 
@@ -23,7 +23,7 @@ export const baseEnvironment: EnvironmentConfig = {
 export const isLocalEnvironment = (): boolean => {
   // Check if window.location.hostname is localhost or 127.0.0.1
   const hostname = window.location.hostname;
-  return hostname === 'localhost' || hostname === '127.0.0.1';
+  return hostname === "localhost" || hostname === "127.0.0.1";
 };
 
 /**
@@ -32,7 +32,22 @@ export const isLocalEnvironment = (): boolean => {
  */
 export const isLocalMode = (): boolean => {
   // Check if the app was started with npm run local (REACT_APP_MODE=local)
-  return process.env.REACT_APP_MODE === 'local' || 
-         window.location.search.includes('mode=local') || 
-         localStorage.getItem('appMode') === 'local';
+  return (
+    process.env.REACT_APP_MODE === "local" ||
+    window.location.search.includes("mode=local") ||
+    localStorage.getItem("appMode") === "local"
+  );
+};
+
+/**
+ * Check if the application is running in dev mode
+ * @returns boolean indicating if the app is running in dev mode
+ */
+export const isDevMode = (): boolean => {
+  // Check if the app was started with npm run dev (REACT_APP_MODE=dev)
+  return (
+    process.env.REACT_APP_MODE === "dev" ||
+    window.location.search.includes("mode=dev") ||
+    localStorage.getItem("appMode") === "dev"
+  );
 };

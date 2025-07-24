@@ -1,6 +1,7 @@
 /**
  * Application configuration
  */
+import { getApiBaseUrl } from "../utils/environment";
 
 interface ApiConfig {
   baseUrl: string;
@@ -27,12 +28,16 @@ interface AppConfig {
 export const config: AppConfig = {
   // API configuration
   api: {
-    baseUrl: process.env.REACT_APP_API_URL || "http://localhost:3001/api",
+    // Use the environment-specific base URL
+    baseUrl:
+      getApiBaseUrl() ||
+      process.env.REACT_APP_API_URL ||
+      "http://localhost:3001/api",
     endpoints: {
-      scrape: "/scrape",
-      status: "/scrape/status",
-      results: "/scrape/results",
-      urlList: "/supabase/url-list",
+      scrape: "/api/scrape",
+      status: "/api/scrape/status",
+      results: "/api/scrape/results",
+      urlList: "/api/supabase/url-list",
     },
     timeout: 30000, // 30 seconds
   },

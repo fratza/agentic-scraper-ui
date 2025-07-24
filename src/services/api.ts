@@ -32,14 +32,10 @@ interface ScrapeResults {
 }
 
 // URL List API types
-interface UrlListItem {
-  id: string;
-  origin_url: string;
-}
-
+// The API returns an array of URL strings, not objects
 export interface UrlListResponse {
   status: 'success' | 'error';
-  data: UrlListItem[];
+  data: string[];
 }
 
 export interface MonitorTaskResponse {

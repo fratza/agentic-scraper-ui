@@ -3,7 +3,7 @@
  * This file exports the environment configuration based on the current mode
  */
 
-import { baseEnvironment, isLocalEnvironment, isLocalMode, EnvironmentConfig } from './environment.base';
+import { baseEnvironment, isLocalEnvironment, isLocalMode, isDevMode, EnvironmentConfig } from './environment.base';
 import { devEnvironment } from './environment.dev';
 import { localEnvironment } from './environment.local';
 
@@ -15,8 +15,11 @@ export const getCurrentEnvironment = (): EnvironmentConfig => {
   if (isLocalMode()) {
     // Local mode (npm run local) - use local environment
     return localEnvironment;
+  } else if (isDevMode()) {
+    // Dev mode (npm run dev) - use dev environment
+    return devEnvironment;
   } else if (isLocalEnvironment()) {
-    // Regular development mode - use dev environment
+    // Regular development mode (npm start) - use dev environment
     return devEnvironment;
   } else {
     // Production mode - use base environment
@@ -44,7 +47,7 @@ export const useMockData = (): boolean => {
 };
 
 // Re-export utility functions from base
-export { isLocalEnvironment, isLocalMode };
+export { isLocalEnvironment, isLocalMode, isDevMode };
 
 // Export the environment configuration interface
 export type { EnvironmentConfig };

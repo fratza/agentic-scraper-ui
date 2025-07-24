@@ -13,6 +13,7 @@ import {
   ScrapingTask,
   TaskStatus,
 } from "../features/monitoring/types";
+// Using UrlListResponse from model/dashboard
 import TaskTable from "../features/monitoring/TaskTable";
 import { useScraperContext } from "../context/ScraperContext";
 import DataTable from "../features/scraper/components/DataTable";
@@ -20,8 +21,9 @@ import DataResultsTable from "../features/dashboard/DataResultsTable";
 import OriginUrlsTable from "../features/dashboard/OriginUrlsTable";
 import { useMockData, getApiBaseUrl } from "../utils/environment";
 import { mockTemplateData } from "../data/mockTableData";
-import { fetchUrlList } from "../api/urls";
+// Removed redundant fetchUrlList import
 import { mockOriginUrls } from "../data/mockOriginUrls";
+import { config } from "../lib/config";
 import "../styles/Dashboard.css";
 
 // Type for URL list response
@@ -94,7 +96,7 @@ const downloadCSV = (
 const Dashboard: React.FC = () => {
   // Get mock data flag early so it can be used in useEffect
   const shouldUseMockData = useMockData();
-  
+
   const [activeTab, setActiveTab] = useState("data");
   const [tasks, setTasks] = useState<ScrapingTask[]>(mockTasks);
   const [showNewTaskDialog, setShowNewTaskDialog] = useState(false);
@@ -104,9 +106,9 @@ const Dashboard: React.FC = () => {
     intervalValue: 1,
     intervalType: "hours" as const,
   });
-  const [apiData, setApiData] = useState<{ id: string; origin_url: string; lastExtract?: string; status?: string }[]>(
-    []
-  );
+  const [apiData, setApiData] = useState<
+    { id: string; origin_url: string; status?: string }[]
+  >([]);
   const [showApiData, setShowApiData] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showUrlTable, setShowUrlTable] = useState(true);
@@ -137,50 +139,111 @@ const Dashboard: React.FC = () => {
     };
     fetchUrls();
   }, []);
-  
+
   // Fetch URL list on component mount
   useEffect(() => {
     const fetchInitialUrlList = async () => {
+      // Set loading state to true and clear any previous errors
       setLoading(true);
+      setError(null);
+
+      // Set showUrlTable to false initially while loading
+      setShowApiData(false);
+
       try {
         if (shouldUseMockData) {
           // Use mock data in local environment
+          // Add a slight delay to simulate API call for better UX
+          await new Promise((resolve) => setTimeout(resolve, 500));
           setApiData(mockOriginUrls);
         } else {
           try {
-            // Call API in production
-            const apiBaseUrl = getApiBaseUrl();
-            const response = await axios.get(`${apiBaseUrl}/api/supabase/url-list`);
-            
-            if (response.data.status === "success" && Array.isArray(response.data.data)) {
+            // Call API using apiService which already uses config.api.endpoints.urlList
+            console.log(`Fetching URL list using apiService`);
+
+            const response = await apiService.getUrlList();
+
+            if (response.status === "success" && Array.isArray(response.data)) {
+              console.log("API response received:", response);
+
               // Transform the API response to match our data structure with additional fields
-              const transformedData = response.data.data.map((url: string, index: number) => ({
-                id: `url-${index}`,
-                origin_url: url,
-                // Add random last extract date within the last 30 days for demonstration
-                lastExtract: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
-                // Add random status for demonstration
-                status: ['Active', 'Pending', 'Completed', 'Error'][Math.floor(Math.random() * 4)]
-              }));
+              const transformedData = response.data.map(
+                (url: any, index: number) => {
+                  // Check if url is already an object or just a string
+                  const urlString =
+                    typeof url === "string"
+                      ? url
+                      : url && typeof url === "object" && "origin_url" in url
+                      ? url.origin_url
+                      : "";
+
+                  return {
+                    id: `url-${index}`,
+                    origin_url: urlString,
+                    // Add random status for demonstration
+                    status: ["Active", "Pending", "Completed", "Error"][
+                      Math.floor(Math.random() * 4)
+                    ],
+                  };
+                }
+              );
+
+              // Set the data
               setApiData(transformedData);
+            } else {
+              throw new Error("Invalid API response format");
             }
           } catch (apiError) {
-            console.error("Error calling direct API:", apiError);
-            // Fallback to fetchUrlList if direct API call fails
-            const response = await fetchUrlList();
+            console.error("Error calling API service:", apiError);
+
+            // Fallback to apiService.getUrlList() with different approach
+            console.log(
+              `Fallback to apiService.getUrlList() with different approach`
+            );
+            const response = await apiService.getUrlList();
             if (response.status === "success") {
-              setApiData(response.data);
+              // Transform the data to match our expected format
+              const transformedData = response.data.map(
+                (url: any, index: number) => {
+                  // Check if url is already an object or just a string
+                  const urlString =
+                    typeof url === "string"
+                      ? url
+                      : url && typeof url === "object" && "origin_url" in url
+                      ? url.origin_url
+                      : "";
+
+                  return {
+                    id: `url-${index}`,
+                    origin_url: urlString,
+                    // Add random status for demonstration
+                    status: ["Active", "Pending", "Completed", "Error"][
+                      Math.floor(Math.random() * 4)
+                    ],
+                  };
+                }
+              );
+
+              setApiData(transformedData);
+            } else {
+              throw new Error("Fallback API returned error status");
             }
           }
         }
+
+        // Only show the data after it's successfully loaded
+        setShowApiData(true);
       } catch (error) {
-        setError("Failed to fetch URL list");
+        setError("Failed to fetch URL list. Please try again later.");
         console.error("Error fetching URL list:", error);
+        // Set empty data to avoid showing stale data
+        setApiData([]);
       } finally {
+        // Set loading to false after everything is done
         setLoading(false);
       }
     };
-    
+
     fetchInitialUrlList();
   }, [shouldUseMockData]);
 
@@ -198,9 +261,31 @@ const Dashboard: React.FC = () => {
         setShowUrlTable(true);
       } else {
         // Call API in production
-        const response = await fetchUrlList();
+        const response = await apiService.getUrlList();
         if (response.status === "success") {
-          setApiData(response.data);
+          // Transform the API response to match our data structure with additional fields
+          const transformedData = response.data.map(
+            (url: any, index: number) => {
+              // Check if url is already an object or just a string
+              const urlString =
+                typeof url === "string"
+                  ? url
+                  : url && typeof url === "object" && "origin_url" in url
+                  ? url.origin_url
+                  : "";
+
+              return {
+                id: `url-${index}`,
+                origin_url: urlString,
+                // Add random status for demonstration
+                status: ["Active", "Pending", "Completed", "Error"][
+                  Math.floor(Math.random() * 4)
+                ],
+              };
+            }
+          );
+
+          setApiData(transformedData);
           setShowUrlTable(true);
         }
       }
@@ -438,14 +523,55 @@ const Dashboard: React.FC = () => {
                       <div className="data-preview-container">
                         <div className="origin-url-container"></div>
 
-                        <OriginUrlsTable
-                          data={apiData}
-                          onViewResult={(url) => {
-                            // TODO: Implement view result functionality
-                            console.log("Viewing result for:", url);
-                          }}
-                          title="Origin URLs"
-                        />
+                        {loading && !showApiData && (
+                          <div
+                            className="loading-container"
+                            style={{ textAlign: "center", padding: "2rem" }}
+                          >
+                            <div
+                              className="loading-spinner"
+                              style={{ marginBottom: "1rem" }}
+                            >
+                              <i
+                                className="pi pi-spin pi-spinner"
+                                style={{ fontSize: "2rem" }}
+                              ></i>
+                            </div>
+                            <p>Loading URL data from API...</p>
+                          </div>
+                        )}
+
+                        {!loading && error && (
+                          <div
+                            className="error-container"
+                            style={{
+                              padding: "1rem",
+                              margin: "1rem 0",
+                              backgroundColor: "var(--red-50)",
+                              border: "1px solid var(--red-200)",
+                              borderRadius: "4px",
+                              color: "var(--red-700)",
+                            }}
+                          >
+                            <i
+                              className="pi pi-exclamation-triangle"
+                              style={{ marginRight: "0.5rem" }}
+                            ></i>
+                            {error}
+                          </div>
+                        )}
+
+                        {(showApiData || !loading) && (
+                          <OriginUrlsTable
+                            data={apiData}
+                            onViewResult={(url) => {
+                              // TODO: Implement view result functionality
+                              console.log("Viewing result for:", url);
+                            }}
+                            title="Origin URLs"
+                            loading={loading}
+                          />
+                        )}
                       </div>
                     ) : tableData ? (
                       <DataResultsTable
