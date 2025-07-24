@@ -32,10 +32,15 @@ interface ScrapeResults {
 }
 
 // URL List API types
-// The API returns an array of URL strings, not objects
+// The API now returns an array of URL objects with id and url properties
+export interface UrlItem {
+  id: string;
+  url: string;
+}
+
 export interface UrlListResponse {
   status: 'success' | 'error';
-  data: string[];
+  data: UrlItem[];
 }
 
 export interface MonitorTaskResponse {
@@ -246,6 +251,8 @@ const apiService = {
   submitMonitorTask: async (taskData: {
     task_name: string;
     url: string;
+    url_id?: string;
+    run_at?: string; // ISO string for the run date/time
     frequency: {
       value: number;
       unit: 'minutes' | 'hours' | 'days' | 'weeks';

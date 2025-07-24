@@ -13,24 +13,15 @@ import {
   ScrapingTask,
   TaskStatus,
 } from "../features/monitoring/types";
-// Using UrlListResponse from model/dashboard
 import TaskTable from "../features/monitoring/TaskTable";
 import { useScraperContext } from "../context/ScraperContext";
-import DataTable from "../features/scraper/components/DataTable";
 import DataResultsTable from "../features/dashboard/DataResultsTable";
 import OriginUrlsTable from "../features/dashboard/OriginUrlsTable";
-import { useMockData, getApiBaseUrl } from "../utils/environment";
+import { useMockData } from "../utils/environment";
 import { mockTemplateData } from "../data/mockTableData";
-// Removed redundant fetchUrlList import
 import { mockOriginUrls } from "../data/mockOriginUrls";
-import { config } from "../lib/config";
+import { UrlListResponse } from "../model/dashboard";
 import "../styles/Dashboard.css";
-
-// Type for URL list response
-interface UrlListResponse {
-  status: "success" | "error";
-  data: string[];
-}
 
 // Helper function to convert data to CSV
 const convertToCSV = (data: any[]): string => {
@@ -100,6 +91,7 @@ const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState("data");
   const [tasks, setTasks] = useState<ScrapingTask[]>(mockTasks);
   const [showNewTaskDialog, setShowNewTaskDialog] = useState(false);
+  const [isLoadingUrls, setIsLoadingUrls] = useState(false);
   const [newTask, setNewTask] = useState<Partial<ScrapingTask>>({
     name: "",
     url: "",
@@ -121,33 +113,93 @@ const Dashboard: React.FC = () => {
     { label: "Weeks", value: "weeks" },
   ];
 
-  // Simulated API call to fetch URLs
+  // State for URLs to be used in the New Task modal
   const [urls, setUrls] = useState<string[]>([]);
-  useEffect(() => {
-    const fetchUrls = async () => {
-      try {
-        // In a real app, this would be an API call
-        const mockUrls = [
-          "https://example.com/page1",
-          "https://example.com/page2",
-          "https://example.com/page3",
-        ];
-        setUrls(mockUrls);
-      } catch (error) {
-        console.error("Failed to fetch URLs:", error);
+  // State to store the full URL objects with IDs
+  const [urlObjects, setUrlObjects] = useState<
+    Array<{ id: string; url: string }>
+  >([]);
+  // Ref to track if we're already fetching URLs to prevent duplicate calls
+  const isFetchingUrls = React.useRef(false);
+
+  // Function to fetch URLs from the API
+  const fetchUrls = async (showLoadingState = true) => {
+    // If we're already fetching URLs, don't start another fetch
+    if (isFetchingUrls.current) {
+      console.log('URL fetch already in progress, skipping duplicate call');
+      return { success: true, data: [] };
+    }
+    
+    // Set the flag to indicate we're fetching URLs
+    isFetchingUrls.current = true;
+    
+    try {
+      if (showLoadingState) {
+        setIsLoadingUrls(true);
       }
-    };
-    fetchUrls();
-  }, []);
+
+      const response = await apiService.getUrlList();
+      if (response.status === "success" && Array.isArray(response.data)) {
+        // Store the full URL objects for future reference
+        setUrlObjects(response.data);
+        // Extract just the URL strings for the dropdown
+        const urlStrings = response.data.map((item) => item.url);
+        setUrls(urlStrings);
+
+        // Transform the data for the URL table display
+        const transformedData = response.data.map((item, index) => {
+          return {
+            id: item.id || `url-${index}`,
+            origin_url: item.url,
+            // Add random status for demonstration
+            status: ["Active", "Pending", "Completed", "Error"][
+              Math.floor(Math.random() * 4)
+            ],
+          };
+        });
+
+        // Update the API data for the table
+        setApiData(transformedData);
+        return { success: true, data: transformedData };
+      } else {
+        console.error("Invalid URL list response format", response);
+        // Fallback to empty arrays if the response format is unexpected
+        setUrlObjects([]);
+        setUrls([]);
+        return { success: false, error: "Invalid response format" as string };
+      }
+    } catch (error) {
+      console.error("Error fetching URL list:", error);
+      setUrlObjects([]);
+      setUrls([]);
+      setError("Failed to load URLs. Please try again.");
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      };
+    } finally {
+      if (showLoadingState) {
+        setIsLoadingUrls(false);
+      }
+      // Reset the flag when we're done, regardless of success or failure
+      isFetchingUrls.current = false;
+    }
+  };
+
+  // Mock URLs for development/testing
+  const mockUrls = [
+    "https://example.com/page1",
+    "https://example.com/page2",
+    "https://example.com/page3",
+  ];
 
   // Fetch URL list on component mount
   useEffect(() => {
     const fetchInitialUrlList = async () => {
       // Set loading state to true and clear any previous errors
       setLoading(true);
+      setIsLoadingUrls(true);
       setError(null);
-
-      // Set showUrlTable to false initially while loading
       setShowApiData(false);
 
       try {
@@ -156,78 +208,21 @@ const Dashboard: React.FC = () => {
           // Add a slight delay to simulate API call for better UX
           await new Promise((resolve) => setTimeout(resolve, 500));
           setApiData(mockOriginUrls);
+          
+          // Set mock URLs for the dropdown
+          setUrls(mockUrls);
+          
+          // Create mock URL objects
+          const mockUrlObjects = mockUrls.map((url, index) => ({
+            id: `mock-${index}`,
+            url
+          }));
+          setUrlObjects(mockUrlObjects);
         } else {
-          try {
-            // Call API using apiService which already uses config.api.endpoints.urlList
-            console.log(`Fetching URL list using apiService`);
-
-            const response = await apiService.getUrlList();
-
-            if (response.status === "success" && Array.isArray(response.data)) {
-              console.log("API response received:", response);
-
-              // Transform the API response to match our data structure with additional fields
-              const transformedData = response.data.map(
-                (url: any, index: number) => {
-                  // Check if url is already an object or just a string
-                  const urlString =
-                    typeof url === "string"
-                      ? url
-                      : url && typeof url === "object" && "origin_url" in url
-                      ? url.origin_url
-                      : "";
-
-                  return {
-                    id: `url-${index}`,
-                    origin_url: urlString,
-                    // Add random status for demonstration
-                    status: ["Active", "Pending", "Completed", "Error"][
-                      Math.floor(Math.random() * 4)
-                    ],
-                  };
-                }
-              );
-
-              // Set the data
-              setApiData(transformedData);
-            } else {
-              throw new Error("Invalid API response format");
-            }
-          } catch (apiError) {
-            console.error("Error calling API service:", apiError);
-
-            // Fallback to apiService.getUrlList() with different approach
-            console.log(
-              `Fallback to apiService.getUrlList() with different approach`
-            );
-            const response = await apiService.getUrlList();
-            if (response.status === "success") {
-              // Transform the data to match our expected format
-              const transformedData = response.data.map(
-                (url: any, index: number) => {
-                  // Check if url is already an object or just a string
-                  const urlString =
-                    typeof url === "string"
-                      ? url
-                      : url && typeof url === "object" && "origin_url" in url
-                      ? url.origin_url
-                      : "";
-
-                  return {
-                    id: `url-${index}`,
-                    origin_url: urlString,
-                    // Add random status for demonstration
-                    status: ["Active", "Pending", "Completed", "Error"][
-                      Math.floor(Math.random() * 4)
-                    ],
-                  };
-                }
-              );
-
-              setApiData(transformedData);
-            } else {
-              throw new Error("Fallback API returned error status");
-            }
+          // Use the consolidated fetchUrls function with loading state handled separately
+          const result = await fetchUrls(false);
+          if (!result.success) {
+            throw new Error(result.error || "Failed to fetch URL list");
           }
         }
 
@@ -238,14 +233,17 @@ const Dashboard: React.FC = () => {
         console.error("Error fetching URL list:", error);
         // Set empty data to avoid showing stale data
         setApiData([]);
+        setUrls([]);
+        setUrlObjects([]);
       } finally {
         // Set loading to false after everything is done
         setLoading(false);
+        setIsLoadingUrls(false);
       }
     };
 
     fetchInitialUrlList();
-  }, [shouldUseMockData]);
+  }, [shouldUseMockData]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleTabClick = (tabId: string) => {
     setActiveTab(tabId);
@@ -260,33 +258,12 @@ const Dashboard: React.FC = () => {
         setApiData(mockOriginUrls);
         setShowUrlTable(true);
       } else {
-        // Call API in production
-        const response = await apiService.getUrlList();
-        if (response.status === "success") {
-          // Transform the API response to match our data structure with additional fields
-          const transformedData = response.data.map(
-            (url: any, index: number) => {
-              // Check if url is already an object or just a string
-              const urlString =
-                typeof url === "string"
-                  ? url
-                  : url && typeof url === "object" && "origin_url" in url
-                  ? url.origin_url
-                  : "";
-
-              return {
-                id: `url-${index}`,
-                origin_url: urlString,
-                // Add random status for demonstration
-                status: ["Active", "Pending", "Completed", "Error"][
-                  Math.floor(Math.random() * 4)
-                ],
-              };
-            }
-          );
-
-          setApiData(transformedData);
+        // Use the consolidated fetchUrls function
+        const result = await fetchUrls(false);
+        if (result.success) {
           setShowUrlTable(true);
+        } else {
+          throw new Error("Failed to fetch URL list");
         }
       }
     } catch (error) {
@@ -315,37 +292,44 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleCreateTask = () => {
-    if (
-      newTask.name &&
-      newTask.url &&
-      newTask.intervalValue &&
-      newTask.intervalType
-    ) {
+  const handleCreateTask = async (formData: any) => {
+    try {
+      // The API call is already handled in the NewTaskModal component
+      // Here we just need to update the local state with the new task
+      
+      // Create a new task object for the UI
       const newTaskObj: ScrapingTask = {
-        id: `task-${Date.now()}`,
-        name: newTask.name,
-        url: newTask.url,
-        intervalValue: newTask.intervalValue,
-        intervalType: newTask.intervalType as
+        id: `task-${Date.now()}`, // In a real app, this would come from the API response
+        name: formData.task_name,
+        url: formData.url,
+        intervalValue: formData.frequency.value,
+        intervalType: formData.frequency.unit as
           | "hours"
           | "minutes"
           | "days"
           | "weeks",
         lastRun: null,
         nextRun: new Date(), // Would be calculated based on schedule in a real app
-        status: "inactive",
-        description: newTask.description || "",
+        status: "active",
+        description: "", // Add description if available in formData
       };
 
+      // Update the tasks list
       setTasks([...tasks, newTaskObj]);
-      setShowNewTaskDialog(false);
+      
+      // Reset the new task form data
       setNewTask({
         name: "",
         url: "",
         intervalValue: 1,
         intervalType: "hours" as const,
       });
+      
+      // Show success message (could be replaced with a toast notification)
+      console.log('Task added to dashboard:', newTaskObj);
+    } catch (error) {
+      console.error('Error handling task creation:', error);
+      // Could add error handling UI feedback here
     }
   };
   const {
@@ -598,7 +582,18 @@ const Dashboard: React.FC = () => {
                         <h3>Scheduled Tasks</h3>
                         <Button
                           className="btn btn-primary"
-                          onClick={() => setShowNewTaskDialog(true)}
+                          onClick={() => {
+                            // Fetch fresh URLs when New Task button is clicked
+                            if (!shouldUseMockData) {
+                              fetchUrls(true);
+                              // Set a small delay before showing the modal to allow URLs to load
+                              setTimeout(() => {
+                                setShowNewTaskDialog(true);
+                              }, 300);
+                            } else {
+                              setShowNewTaskDialog(true);
+                            }
+                          }}
                           aria-label="Create new task"
                         >
                           <CirclePlus size={18} />
@@ -617,6 +612,8 @@ const Dashboard: React.FC = () => {
                       onSubmit={handleCreateTask}
                       initialData={newTask}
                       urls={urls}
+                      urlObjects={urlObjects}
+                      isLoadingUrls={isLoadingUrls}
                     />
                   </div>
                 </div>

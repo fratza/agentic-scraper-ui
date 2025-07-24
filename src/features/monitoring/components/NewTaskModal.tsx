@@ -14,10 +14,13 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   onSubmit,
   initialData,
   urls,
+  urlObjects = [],
+  isLoadingUrls = false,
 }) => {
   const [formData, setFormData] = useState<NewTaskFormData>({
     task_name: initialData?.task_name || '',
     url: initialData?.url || '',
+    url_id: initialData?.url_id || '',
     frequency: {
       value: initialData?.frequency?.value || 1,
       unit: initialData?.frequency?.unit || 'hours'
@@ -27,10 +30,15 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // Get current date and time for run_at field
+      const currentDateTime = new Date().toISOString();
+      
       // Call the API to submit the task
       const response = await apiService.submitMonitorTask({
         task_name: formData.task_name,
         url: formData.url,
+        url_id: formData.url_id,
+        run_at: currentDateTime, // Add the current date and time
         frequency: {
           value: formData.frequency.value,
           unit: formData.frequency.unit
@@ -52,7 +60,7 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   };
 
   const handleInputChange = (
-    field: 'task_name' | 'url' | 'frequency',
+    field: 'task_name' | 'url' | 'url_id' | 'frequency',
     value: string | number | { value: number; unit: 'minutes' | 'hours' | 'days' | 'weeks' }
   ) => {
     setFormData(prev => {
@@ -114,17 +122,35 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
             <select
               id="taskUrl"
               value={formData.url || ''}
-              onChange={(e) => handleInputChange('url', e.target.value)}
+              onChange={(e) => {
+                const selectedUrl = e.target.value;
+                handleInputChange('url', selectedUrl);
+                
+                // Find the URL ID for the selected URL
+                const selectedUrlObject = urlObjects.find(item => item.url === selectedUrl);
+                if (selectedUrlObject) {
+                  handleInputChange('url_id', selectedUrlObject.id);
+                } else {
+                  // Clear the URL ID if no matching URL is found
+                  handleInputChange('url_id', '');
+                }
+              }}
               className="p-inputtext p-component form-control"
               required
+              disabled={isLoadingUrls}
             >
-              <option value="">Select URL</option>
-              {urls.map((url) => (
+              <option value="">{isLoadingUrls ? 'Loading URLs...' : 'Select URL'}</option>
+              {!isLoadingUrls && urls.map((url) => (
                 <option key={url} value={url}>
                   {url}
                 </option>
               ))}
             </select>
+            {isLoadingUrls && (
+              <small className="text-sm text-gray-500 mt-1">
+                Loading available URLs...
+              </small>
+            )}
           </div>
 
           <div className="form-group">
