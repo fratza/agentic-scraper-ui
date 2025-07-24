@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
@@ -6,6 +6,7 @@ import { usePagination } from "../../../hooks/usePagination";
 import { OriginUrlsTableProps, UrlRow } from "./types";
 import { useMockData } from "../../../utils/environment";
 import "../../../styles/SharedTable.css";
+import axios from "axios";
 
 // Add custom CSS for table headers
 const tableHeaderStyle = `
@@ -21,7 +22,7 @@ const tableHeaderStyle = `
 `;
 
 const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
-  data,
+  data: initialData,
   onViewResult,
   title = "Origin URLs",
   originUrl,
@@ -29,6 +30,51 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
   const shouldUseMockData = useMockData();
   const displayUrl =
     originUrl || (shouldUseMockData ? "https://example.com" : null);
+  
+  const [loading, setLoading] = useState<boolean>(false);
+  const [data, setData] = useState<UrlRow[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch data from API
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const response = await axios.get('/api/supabase/url-list');
+        
+        if (response.data.status === "success" && Array.isArray(response.data.data)) {
+          // Transform the API response to match our UrlRow structure
+          const transformedData: UrlRow[] = response.data.data.map((url: string, index: number) => ({
+            id: `url-${index}`,
+            origin_url: url,
+            lastExtract: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(), // Random date within last 30 days for demo
+            status: ['Active', 'Pending', 'Completed', 'Error'][Math.floor(Math.random() * 4)] // Random status for demo
+          }));
+          
+          setData(transformedData);
+        } else {
+          setError('Invalid data format received from API');
+          // Fallback to initial data if provided
+          if (initialData && initialData.length > 0) {
+            setData(initialData as UrlRow[]);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching URL list:', err);
+        setError('Failed to fetch URL list');
+        // Fallback to initial data if provided
+        if (initialData && initialData.length > 0) {
+          setData(initialData as UrlRow[]);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [initialData]);
 
   // Ensure data is typed as UrlRow[]
   const typedData = data as UrlRow[];
@@ -118,6 +164,22 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
 
   return (
     <div className="data-preview-container">
+      {error && (
+        <div className="p-message p-message-error" style={{ marginBottom: '1rem', padding: '0.5rem' }}>
+          <span className="p-message-text">{error}</span>
+        </div>
+      )}
+      
+      <div className="table-header" style={{ marginBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h3 style={{ margin: 0, fontSize: '1rem' }}>{title}</h3>
+        <Button 
+          icon="pi pi-download" 
+          label="Export" 
+          className="p-button-sm p-button-outlined" 
+          onClick={handleExport} 
+        />
+      </div>
+      
       <DataTable
         value={typedData}
         className="data-table compact-table"
@@ -126,6 +188,12 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
         scrollable
         scrollHeight="flex"
         style={{ fontSize: "0.8rem" }}
+        loading={loading}
+        emptyMessage="No URLs found"
+        rows={5}
+        paginator
+        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+        rowsPerPageOptions={[5, 10, 25]}
       >
         <Column
           header="#"
