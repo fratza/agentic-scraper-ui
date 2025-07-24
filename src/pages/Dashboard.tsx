@@ -564,6 +564,7 @@ const Dashboard: React.FC = () => {
                         onBackToMain={handleBackToMain}
                         onDownloadCSV={downloadCSV}
                         isXmlContent={isXmlContent}
+                        id={extractedData?.jobId || extractedData?.run_id || null}
                       />
                     ) : (
                       <p>
@@ -583,16 +584,8 @@ const Dashboard: React.FC = () => {
                         <Button
                           className="btn btn-primary"
                           onClick={() => {
-                            // Fetch fresh URLs when New Task button is clicked
-                            if (!shouldUseMockData) {
-                              fetchUrls(true);
-                              // Set a small delay before showing the modal to allow URLs to load
-                              setTimeout(() => {
-                                setShowNewTaskDialog(true);
-                              }, 300);
-                            } else {
-                              setShowNewTaskDialog(true);
-                            }
+                            // Use the already fetched URLs instead of making a new API call
+                            setShowNewTaskDialog(true);
                           }}
                           aria-label="Create new task"
                         >
@@ -613,7 +606,7 @@ const Dashboard: React.FC = () => {
                       initialData={newTask}
                       urls={urls}
                       urlObjects={urlObjects}
-                      isLoadingUrls={isLoadingUrls}
+                      isLoadingUrls={isLoadingUrls || loading}
                     />
                   </div>
                 </div>

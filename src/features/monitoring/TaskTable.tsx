@@ -43,12 +43,20 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, onRunTask }) => {
             >
               <td>{task.name}</td>
               <td>
-                <a href={task.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700">
+                <a
+                  href={task.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:text-blue-700"
+                >
                   {new URL(task.url).hostname}
                 </a>
               </td>
               <td>
-                <span className="schedule-help" data-pr-tooltip={`${task.intervalValue} ${task.intervalType}`}>
+                <span
+                  className="schedule-help"
+                  data-pr-tooltip={`${task.intervalValue} ${task.intervalType}`}
+                >
                   {task.intervalValue} {task.intervalType}
                 </span>
               </td>

@@ -1,0 +1,96 @@
+.task-name-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.task-name-modal-content {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 450px;
+  overflow: hidden;
+}
+
+.task-name-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.task-name-modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #343a40;
+}
+
+.task-name-modal-close-button {
+  width: 2rem !important;
+  height: 2rem !important;
+  background: transparent !important;
+  color: #6c757d !important;
+  border: none !important;
+}
+
+.task-name-modal-close-button:hover {
+  background: rgba(108, 117, 125, 0.1) !important;
+  color: #343a40 !important;
+}
+
+.task-name-modal-body {
+  padding: 1.5rem;
+}
+
+.task-name-modal-body .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.task-name-modal-body label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.task-name-modal-body .form-control {
+  width: 100%;
+}
+
+.task-name-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1rem;
+}
+
+.task-name-modal-cancel-button {
+  color: #6c757d !important;
+}
+
+.task-name-modal-submit-button {
+  background-color: #2196f3 !important;
+  border-color: #2196f3 !important;
+}
+
+.task-name-modal-submit-button:hover {
+  background-color: #0d89ec !important;
+  border-color: #0d89ec !important;
+}
+
+.p-error {
+  color: #f44336;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
+}

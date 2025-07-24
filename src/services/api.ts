@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 import { config } from "../lib/config";
+import { TaskNameResponse } from "../model/api";
 
 // Define types for API responses and parameters
 interface ScrapeRequestData {
@@ -53,14 +54,7 @@ export interface MonitorTaskResponse {
   };
 }
 
-export interface TaskNameResponse {
-  status: 'success' | 'error';
-  message?: string;
-  data?: {
-    id: string;
-    task_name: string;
-  };
-}
+// TaskNameResponse is now imported from model/api.ts
 
 // Initialize axios instance with centralized config
 export const apiClient: AxiosInstance = axios.create({

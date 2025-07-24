@@ -6,6 +6,7 @@ export interface DataResultsTableProps {
   onBackToMain: () => void;
   onDownloadCSV: (data: any[]) => void;
   isXmlContent: boolean;
+  id?: string; // ID for the data results, used when submitting task name
 }
 
 export interface XmlHeaders extends Record<string, string> {

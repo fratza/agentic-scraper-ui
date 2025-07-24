@@ -48,6 +48,18 @@ export interface ScrapeResultsResponse {
 }
 
 /**
+ * Response from the submit task name API
+ */
+export interface TaskNameResponse {
+  status: 'success' | 'error';
+  message?: string;
+  data?: {
+    id: string;
+    task_name: string;
+  };
+}
+
+/**
  * API error structure
  */
 export interface ApiError {

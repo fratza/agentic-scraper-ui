@@ -1,0 +1,30 @@
+.data-actions-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+  padding: 0 1rem 1rem;
+}
+
+.btn-approve {
+  background-color: #4caf50 !important;
+  border-color: #4caf50 !important;
+}
+
+.btn-approve:hover {
+  background-color: #43a047 !important;
+  border-color: #43a047 !important;
+}
+
+.btn-approve:disabled {
+  background-color: #a5d6a7 !important;
+  border-color: #a5d6a7 !important;
+  cursor: not-allowed;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .data-actions-container {
+    justify-content: center;
+    padding: 0 0.5rem 0.5rem;
+  }
+}
