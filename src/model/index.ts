@@ -19,6 +19,7 @@ export * from './xmlPreviewData';
 export * from './api';
 export * from './scraperHook';
 export * from './product';
+export * from './dashboard';
 
 // Context interfaces
 export * from './context';

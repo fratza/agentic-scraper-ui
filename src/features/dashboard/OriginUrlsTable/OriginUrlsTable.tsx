@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { usePagination } from "../../../hooks/usePagination";
-import { OriginUrlsTableProps, UrlRow } from "./types";
 import { useMockData } from "../../../utils/environment";
+import { exportToCSV, formatDate } from "../../../utils/exportUtils";
+import { OriginUrlsTableProps, UrlRow } from "../../../model/dashboard";
 import "../../../styles/SharedTable.css";
 
 
@@ -53,13 +54,13 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
   // Ensure data is typed as UrlRow[]
   const typedData = initialData as UrlRow[];
 
-  // Column for displaying the index (row number)
-  const indexBodyTemplate = (_: any, options: any) => {
+  // Column for displaying the index (row number) - memoized for better performance
+  const indexBodyTemplate = useCallback((_: any, options: any) => {
     return options.rowIndex + 1;
-  };
+  }, []);
 
-  // Column for displaying the URL
-  const urlBodyTemplate = (rowData: UrlRow) => (
+  // Column for displaying the URL - memoized for better performance
+  const urlBodyTemplate = useCallback((rowData: UrlRow) => (
     <a
       href={rowData.origin_url}
       target="_blank"
@@ -69,61 +70,51 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
     >
       {rowData.origin_url}
     </a>
-  );
+  ), []);
 
-  // Column for displaying the last extract date
-  const lastExtractBodyTemplate = (rowData: UrlRow) => (
+  // Column for displaying the last extract date - memoized for better performance
+  const lastExtractBodyTemplate = useCallback((rowData: UrlRow) => (
     <span>
-      {rowData.lastExtract
-        ? new Date(rowData.lastExtract).toLocaleDateString()
-        : "N/A"}
+      {formatDate(rowData.lastExtract)}
     </span>
-  );
+  ), []);
 
-  // Column for displaying the status
-  const statusBodyTemplate = (rowData: UrlRow) => (
+  // Column for displaying the status - memoized for better performance
+  const statusBodyTemplate = useCallback((rowData: UrlRow) => (
     <span
       className={`status-badge status-${
         rowData.status?.toLowerCase() || "unknown"
       }`}
+      aria-label={`Status: ${rowData.status || "Unknown"}`}
     >
       {rowData.status || "Unknown"}
     </span>
-  );
+  ), []);
 
-  // Column for actions
-  const actionBodyTemplate = (rowData: UrlRow) => (
+  // Column for actions - memoized for better performance
+  const actionBodyTemplate = useCallback((rowData: UrlRow) => (
     <Button
       label="View Result"
       className="p-button-sm p-button-text"
       onClick={() => onViewResult(rowData.origin_url)}
       disabled={!rowData.origin_url}
+      aria-label={`View results for ${rowData.origin_url}`}
     />
-  );
+  ), [onViewResult]);
 
-  // Handle CSV export
-  const handleExport = () => {
-    const csvContent = [
-      "Index,URL,Last Extract,Status", // Header row
-      ...typedData.map(
-        (item: UrlRow, index) =>
-          `${index + 1},"${item.origin_url}","${
-            item.lastExtract
-              ? new Date(item.lastExtract).toLocaleDateString()
-              : "N/A"
-          }","${item.status || "Unknown"}"`
-      ),
-    ].join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "origin_urls.csv";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  // Handle CSV export using the utility function - memoized for better performance
+  const handleExport = useCallback(() => {
+    exportToCSV(
+      typedData,
+      {
+        id: "ID",
+        origin_url: "URL",
+        lastExtract: "Last Extract",
+        status: "Status"
+      },
+      "origin_urls.csv"
+    );
+  }, [typedData]);
 
   // Add custom styles for table headers
   useEffect(() => {
@@ -154,21 +145,24 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
         />
       </div>
       
-      <DataTable
-        value={typedData}
-        className="data-table compact-table"
-        responsiveLayout="scroll"
-        stripedRows
-        scrollable
-        scrollHeight="flex"
-        style={{ fontSize: "0.8rem" }}
-        loading={loading}
-        emptyMessage="No URLs found"
-        rows={5}
-        paginator
-        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-        rowsPerPageOptions={[5, 10, 25]}
-      >
+      {/* Memoize the DataTable for better performance */}
+      {useMemo(() => (
+        <DataTable
+          value={typedData}
+          className="data-table compact-table"
+          responsiveLayout="scroll"
+          stripedRows
+          scrollable
+          scrollHeight="flex"
+          style={{ fontSize: "0.8rem" }}
+          loading={loading}
+          emptyMessage="No URLs found"
+          rows={5}
+          paginator
+          paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+          rowsPerPageOptions={[5, 10, 25]}
+          aria-label="Origin URLs Table"
+        >
         <Column
           header="#"
           body={indexBodyTemplate}
@@ -263,6 +257,7 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
           }}
         />
       </DataTable>
+      ))}
     </div>
   );
 };
