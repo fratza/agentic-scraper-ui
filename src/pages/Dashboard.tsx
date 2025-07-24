@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import apiService from "../services/api";
 import { motion } from "framer-motion";
 import { Button } from "primereact/button";
@@ -91,6 +92,9 @@ const downloadCSV = (
 };
 
 const Dashboard: React.FC = () => {
+  // Get mock data flag early so it can be used in useEffect
+  const shouldUseMockData = useMockData();
+  
   const [activeTab, setActiveTab] = useState("data");
   const [tasks, setTasks] = useState<ScrapingTask[]>(mockTasks);
   const [showNewTaskDialog, setShowNewTaskDialog] = useState(false);
@@ -105,7 +109,7 @@ const Dashboard: React.FC = () => {
   );
   const [showApiData, setShowApiData] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showUrlTable, setShowUrlTable] = useState(false);
+  const [showUrlTable, setShowUrlTable] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const intervalTypes = [
@@ -133,6 +137,47 @@ const Dashboard: React.FC = () => {
     };
     fetchUrls();
   }, []);
+  
+  // Fetch URL list on component mount
+  useEffect(() => {
+    const fetchInitialUrlList = async () => {
+      setLoading(true);
+      try {
+        if (shouldUseMockData) {
+          // Use mock data in local environment
+          setApiData(mockOriginUrls);
+        } else {
+          try {
+            // Call API in production
+            const response = await axios.get('/api/supabase/url-list');
+            
+            if (response.data.status === "success" && Array.isArray(response.data.data)) {
+              // Transform the API response to match our data structure
+              const transformedData = response.data.data.map((url: string, index: number) => ({
+                id: `url-${index}`,
+                origin_url: url
+              }));
+              setApiData(transformedData);
+            }
+          } catch (apiError) {
+            console.error("Error calling direct API:", apiError);
+            // Fallback to fetchUrlList if direct API call fails
+            const response = await fetchUrlList();
+            if (response.status === "success") {
+              setApiData(response.data);
+            }
+          }
+        }
+      } catch (error) {
+        setError("Failed to fetch URL list");
+        console.error("Error fetching URL list:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchInitialUrlList();
+  }, [shouldUseMockData]);
 
   const handleTabClick = (tabId: string) => {
     setActiveTab(tabId);
@@ -224,7 +269,7 @@ const Dashboard: React.FC = () => {
     | (any & { _contentType?: string })
     | null;
   // Check if we should use mock data
-  const shouldUseMockData = useMockData();
+  // shouldUseMockData is now declared at the top of the component
 
   // Log extracted data for debugging
   useEffect(() => {}, [extractedData]);
