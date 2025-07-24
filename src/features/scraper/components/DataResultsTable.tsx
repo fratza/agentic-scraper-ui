@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { Button } from "primereact/button";
 import DataTable from "./DataTable";
-import { useMockData } from "../../../utils/environment";
 import { mockTemplateData } from "../../../data/mockTableData";
-import { fetchUrlList } from '../../../api/urls';
-import type { UrlListResponse } from '../../../services/api';
+import "./DataResultsTable.css";
 
 // Define the URL list item type
 type UrlListItem = {
@@ -30,13 +28,9 @@ const DataResultsTable: React.FC<DataResultsTableProps> = ({
   const [showUrlTable, setShowUrlTable] = useState(false);
   const [urlList, setUrlList] = useState<UrlListItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  
-  // Check if we should use mock data
-  const shouldUseMockData = useMockData();
 
-  // Use mock URL if in local environment and no real URL is available
-  const displayUrl =
-    originUrl || (shouldUseMockData ? "https://example.com/template" : null);
+  // Use mock URL if no real URL is available
+  const displayUrl = originUrl || "https://example.com/template";
 
   // Define fixed headers for XML content
   const xmlHeaders = {
@@ -46,33 +40,23 @@ const DataResultsTable: React.FC<DataResultsTableProps> = ({
     description: "Description",
   };
 
-  const handleOkClick = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetchUrlList();
-      if (response.status === 'success') {
-        // Ensure we have an array of objects with origin_url property
-        const formattedData = Array.isArray(response.data) 
-          ? response.data.map((item: any) => ({
-              id: item.id || `item-${Math.random().toString(36).substr(2, 9)}`,
-              origin_url: item.origin_url || ''
-            }))
-          : [];
-        setUrlList(formattedData);
-        setShowUrlTable(true);
-      }
-    } catch (error) {
-      console.error('Error fetching URL list:', error);
-      // Set some mock data for testing if the API fails
+  const handleOkClick = () => {
+    setIsLoading(true);
+    
+    // Use mock data with a small delay to simulate API call
+    setTimeout(() => {
       setUrlList([
-        { id: '1', origin_url: 'https://example.com/1' },
-        { id: '2', origin_url: 'https://example.com/2' },
-        { id: '3', origin_url: 'https://example.com/3' }
+        { id: '1', origin_url: 'https://example.com/products/1' },
+        { id: '2', origin_url: 'https://example.com/products/2' },
+        { id: '3', origin_url: 'https://example.com/products/3' },
+        { id: '4', origin_url: 'https://example.com/products/4' },
+        { id: '5', origin_url: 'https://example.com/products/5' },
+        { id: '6', origin_url: 'https://example.com/blog/1' },
+        { id: '7', origin_url: 'https://example.com/blog/2' }
       ]);
       setShowUrlTable(true);
-    } finally {
       setIsLoading(false);
-    }
+    }, 500);
   };
 
   return (

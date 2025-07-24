@@ -20,6 +20,7 @@ import OriginUrlsTable from "../features/dashboard/OriginUrlsTable";
 import { useMockData } from "../utils/environment";
 import { mockTemplateData } from "../data/mockTableData";
 import { fetchUrlList } from "../api/urls";
+import { mockOriginUrls } from "../data/mockOriginUrls";
 import "../styles/Dashboard.css";
 
 // Type for URL list response
@@ -99,7 +100,9 @@ const Dashboard: React.FC = () => {
     intervalValue: 1,
     intervalType: "hours" as const,
   });
-  const [apiData, setApiData] = useState<{ id: string; origin_url: string }[]>([]);
+  const [apiData, setApiData] = useState<{ id: string; origin_url: string }[]>(
+    []
+  );
   const [showApiData, setShowApiData] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showUrlTable, setShowUrlTable] = useState(false);
@@ -139,14 +142,21 @@ const Dashboard: React.FC = () => {
   const handleOkClick = async () => {
     setLoading(true);
     try {
-      const response = await fetchUrlList();
-      if (response.status === 'success') {
-        setApiData(response.data);
+      if (shouldUseMockData) {
+        // Use mock data in local environment
+        setApiData(mockOriginUrls);
         setShowUrlTable(true);
+      } else {
+        // Call API in production
+        const response = await fetchUrlList();
+        if (response.status === "success") {
+          setApiData(response.data);
+          setShowUrlTable(true);
+        }
       }
     } catch (error) {
-      setError('Failed to fetch URL list');
-      console.error('Error fetching URL list:', error);
+      setError("Failed to fetch URL list");
+      console.error("Error fetching URL list:", error);
     } finally {
       setLoading(false);
     }
@@ -376,13 +386,8 @@ const Dashboard: React.FC = () => {
                   >
                     {showUrlTable ? (
                       <div className="data-preview-container">
-                        <div className="data-table-header">
-                          <div className="origin-url-container">
-                            <div className="origin-url">
-                              <span>Origin URLs:</span>
-                            </div>
-                          </div>
-                        </div>
+                        <div className="origin-url-container"></div>
+
                         <OriginUrlsTable
                           data={apiData}
                           onViewResult={(url) => {
@@ -443,22 +448,26 @@ const Dashboard: React.FC = () => {
 
               <div className="card-actions mt-4">
                 <div className="spacer"></div>
-                <Button
-                  icon="pi pi-search"
-                  label="New Scrape"
-                  className="btn btn-primary"
-                  onClick={() => (window.location.href = "/")}
-                  aria-label="Start new scrape"
-                />
-                <Button
-                  icon="pi pi-check"
-                  label={showUrlTable ? "Back to Results" : "Okay, Looks good!"}
-                  className="btn btn-primary"
-                  onClick={showUrlTable ? () => setShowUrlTable(false) : handleOkClick}
-                  aria-label={showUrlTable ? "Back to results" : "Fetch URL list"}
-                  loading={loading}
-                  disabled={!tableData}
-                />
+                {tableData && !showUrlTable && (
+                  <>
+                    <Button
+                      icon="pi pi-search"
+                      label="New Scrape"
+                      className="btn btn-primary"
+                      onClick={() => (window.location.href = "/")}
+                      aria-label="Start new scrape"
+                    />
+                    <Button
+                      icon="pi pi-check"
+                      label="Okay, Looks good!"
+                      className="btn btn-primary"
+                      onClick={handleOkClick}
+                      aria-label="Fetch URL list"
+                      loading={loading}
+                    />
+                  </>
+                )}
+
                 {error && <div className="p-error mt-2">{error}</div>}
               </div>
             </Card>

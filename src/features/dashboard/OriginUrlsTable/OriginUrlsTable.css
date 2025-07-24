@@ -1,0 +1,183 @@
+.origin-urls-container {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.table-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1.25rem;
+}
+
+.origin-urls-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.origin-urls-table .p-datatable-tbody > tr {
+  transition: background-color 0.2s;
+}
+
+.origin-urls-table .p-datatable-tbody > tr:hover {
+  background-color: #f1f5f9;
+}
+
+.origin-urls-table .p-datatable-tbody > tr > td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e9ecef;
+  vertical-align: middle;
+}
+
+.index-column {
+  font-weight: 600;
+  color: #6c757d;
+  text-align: center;
+}
+
+.url-column {
+  max-width: 500px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.url-link {
+  color: #3b82f6;
+  text-decoration: none;
+  transition: color 0.2s;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.url-link:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.empty-column {
+  min-width: 100px;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+  .origin-urls-container {
+    padding: 1rem;
+  }
+
+  .table-title {
+    font-size: 1.25rem;
+  }
+
+  .origin-urls-table .p-datatable-thead > tr > th,
+  .origin-urls-table .p-datatable-tbody > tr > td {
+    padding: 0.5rem;
+  }
+
+  .url-column {
+    max-width: 250px;
+  }
+}
+
+/* Accessibility improvements */
+.origin-urls-table .p-paginator {
+  padding: 1rem 0;
+}
+
+.origin-urls-table .p-paginator .p-paginator-pages .p-paginator-page {
+  min-width: 2.5rem;
+  height: 2.5rem;
+}
+
+.origin-urls-table .p-paginator .p-paginator-pages .p-paginator-page:focus {
+  box-shadow: 0 0 0 2px #bfdbfe;
+  outline: none;
+}
+
+/* Origin URLs Table Styles */
+
+.data-preview-container {
+  margin: 0.5rem 0;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  background-color: var(--surface-0);
+  padding: 0.5rem;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.table-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-color);
+}
+
+.data-table {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.url-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.url-link:hover {
+  color: var(--primary-color-dark);
+  text-decoration: underline;
+}
+
+/* Status badge styles */
+.status-badge {
+  display: inline-block;
+  padding: 0.2rem 0.4rem;
+  border-radius: 10px;
+  font-size: 0.65rem;
+  font-weight: 500;
+}
+
+.status-active, .status-completed, .status-success {
+  background-color: var(--green-100);
+  color: var(--green-800);
+}
+
+.status-pending, .status-processing {
+  background-color: var(--yellow-100);
+  color: var(--yellow-800);
+}
+
+.status-error, .status-failed {
+  background-color: var(--red-100);
+  color: var(--red-800);
+}
+
+.status-unknown {
+  background-color: var(--gray-100);
+  color: var(--gray-800);
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .data-preview-container {
+    padding: 0.5rem;
+  }
+}
