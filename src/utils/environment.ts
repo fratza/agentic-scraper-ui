@@ -1,15 +1,38 @@
 /**
  * Environment utility functions
+ * This file exports the environment configuration based on the current mode
  */
 
+import { baseEnvironment, isLocalEnvironment, isLocalMode, EnvironmentConfig } from './environment.base';
+import { devEnvironment } from './environment.dev';
+import { localEnvironment } from './environment.local';
+
 /**
- * Check if the application is running in a local development environment
- * @returns boolean indicating if the app is running locally
+ * Get the current environment configuration
+ * @returns The environment configuration for the current mode
  */
-export const isLocalEnvironment = (): boolean => {
-  // Check if window.location.hostname is localhost or 127.0.0.1
-  const hostname = window.location.hostname;
-  return hostname === 'localhost' || hostname === '127.0.0.1';
+export const getCurrentEnvironment = (): EnvironmentConfig => {
+  if (isLocalMode()) {
+    // Local mode (npm run local) - use local environment
+    return localEnvironment;
+  } else if (isLocalEnvironment()) {
+    // Regular development mode - use dev environment
+    return devEnvironment;
+  } else {
+    // Production mode - use base environment
+    return baseEnvironment;
+  }
+};
+
+// Export the current environment configuration
+const currentEnv = getCurrentEnvironment();
+
+/**
+ * Get the base API URL based on the environment
+ * @returns string with the base API URL
+ */
+export const getApiBaseUrl = (): string => {
+  return currentEnv.apiBaseUrl;
 };
 
 /**
@@ -17,6 +40,11 @@ export const isLocalEnvironment = (): boolean => {
  * @returns boolean indicating if mock data should be used
  */
 export const useMockData = (): boolean => {
-  // In a real app, you might also check for specific URL parameters or environment variables
-  return isLocalEnvironment();
+  return currentEnv.useMockData;
 };
+
+// Re-export utility functions from base
+export { isLocalEnvironment, isLocalMode };
+
+// Export the environment configuration interface
+export type { EnvironmentConfig };

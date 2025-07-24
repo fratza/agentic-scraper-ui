@@ -18,7 +18,7 @@ import { useScraperContext } from "../context/ScraperContext";
 import DataTable from "../features/scraper/components/DataTable";
 import DataResultsTable from "../features/dashboard/DataResultsTable";
 import OriginUrlsTable from "../features/dashboard/OriginUrlsTable";
-import { useMockData } from "../utils/environment";
+import { useMockData, getApiBaseUrl } from "../utils/environment";
 import { mockTemplateData } from "../data/mockTableData";
 import { fetchUrlList } from "../api/urls";
 import { mockOriginUrls } from "../data/mockOriginUrls";
@@ -149,7 +149,8 @@ const Dashboard: React.FC = () => {
         } else {
           try {
             // Call API in production
-            const response = await axios.get('/api/supabase/url-list');
+            const apiBaseUrl = getApiBaseUrl();
+            const response = await axios.get(`${apiBaseUrl}/api/supabase/url-list`);
             
             if (response.data.status === "success" && Array.isArray(response.data.data)) {
               // Transform the API response to match our data structure with additional fields
