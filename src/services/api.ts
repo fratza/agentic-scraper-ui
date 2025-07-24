@@ -53,6 +53,15 @@ export interface MonitorTaskResponse {
   };
 }
 
+export interface TaskNameResponse {
+  status: 'success' | 'error';
+  message?: string;
+  data?: {
+    id: string;
+    task_name: string;
+  };
+}
+
 // Initialize axios instance with centralized config
 export const apiClient: AxiosInstance = axios.create({
   baseURL: config.api.baseUrl,
@@ -263,6 +272,20 @@ const apiService = {
       return response.data;
     } catch (error) {
       console.error('Error submitting monitoring task:', error);
+      throw error;
+    }
+  },
+
+  // Submit a task name for extracted data
+  submitTaskName: async (data: {
+    task_name: string;
+    id: string;
+  }): Promise<TaskNameResponse> => {
+    try {
+      const response = await apiClient.post('/api/submit-task-name', data);
+      return response.data;
+    } catch (error) {
+      console.error('Error submitting task name:', error);
       throw error;
     }
   },
