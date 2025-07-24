@@ -6,7 +6,7 @@ import { usePagination } from "../../../hooks/usePagination";
 import { OriginUrlsTableProps, UrlRow } from "./types";
 import { useMockData } from "../../../utils/environment";
 import "../../../styles/SharedTable.css";
-import axios from "axios";
+
 
 // Add custom CSS for table headers
 const tableHeaderStyle = `
@@ -32,52 +32,26 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
     originUrl || (shouldUseMockData ? "https://example.com" : null);
   
   const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<UrlRow[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch data from API
+  // Use initialData directly without API call
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      
-      try {
-        const response = await axios.get('/api/supabase/url-list');
-        
-        if (response.data.status === "success" && Array.isArray(response.data.data)) {
-          // Transform the API response to match our UrlRow structure
-          const transformedData: UrlRow[] = response.data.data.map((url: string, index: number) => ({
-            id: `url-${index}`,
-            origin_url: url,
-            lastExtract: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(), // Random date within last 30 days for demo
-            status: ['Active', 'Pending', 'Completed', 'Error'][Math.floor(Math.random() * 4)] // Random status for demo
-          }));
-          
-          setData(transformedData);
-        } else {
-          setError('Invalid data format received from API');
-          // Fallback to initial data if provided
-          if (initialData && initialData.length > 0) {
-            setData(initialData as UrlRow[]);
-          }
-        }
-      } catch (err) {
-        console.error('Error fetching URL list:', err);
-        setError('Failed to fetch URL list');
-        // Fallback to initial data if provided
-        if (initialData && initialData.length > 0) {
-          setData(initialData as UrlRow[]);
-        }
-      } finally {
+    // Set loading state when initialData changes
+    setLoading(true);
+    
+    // Short timeout to show loading indicator for better UX
+    setTimeout(() => {
+      if (initialData && initialData.length > 0) {
+        setLoading(false);
+      } else {
+        setError('No URL data available');
         setLoading(false);
       }
-    };
-
-    fetchData();
+    }, 300);
   }, [initialData]);
 
   // Ensure data is typed as UrlRow[]
-  const typedData = data as UrlRow[];
+  const typedData = initialData as UrlRow[];
 
   // Column for displaying the index (row number)
   const indexBodyTemplate = (_: any, options: any) => {

@@ -104,7 +104,7 @@ const Dashboard: React.FC = () => {
     intervalValue: 1,
     intervalType: "hours" as const,
   });
-  const [apiData, setApiData] = useState<{ id: string; origin_url: string }[]>(
+  const [apiData, setApiData] = useState<{ id: string; origin_url: string; lastExtract?: string; status?: string }[]>(
     []
   );
   const [showApiData, setShowApiData] = useState(false);
@@ -152,10 +152,14 @@ const Dashboard: React.FC = () => {
             const response = await axios.get('/api/supabase/url-list');
             
             if (response.data.status === "success" && Array.isArray(response.data.data)) {
-              // Transform the API response to match our data structure
+              // Transform the API response to match our data structure with additional fields
               const transformedData = response.data.data.map((url: string, index: number) => ({
                 id: `url-${index}`,
-                origin_url: url
+                origin_url: url,
+                // Add random last extract date within the last 30 days for demonstration
+                lastExtract: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
+                // Add random status for demonstration
+                status: ['Active', 'Pending', 'Completed', 'Error'][Math.floor(Math.random() * 4)]
               }));
               setApiData(transformedData);
             }
