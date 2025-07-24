@@ -12,7 +12,11 @@ export interface EnvironmentConfig {
  * Default environment configuration
  */
 export const baseEnvironment: EnvironmentConfig = {
-  apiBaseUrl: "", // Default to relative URL for production
+  // In production, use RENDER_EXTERNAL_URL environment variable if available (Render.com),
+  // otherwise default to empty string for relative URLs
+  apiBaseUrl: process.env.NODE_ENV === 'production' 
+    ? (process.env.REACT_APP_API_URL || process.env.RENDER_EXTERNAL_URL || '')
+    : '',
   useMockData: false,
 };
 
