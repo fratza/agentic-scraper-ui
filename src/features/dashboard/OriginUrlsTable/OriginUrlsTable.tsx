@@ -257,7 +257,7 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
           }}
         />
       </DataTable>
-      ))}
+      ), [typedData, loading, indexBodyTemplate, urlBodyTemplate, lastExtractBodyTemplate, statusBodyTemplate, actionBodyTemplate])}
     </div>
   );
 };
