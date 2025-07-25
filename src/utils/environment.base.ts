@@ -13,19 +13,18 @@ export interface EnvironmentConfig {
  */
 // Helper function to get the API base URL based on the environment
 const getProductionApiBaseUrl = (): string => {
-  // In production, try these environment variables in order:
-  // 1. REACT_APP_API_URL - Explicit API URL
-  // 2. RENDER_EXTERNAL_URL - Render's external URL (includes protocol)
-  // 3. Empty string for relative URLs
   return (
     process.env.REACT_APP_API_URL ||
-    (process.env.RENDER_EXTERNAL_URL ? `${process.env.RENDER_EXTERNAL_URL}/api` : '')
+    (process.env.RENDER_EXTERNAL_URL
+      ? `${process.env.RENDER_EXTERNAL_URL}/api`
+      : "")
   );
 };
 
 export const baseEnvironment: EnvironmentConfig = {
   // In production, use the determined API base URL, otherwise use empty string for development
-  apiBaseUrl: process.env.NODE_ENV === 'production' ? getProductionApiBaseUrl() : '',
+  apiBaseUrl:
+    process.env.NODE_ENV === "production" ? getProductionApiBaseUrl() : "",
   useMockData: false,
 };
 
