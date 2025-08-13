@@ -31,9 +31,9 @@ const convertToCSV = (data: any[]): string => {
   const keys = Array.from(
     new Set(
       data.flatMap((item) =>
-        typeof item === "object" && item !== null ? Object.keys(item) : []
-      )
-    )
+        typeof item === "object" && item !== null ? Object.keys(item) : [],
+      ),
+    ),
   );
 
   // Create header row
@@ -70,7 +70,7 @@ const convertToCSV = (data: any[]): string => {
 // Helper function to download CSV
 const downloadCSV = (
   data: any[],
-  filename: string = "extracted_data.csv"
+  filename: string = "extracted_data.csv",
 ): void => {
   const csv = convertToCSV(data);
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -126,13 +126,12 @@ const Dashboard: React.FC = () => {
   const fetchUrls = async (showLoadingState = true) => {
     // If we're already fetching URLs, don't start another fetch
     if (isFetchingUrls.current) {
-      console.log('URL fetch already in progress, skipping duplicate call');
       return { success: true, data: [] };
     }
-    
+
     // Set the flag to indicate we're fetching URLs
     isFetchingUrls.current = true;
-    
+
     try {
       if (showLoadingState) {
         setIsLoadingUrls(true);
@@ -208,14 +207,14 @@ const Dashboard: React.FC = () => {
           // Add a slight delay to simulate API call for better UX
           await new Promise((resolve) => setTimeout(resolve, 500));
           setApiData(mockOriginUrls);
-          
+
           // Set mock URLs for the dropdown
           setUrls(mockUrls);
-          
+
           // Create mock URL objects
           const mockUrlObjects = mockUrls.map((url, index) => ({
             id: `mock-${index}`,
-            url
+            url,
           }));
           setUrlObjects(mockUrlObjects);
         } else {
@@ -296,7 +295,7 @@ const Dashboard: React.FC = () => {
     try {
       // The API call is already handled in the NewTaskModal component
       // Here we just need to update the local state with the new task
-      
+
       // Create a new task object for the UI
       const newTaskObj: ScrapingTask = {
         id: `task-${Date.now()}`, // In a real app, this would come from the API response
@@ -316,7 +315,7 @@ const Dashboard: React.FC = () => {
 
       // Update the tasks list
       setTasks([...tasks, newTaskObj]);
-      
+
       // Reset the new task form data
       setNewTask({
         name: "",
@@ -324,11 +323,11 @@ const Dashboard: React.FC = () => {
         intervalValue: 1,
         intervalType: "hours" as const,
       });
-      
+
       // Show success message (could be replaced with a toast notification)
-      console.log('Task added to dashboard:', newTaskObj);
+      console.log("Task added to dashboard:", newTaskObj);
     } catch (error) {
-      console.error('Error handling task creation:', error);
+      console.error("Error handling task creation:", error);
       // Could add error handling UI feedback here
     }
   };
@@ -531,21 +530,20 @@ const Dashboard: React.FC = () => {
                             style={{
                               padding: "1rem",
                               margin: "1rem 0",
-                              backgroundColor: "var(--red-50)",
-                              border: "1px solid var(--red-200)",
+                              backgroundColor: "var(--surface-100)",
+                              border: "1px solid var(--surface-200)",
                               borderRadius: "4px",
-                              color: "var(--red-700)",
                             }}
                           >
                             <i
-                              className="pi pi-exclamation-triangle"
+                              className="pi pi-info-circle"
                               style={{ marginRight: "0.5rem" }}
                             ></i>
                             {error}
                           </div>
                         )}
 
-                        {(showApiData || !loading) && (
+                        {(showApiData || !loading) && !error && apiData.length > 0 && (
                           <OriginUrlsTable
                             data={apiData}
                             onViewResult={(url) => {
@@ -556,6 +554,12 @@ const Dashboard: React.FC = () => {
                             loading={loading}
                           />
                         )}
+                        
+                        {!loading && !error && apiData.length === 0 && (
+                          <div className="empty-state-container" style={{ textAlign: "center", padding: "2rem" }}>
+                            <p>No URL data available. Please add URLs to continue.</p>
+                          </div>
+                        )}
                       </div>
                     ) : tableData ? (
                       <DataResultsTable
@@ -564,7 +568,9 @@ const Dashboard: React.FC = () => {
                         onBackToMain={handleBackToMain}
                         onDownloadCSV={downloadCSV}
                         isXmlContent={isXmlContent}
-                        id={extractedData?.jobId || extractedData?.run_id || null}
+                        id={
+                          extractedData?.jobId || extractedData?.run_id || null
+                        }
                       />
                     ) : (
                       <p>
@@ -634,7 +640,7 @@ const Dashboard: React.FC = () => {
                   </>
                 )}
 
-                {error && <div className="p-error mt-2">{error}</div>}
+                {/* Error message removed as requested */}
               </div>
             </Card>
           </section>

@@ -17,9 +17,17 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
-    }
+      "@/*": ["src/*"],
+      "react/jsx-runtime": ["./node_modules/react/jsx-runtime"]
+    },
+    "typeRoots": ["./node_modules/@types", "./src/types"]
   },
-  "include": ["src"],
+  "include": [
+    "src",
+    "src/types",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.d.ts"
+  ],
   "exclude": ["node_modules"]
 }
