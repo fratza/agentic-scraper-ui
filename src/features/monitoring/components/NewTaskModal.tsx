@@ -95,12 +95,15 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
         <div className="modal-header">
           <h2 className="modal-title">New Task</h2>
           <Button
-            icon="pi pi-times"
             className="modal-close-button"
             onClick={onClose}
             aria-label="Close"
             type="button"
-          />
+            tooltip="Close"
+            tooltipOptions={{ position: 'left' }}
+          >
+            ✕
+          </Button>
         </div>
         <form onSubmit={handleSubmit} className="modal-body">
           <div className="form-group">

@@ -53,10 +53,7 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, onRunTask }) => {
                 </a>
               </td>
               <td>
-                <span
-                  className="schedule-help"
-                  data-pr-tooltip={`${task.intervalValue} ${task.intervalType}`}
-                >
+                <span>
                   {task.intervalValue} {task.intervalType}
                 </span>
               </td>
