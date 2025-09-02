@@ -10,5 +10,4 @@ import { EnvironmentConfig } from "./environment.base";
  */
 export const devEnvironment: EnvironmentConfig = {
   apiBaseUrl: "https://agentic-scraper-api-1.onrender.com", // Use relative URLs for regular development
-  useMockData: false, // Use mock data in regular development mode
 };

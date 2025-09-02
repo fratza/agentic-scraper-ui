@@ -1,26 +1,18 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+
 import apiService from "../services/api";
 import { motion } from "framer-motion";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
-import { SquareMenu, CirclePlus } from "lucide-react";
+import { CirclePlus } from "lucide-react";
 import { NewTaskModal } from "../features/monitoring/components/NewTaskModal";
-import { InputText } from "primereact/inputtext";
-import { InputTextarea } from "primereact/inputtextarea";
-import {
-  mockTasks,
-  ScrapingTask,
-  TaskStatus,
-} from "../features/monitoring/types";
+
+import { ScrapingTask, TaskStatus } from "../features/monitoring/types";
 import TaskTable from "../features/monitoring/TaskTable";
 import { useScraperContext } from "../context/ScraperContext";
 import DataResultsTable from "../features/dashboard/DataResultsTable";
 import OriginUrlsTable from "../features/dashboard/OriginUrlsTable";
-import { useMockData } from "../utils/environment";
-import { mockTemplateData } from "../data/mockTableData";
-import { mockOriginUrls } from "../data/mockOriginUrls";
-import { UrlListResponse } from "../model/dashboard";
+
 import "../styles/Dashboard.css";
 
 // Helper function to convert data to CSV
@@ -85,11 +77,8 @@ const downloadCSV = (
 };
 
 const Dashboard: React.FC = () => {
-  // Get mock data flag early so it can be used in useEffect
-  const shouldUseMockData = useMockData();
-
   const [activeTab, setActiveTab] = useState("data");
-  const [tasks, setTasks] = useState<ScrapingTask[]>(mockTasks);
+  const [tasks, setTasks] = useState<ScrapingTask[]>([]);
   const [showNewTaskDialog, setShowNewTaskDialog] = useState(false);
   const [isLoadingUrls, setIsLoadingUrls] = useState(false);
   const [newTask, setNewTask] = useState<Partial<ScrapingTask>>({
@@ -99,19 +88,12 @@ const Dashboard: React.FC = () => {
     intervalType: "hours" as const,
   });
   const [apiData, setApiData] = useState<
-    { id: string; origin_url: string; status?: string }[]
+    { id: string; origin_url: string; status?: string; name?: string }[]
   >([]);
   const [showApiData, setShowApiData] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showUrlTable, setShowUrlTable] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const intervalTypes = [
-    { label: "Hours", value: "hours" },
-    { label: "Minutes", value: "minutes" },
-    { label: "Days", value: "days" },
-    { label: "Weeks", value: "weeks" },
-  ];
 
   // State for URLs to be used in the New Task modal
   const [urls, setUrls] = useState<string[]>([]);
@@ -150,6 +132,7 @@ const Dashboard: React.FC = () => {
           return {
             id: item.id || `url-${index}`,
             origin_url: item.url,
+            name: item.name,
             // Add random status for demonstration
             status: ["Active", "Pending", "Completed", "Error"][
               Math.floor(Math.random() * 4)
@@ -185,13 +168,6 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  // Mock URLs for development/testing
-  const mockUrls = [
-    "https://example.com/page1",
-    "https://example.com/page2",
-    "https://example.com/page3",
-  ];
-
   // Fetch URL list on component mount
   useEffect(() => {
     const fetchInitialUrlList = async () => {
@@ -202,27 +178,10 @@ const Dashboard: React.FC = () => {
       setShowApiData(false);
 
       try {
-        if (shouldUseMockData) {
-          // Use mock data in local environment
-          // Add a slight delay to simulate API call for better UX
-          await new Promise((resolve) => setTimeout(resolve, 500));
-          setApiData(mockOriginUrls);
-
-          // Set mock URLs for the dropdown
-          setUrls(mockUrls);
-
-          // Create mock URL objects
-          const mockUrlObjects = mockUrls.map((url, index) => ({
-            id: `mock-${index}`,
-            url,
-          }));
-          setUrlObjects(mockUrlObjects);
-        } else {
-          // Use the consolidated fetchUrls function with loading state handled separately
-          const result = await fetchUrls(false);
-          if (!result.success) {
-            throw new Error(result.error || "Failed to fetch URL list");
-          }
+        // Use the consolidated fetchUrls function with loading state handled separately
+        const result = await fetchUrls(false);
+        if (!result.success) {
+          throw new Error(result.error || "Failed to fetch URL list");
         }
 
         // Only show the data after it's successfully loaded
@@ -242,7 +201,7 @@ const Dashboard: React.FC = () => {
     };
 
     fetchInitialUrlList();
-  }, [shouldUseMockData]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleTabClick = (tabId: string) => {
     setActiveTab(tabId);
@@ -252,18 +211,12 @@ const Dashboard: React.FC = () => {
   const handleOkClick = async () => {
     setLoading(true);
     try {
-      if (shouldUseMockData) {
-        // Use mock data in local environment
-        setApiData(mockOriginUrls);
+      // Use the consolidated fetchUrls function
+      const result = await fetchUrls(false);
+      if (result.success) {
         setShowUrlTable(true);
       } else {
-        // Use the consolidated fetchUrls function
-        const result = await fetchUrls(false);
-        if (result.success) {
-          setShowUrlTable(true);
-        } else {
-          throw new Error("Failed to fetch URL list");
-        }
+        throw new Error("Failed to fetch URL list");
       }
     } catch (error) {
       setError("Failed to fetch URL list");
@@ -299,7 +252,7 @@ const Dashboard: React.FC = () => {
       // Create a new task object for the UI
       const newTaskObj: ScrapingTask = {
         id: `task-${Date.now()}`, // In a real app, this would come from the API response
-        name: formData.task_name,
+        name: formData.taskName,
         url: formData.url,
         intervalValue: formData.frequency.value,
         intervalType: formData.frequency.unit as
@@ -401,19 +354,12 @@ const Dashboard: React.FC = () => {
       return [removeUuid(extractedData)];
     }
 
-    // If we're in a local environment and have no real data, use mock data
-    if (shouldUseMockData) {
-      console.log("Using mock template data");
-      return mockTemplateData;
-    }
-
     return null;
   };
 
   const tableData = getTableData();
   // Use mock URL if in local environment and no real URL is available
-  const displayUrl =
-    originUrl || (shouldUseMockData ? "https://example.com/template" : null);
+  const displayUrl = originUrl || null;
 
   // Check if the content type is XML
   const isXmlContent =
@@ -421,12 +367,6 @@ const Dashboard: React.FC = () => {
     extractedData?._contentType === "rss";
 
   // Define fixed headers for XML content
-  const xmlHeaders = {
-    title: "Title",
-    date: "Date",
-    image: "Image",
-    description: "Description",
-  };
 
   // Handle navigation back to main page
   const handleBackToMain = (): void => {
@@ -485,7 +425,7 @@ const Dashboard: React.FC = () => {
                     }`}
                     onClick={() => handleTabClick("data")}
                   >
-                    Data Results
+                    Data Result
                   </button>
                   <button
                     className={`tab-button ${
@@ -543,21 +483,29 @@ const Dashboard: React.FC = () => {
                           </div>
                         )}
 
-                        {(showApiData || !loading) && !error && apiData.length > 0 && (
-                          <OriginUrlsTable
-                            data={apiData}
-                            onViewResult={(url) => {
-                              // TODO: Implement view result functionality
-                              console.log("Viewing result for:", url);
-                            }}
-                            title="Origin URLs"
-                            loading={loading}
-                          />
-                        )}
-                        
+                        {(showApiData || !loading) &&
+                          !error &&
+                          apiData.length > 0 && (
+                            <OriginUrlsTable
+                              data={apiData}
+                              onViewResult={(url) => {
+                                // TODO: Implement view result functionality
+                                console.log("Viewing result for:", url);
+                              }}
+                              title="Origin URLs"
+                              loading={loading}
+                            />
+                          )}
+
                         {!loading && !error && apiData.length === 0 && (
-                          <div className="empty-state-container" style={{ textAlign: "center", padding: "2rem" }}>
-                            <p>No URL data available. Please add URLs to continue.</p>
+                          <div
+                            className="empty-state-container"
+                            style={{ textAlign: "center", padding: "2rem" }}
+                          >
+                            <p>
+                              No URL data available. Please add URLs to
+                              continue.
+                            </p>
                           </div>
                         )}
                       </div>

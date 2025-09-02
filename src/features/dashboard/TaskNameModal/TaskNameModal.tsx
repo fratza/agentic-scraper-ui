@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import { Button } from 'primereact/button';
-import { InputText } from 'primereact/inputtext';
-import { classNames } from 'primereact/utils';
-import { TaskNameModalProps, TaskNameFormData } from '../../../model/dashboard';
-import './TaskNameModal.css';
+import React, { useState } from "react";
+import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext";
+import { classNames } from "primereact/utils";
+import { TaskNameModalProps, TaskNameFormData } from "../../../model/dashboard";
+import "./TaskNameModal.css";
 
 export const TaskNameModal: React.FC<TaskNameModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
-  id
+  id,
 }) => {
   const [formData, setFormData] = useState<TaskNameFormData>({
-    task_name: '',
+    taskName: "",
   });
 
   const [submitted, setSubmitted] = useState(false);
@@ -20,17 +20,17 @@ export const TaskNameModal: React.FC<TaskNameModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
-    
-    if (formData.task_name.trim()) {
-      onSubmit(formData.task_name, id);
+
+    if (formData.taskName.trim()) {
+      onSubmit(formData.taskName, id);
       onClose();
     }
   };
 
   const handleInputChange = (value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      task_name: value
+      taskName: value,
     }));
   };
 
@@ -54,16 +54,16 @@ export const TaskNameModal: React.FC<TaskNameModalProps> = ({
             <label htmlFor="taskName">Task Name</label>
             <InputText
               id="taskName"
-              value={formData.task_name}
+              value={formData.taskName}
               onChange={(e) => handleInputChange(e.target.value)}
-              className={classNames('form-control', {
-                'p-invalid': submitted && !formData.task_name.trim(),
+              className={classNames("form-control", {
+                "p-invalid": submitted && !formData.taskName.trim(),
               })}
               required
               placeholder="Enter task name"
               autoFocus
             />
-            {submitted && !formData.task_name.trim() && (
+            {submitted && !formData.taskName.trim() && (
               <small className="p-error">Task name is required.</small>
             )}
           </div>

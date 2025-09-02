@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { Button } from 'primereact/button';
-import { InputText } from 'primereact/inputtext';
-import { InputTextarea } from 'primereact/inputtextarea';
-import { Dropdown } from 'primereact/dropdown';
-import { classNames } from 'primereact/utils';
-import { NewTaskModalProps, NewTaskFormData } from './types';
-import apiService from '../../../services/api';
-import './NewTaskModal.css';
+import React, { useState } from "react";
+import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext";
+import { InputTextarea } from "primereact/inputtextarea";
+import { Dropdown } from "primereact/dropdown";
+import { classNames } from "primereact/utils";
+import { NewTaskModalProps, NewTaskFormData } from "./types";
+import apiService from "../../../services/api";
+import "./NewTaskModal.css";
 
 export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   isOpen,
@@ -18,76 +18,111 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   isLoadingUrls = false,
 }) => {
   const [formData, setFormData] = useState<NewTaskFormData>({
-    task_name: initialData?.task_name || '',
-    url: initialData?.url || '',
-    url_id: initialData?.url_id || '',
+    taskName: initialData?.taskName || "",
+    url: initialData?.url || "",
+    urlId: initialData?.urlId || "",
     frequency: {
       value: initialData?.frequency?.value || 1,
-      unit: initialData?.frequency?.unit || 'hours'
-    }
+      unit: initialData?.frequency?.unit || "hours",
+    },
   });
+
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Get current date and time for run_at field
+      // Get current date and time for runAt field
       const currentDateTime = new Date().toISOString();
-      
+
       // Call the API to submit the task
       const response = await apiService.submitMonitorTask({
-        task_name: formData.task_name,
+        taskName: formData.taskName,
         url: formData.url,
-        url_id: formData.url_id,
-        run_at: currentDateTime, // Add the current date and time
+        urlId: formData.urlId,
+        runAt: currentDateTime,
         frequency: {
           value: formData.frequency.value,
-          unit: formData.frequency.unit
-        }
+          unit: formData.frequency.unit,
+        },
       });
-      
+
       // Call the parent's onSubmit with the form data
       onSubmit(formData);
-      
-      // Show success message (you might want to use a toast notification here)
-      console.log('Task created successfully:', response);
-      
-      // Close the modal after successful submission
+
+      // Show success modal
+      setShowSuccess(true);
       onClose();
     } catch (error) {
-      console.error('Failed to create task:', error);
+      console.error("Failed to create task:", error);
       // You might want to show an error message to the user here
     }
   };
 
   const handleInputChange = (
-    field: 'task_name' | 'url' | 'url_id' | 'frequency',
-    value: string | number | { value: number; unit: 'minutes' | 'hours' | 'days' | 'weeks' }
+    field: "taskName" | "url" | "urlId" | "frequency",
+    value:
+      | string
+      | number
+      | { value: number; unit: "minutes" | "hours" | "days" | "weeks" },
   ) => {
-    setFormData(prev => {
-      if (field === 'frequency' && typeof value === 'object') {
+    setFormData((prev) => {
+      if (field === "frequency" && typeof value === "object") {
         return {
           ...prev,
           frequency: {
             ...prev.frequency,
-            ...value
-          }
+            ...value,
+          },
         };
       }
       return {
         ...prev,
-        [field]: value
+        [field]: value,
       } as NewTaskFormData;
     });
   };
 
   const intervalTypes = [
-    { label: 'Minutes', value: 'minutes' },
-    { label: 'Hours', value: 'hours' },
-    { label: 'Days', value: 'days' },
-    { label: 'Weeks', value: 'weeks' },
+    { label: "Minutes", value: "minutes" },
+    { label: "Hours", value: "hours" },
+    { label: "Days", value: "days" },
+    { label: "Weeks", value: "weeks" },
   ];
 
-  if (!isOpen) return null;
+  if (!isOpen && !showSuccess) return null;
+
+  if (showSuccess) {
+    return (
+      <div className="modal-overlay" role="dialog" aria-modal="true">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h2 className="modal-title">Task Created</h2>
+            <Button
+              className="modal-close-button"
+              onClick={onClose}
+              aria-label="Close"
+              type="button"
+              tooltip="Close"
+              tooltipOptions={{ position: "left" }}
+            >
+              ✕
+            </Button>
+          </div>
+          <div className="modal-body">
+            <p>Your task has been created successfully!</p>
+          </div>
+          <div className="modal-footer flex justify-between items-center">
+            <Button
+              label="Close"
+              className="modal-submit-button"
+              onClick={() => setShowSuccess(false)}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="modal-overlay" role="dialog" aria-modal="true">
@@ -96,11 +131,11 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
           <h2 className="modal-title">New Task</h2>
           <Button
             className="modal-close-button"
-            onClick={onClose}
+            onClick={() => setShowSuccess(false)}
             aria-label="Close"
             type="button"
             tooltip="Close"
-            tooltipOptions={{ position: 'left' }}
+            tooltipOptions={{ position: "left" }}
           >
             ✕
           </Button>
@@ -110,10 +145,10 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
             <label htmlFor="taskName">Task Name</label>
             <InputText
               id="taskName"
-              value={formData.task_name}
-              onChange={(e) => handleInputChange('task_name', e.target.value)}
-              className={classNames('form-control', {
-                'p-invalid': !formData.task_name,
+              value={formData.taskName}
+              onChange={(e) => handleInputChange("taskName", e.target.value)}
+              className={classNames("form-control", {
+                "p-invalid": !formData.taskName,
               })}
               required
               placeholder="Enter task name"
@@ -124,30 +159,35 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
             <label htmlFor="taskUrl">URL</label>
             <select
               id="taskUrl"
-              value={formData.url || ''}
+              value={formData.url || ""}
               onChange={(e) => {
                 const selectedUrl = e.target.value;
-                handleInputChange('url', selectedUrl);
-                
+                handleInputChange("url", selectedUrl);
+
                 // Find the URL ID for the selected URL
-                const selectedUrlObject = urlObjects.find(item => item.url === selectedUrl);
+                const selectedUrlObject = urlObjects.find(
+                  (item) => item.url === selectedUrl,
+                );
                 if (selectedUrlObject) {
-                  handleInputChange('url_id', selectedUrlObject.id);
+                  handleInputChange("urlId", selectedUrlObject.id);
                 } else {
                   // Clear the URL ID if no matching URL is found
-                  handleInputChange('url_id', '');
+                  handleInputChange("urlId", "");
                 }
               }}
               className="p-inputtext p-component form-control"
               required
               disabled={isLoadingUrls}
             >
-              <option value="">{isLoadingUrls ? 'Loading URLs...' : 'Select URL'}</option>
-              {!isLoadingUrls && urls.map((url) => (
-                <option key={url} value={url}>
-                  {url}
-                </option>
-              ))}
+              <option value="">
+                {isLoadingUrls ? "Loading URLs..." : "Select URL"}
+              </option>
+              {!isLoadingUrls &&
+                urls.map((url) => (
+                  <option key={url} value={url}>
+                    {url}
+                  </option>
+                ))}
             </select>
             {isLoadingUrls && (
               <small className="text-sm text-gray-500 mt-1">
@@ -163,9 +203,9 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
                 id="intervalValue"
                 value={formData.frequency.value.toString()}
                 onChange={(e) =>
-                  handleInputChange('frequency', {
+                  handleInputChange("frequency", {
                     ...formData.frequency,
-                    value: parseInt(e.target.value) || 1
+                    value: parseInt(e.target.value) || 1,
                   })
                 }
                 className="form-control w-20"
@@ -178,9 +218,9 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
                 value={formData.frequency.unit}
                 options={intervalTypes}
                 onChange={(e) =>
-                  handleInputChange('frequency', {
+                  handleInputChange("frequency", {
                     ...formData.frequency,
-                    unit: e.value as 'minutes' | 'hours' | 'days' | 'weeks'
+                    unit: e.value as "minutes" | "hours" | "days" | "weeks",
                   })
                 }
                 className="form-control"
@@ -192,22 +232,22 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
             </div>
           </div>
 
-
-
           <div className="modal-footer flex justify-between items-center">
-  <Button
-    label="Cancel"
-    className="modal-cancel-button"
-    onClick={onClose}
-    type="button"
-  />
-  <Button
-    label="Create Task"
-    className="modal-submit-button"
-    type="submit"
-    disabled={!formData.task_name || !formData.url || !formData.frequency.value}
-  />
-</div>
+            <Button
+              label="Cancel"
+              className="modal-cancel-button"
+              onClick={onClose}
+              type="button"
+            />
+            <Button
+              label="Create Task"
+              className="modal-submit-button"
+              type="submit"
+              disabled={
+                !formData.taskName || !formData.url || !formData.frequency.value
+              }
+            />
+          </div>
         </form>
       </div>
     </div>

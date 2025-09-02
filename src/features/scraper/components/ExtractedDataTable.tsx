@@ -21,10 +21,6 @@ import "primeflex/primeflex.css";
 
 import TableDisplay from "./TableDisplay";
 
-// Import mock data and environment utilities
-import { useMockData } from "../../../utils/environment";
-import { mockProductData } from "../../../data/mockTableData";
-
 // Import interfaces from model folder
 import {
   ExtractedDataTableProps,
@@ -36,12 +32,8 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
   extractedData,
   onBackToMain,
 }) => {
-  // Check if we should use mock data
-  const shouldUseMockData = useMockData();
-
   // For backward compatibility, use extractedData if provided, otherwise fall back to scrapedData
-  // If in local environment and no data is provided, use mock data
-  const data = extractedData || (shouldUseMockData ? mockProductData : null);
+  const data = extractedData || null;
 
   const [tableData, setTableData] = useState<Record<string, any>[]>([]);
   const [keys, setKeys] = useState<string[]>([]);
@@ -100,7 +92,7 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
   const getKeys = () => {
     if (tableData.length > 0) {
       const keys = Object.keys(tableData[0]).filter(
-        (key) => key.toLowerCase() !== "uuid" && key !== "id"
+        (key) => key.toLowerCase() !== "uuid" && key !== "id",
       );
       setKeys(keys);
     }
@@ -138,7 +130,7 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
 
   // Handle global filter change
   const onGlobalFilterChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ): void => {
     const value = e.target.value;
     let _filters = { ...filters };
@@ -255,7 +247,7 @@ const ExtractedDataTable: React.FC<ExtractedDataTableProps> = ({
   // Format cell value based on type for PrimeReact DataTable
   const formatCellValue = (
     rowData: any,
-    column: { field: string }
+    column: { field: string },
   ): React.ReactNode => {
     const key = column.field;
     const value = rowData[key];

@@ -1,8 +1,6 @@
 import React, { useState, useEffect, ChangeEvent, KeyboardEvent } from "react";
 import { XMLPreviewDataProps, XMLRowData } from "../../../model/xmlPreviewData";
 import apiService from "../../../services/api";
-import { useMockData } from "../../../utils/environment";
-import { mockXMLData } from "../../../data/mockTableData";
 import "../../../styles/SharedTable.css";
 import "./XMLPreviewData.css";
 
@@ -14,26 +12,19 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
   onActionSelect,
   onParse,
 }) => {
-  // Check if we should use mock data
-  const shouldUseMockData = useMockData();
-
-  // Use mock data if in local environment and no real data is provided
-  const xmlData =
-    shouldUseMockData && (!propXmlData || propXmlData.length === 0)
-      ? mockXMLData
-      : propXmlData;
+  const xmlData = propXmlData;
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [displayData, setDisplayData] = useState<XMLRowData[]>([]);
   const [availableFields, setAvailableFields] = useState<string[]>([]);
   const [editableRows, setEditableRows] = useState<Set<string | number>>(
-    new Set()
+    new Set(),
   );
 
   // Handle dropdown change for action selection
   const handleActionChange = (id: string | number, value: string) => {
     setDisplayData((prevData) => {
       const updatedData = prevData.map((row) =>
-        row.id === id ? { ...row, selectedAction: value } : row
+        row.id === id ? { ...row, selectedAction: value } : row,
       );
 
       // If onActionSelect callback is provided, call it with the updated field mappings
@@ -59,7 +50,7 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
 
       // Extract available fields from XML data
       const fields = Object.keys(firstItem).filter(
-        (key) => key !== "contentType"
+        (key) => key !== "contentType",
       );
       setAvailableFields(fields);
 
@@ -132,8 +123,8 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
     // Generate a unique ID for the new row
     const maxId = Math.max(
       ...displayData.map((row) =>
-        typeof row.id === "number" ? row.id : parseInt(row.id.toString()) || 0
-      )
+        typeof row.id === "number" ? row.id : parseInt(row.id.toString()) || 0,
+      ),
     );
     const newId = maxId + 1;
 
@@ -175,15 +166,15 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
   const handleFieldNameChange = (id: string | number, newName: string) => {
     setDisplayData((prevData) =>
       prevData.map((row) =>
-        row.id === id ? { ...row, fieldName: newName } : row
-      )
+        row.id === id ? { ...row, fieldName: newName } : row,
+      ),
     );
   };
 
   // Handle key press in editable field
   const handleKeyPress = (
     e: KeyboardEvent<HTMLInputElement>,
-    id: string | number
+    id: string | number,
   ) => {
     if (e.key === "Enter") {
       // Remove focus from the input field
@@ -201,11 +192,7 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
   // Handle cancel button click
   const handleCancel = async () => {
     try {
-      // Send cancel action to backend
-      if (!shouldUseMockData) {
-        await apiService.submitPreviewData("cancel");
-      }
-      // Close the modal
+      await apiService.submitPreviewData("cancel");
       onClose();
     } catch (error) {
       console.error("Error canceling XML parsing:", error);
@@ -240,26 +227,13 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
 
     try {
       // If we're in a local environment, simulate a successful response
-      if (shouldUseMockData) {
-        console.log("Using mock data for XML parsing");
+      // Submit the data to the API using submitPreviewData with approve action
+      // Include the XML payload in the request
+      await apiService.submitPreviewData("approve", payload);
 
-        // Simulate loading delay
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
-        // If onParse callback is provided, call it without parameters
-        // The backend will handle the resume link
-        if (onParse) {
-          onParse();
-        }
-      } else {
-        // Submit the data to the API using submitPreviewData with approve action
-        // Include the XML payload in the request
-        await apiService.submitPreviewData("approve", payload);
-
-        // Notify parent component that parsing has started
-        if (onParse) {
-          onParse();
-        }
+      // Notify parent component that parsing has started
+      if (onParse) {
+        onParse();
       }
     } catch (error) {
       console.error("Error submitting XML field mappings:", error);
@@ -335,7 +309,7 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                               <span
                                 onClick={() =>
                                   setEditableRows((prev) =>
-                                    new Set(prev).add(row.id)
+                                    new Set(prev).add(row.id),
                                   )
                                 }
                               >
@@ -368,7 +342,7 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
                                         : value
                                       : `${JSON.stringify(value).substring(
                                           0,
-                                          30
+                                          30,
                                         )}${
                                           JSON.stringify(value).length > 30
                                             ? "..."

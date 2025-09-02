@@ -5,7 +5,6 @@
 
 export interface EnvironmentConfig {
   apiBaseUrl: string;
-  useMockData: boolean;
 }
 
 /**
@@ -25,7 +24,6 @@ export const baseEnvironment: EnvironmentConfig = {
   // In production, use the determined API base URL, otherwise use empty string for development
   apiBaseUrl:
     process.env.NODE_ENV === "production" ? getProductionApiBaseUrl() : "",
-  useMockData: false,
 };
 
 /**

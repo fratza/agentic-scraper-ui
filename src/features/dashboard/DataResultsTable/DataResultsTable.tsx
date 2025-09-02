@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Button } from "primereact/button";
 import DataTable from "../../scraper/components/DataTable";
-import { useMockData } from "../../../utils/environment";
-import { mockTemplateData } from "../../../data/mockTableData";
+
 import { DataResultsTableProps, XmlHeaders } from "./types";
 import TaskNameModal from "../TaskNameModal/TaskNameModal";
 import apiService from "../../../services/api";
@@ -14,18 +13,13 @@ const DataResultsTable: React.FC<DataResultsTableProps> = ({
   onBackToMain,
   onDownloadCSV,
   isXmlContent,
-  id
+  id,
 }) => {
   // State for task name modal
   const [isTaskNameModalOpen, setIsTaskNameModalOpen] = useState(false);
 
-  // Check if we should use mock data
-  const shouldUseMockData = useMockData();
+  const displayUrl = originUrl || null;
 
-  // Use mock URL if in local environment and no real URL is available
-  const displayUrl =
-    originUrl || (shouldUseMockData ? "https://example.com/template" : null);
-    
   // Handle opening the task name modal
   const handleApproveData = () => {
     if (!id) {
@@ -34,19 +28,19 @@ const DataResultsTable: React.FC<DataResultsTableProps> = ({
     }
     setIsTaskNameModalOpen(true);
   };
-  
+
   // Handle submitting the task name
   const handleSubmitTaskName = async (taskName: string, dataId: string) => {
     try {
       const response = await apiService.submitTaskName({
-        task_name: taskName,
-        id: dataId
+        taskName: taskName,
+        id: dataId,
       });
-      
-      console.log('Task name submitted successfully:', response);
+
+      console.log("Task name submitted successfully:", response);
       // You could show a success toast notification here
     } catch (error) {
-      console.error('Error submitting task name:', error);
+      console.error("Error submitting task name:", error);
       // You could show an error toast notification here
     }
   };
@@ -114,13 +108,13 @@ const DataResultsTable: React.FC<DataResultsTableProps> = ({
           </div>
         </>
       ) : null}
-      
+
       {/* Task Name Modal */}
       <TaskNameModal
         isOpen={isTaskNameModalOpen}
         onClose={() => setIsTaskNameModalOpen(false)}
         onSubmit={handleSubmitTaskName}
-        id={id || ''}
+        id={id || ""}
       />
     </div>
   );

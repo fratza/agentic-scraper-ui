@@ -8,7 +8,6 @@ import React, {
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
-import { useMockData } from "../../../utils/environment";
 import { exportToCSV } from "../../../utils/exportUtils";
 import { OriginUrlsTableProps, UrlRow } from "../../../model/dashboard";
 import "../../../styles/SharedTable.css";
@@ -16,12 +15,12 @@ import "../../../styles/SharedTable.css";
 // Add custom CSS for table headers
 const tableHeaderStyle = `
   .p-datatable-thead > tr > th {
-    text-align: center !important;
-    justify-content: center !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
   }
-  
+
   .p-column-header-content {
-    justify-content: center !important;
+    justify-content: flex-start !important;
     width: 100%;
   }
 `;
@@ -33,9 +32,7 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
   originUrl,
   loading: externalLoading,
 }) => {
-  const shouldUseMockData = useMockData();
-  const displayUrl =
-    originUrl || (shouldUseMockData ? "https://example.com" : null);
+  const displayUrl = originUrl || null;
 
   // Use the external loading state if provided, otherwise manage internally
   const [internalLoading, setInternalLoading] = useState<boolean>(false);
@@ -87,10 +84,16 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
         className="url-link"
         title={rowData.origin_url}
       >
-        {rowData.origin_url}
+        View Link
       </a>
     ),
-    []
+    [],
+  );
+
+  // Column for displaying the name - memoized for better performance
+  const nameBodyTemplate = useCallback(
+    (rowData: UrlRow) => rowData.name || "N/A",
+    [],
   );
 
   // Last Extract column has been removed
@@ -107,7 +110,7 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
         {rowData.status || "Unknown"}
       </span>
     ),
-    []
+    [],
   );
 
   // Column for actions - memoized for better performance
@@ -121,7 +124,7 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
         aria-label={`View results for ${rowData.origin_url}`}
       />
     ),
-    [onViewResult]
+    [onViewResult],
   );
 
   // Add custom styles for table headers
@@ -166,9 +169,8 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
               header="#"
               body={indexBodyTemplate}
               headerStyle={{
-                textAlign: "center",
+                textAlign: "left",
                 verticalAlign: "middle",
-                padding: "0.3rem",
                 fontSize: "0.8rem",
                 backgroundColor: "var(--surface-50)",
               }}
@@ -176,8 +178,28 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
                 width: "5%",
                 minWidth: "30px",
                 textAlign: "left",
+                fontSize: "0.8rem",
+                paddingLeft: "0.5rem",
+              }}
+            />
+            <Column
+              header="Name"
+              body={nameBodyTemplate}
+              headerStyle={{
+                textAlign: "left",
+                verticalAlign: "middle",
                 padding: "0.3rem",
                 fontSize: "0.8rem",
+                backgroundColor: "var(--surface-50)",
+              }}
+              style={{
+                width: "25%",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                padding: "0.3rem",
+                fontSize: "0.8rem",
+                textAlign: "left",
               }}
             />
             <Column
@@ -185,14 +207,14 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
               header="URL"
               body={urlBodyTemplate}
               headerStyle={{
-                textAlign: "center",
+                textAlign: "left",
                 verticalAlign: "middle",
                 padding: "0.3rem",
                 fontSize: "0.8rem",
                 backgroundColor: "var(--surface-50)",
               }}
               style={{
-                width: "60%",
+                width: "20%",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -207,7 +229,7 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
               header="Status"
               body={statusBodyTemplate}
               headerStyle={{
-                textAlign: "center",
+                textAlign: "left",
                 verticalAlign: "middle",
                 padding: "0.3rem",
                 fontSize: "0.8rem",
@@ -224,14 +246,14 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
               header="Actions"
               body={actionBodyTemplate}
               headerStyle={{
-                textAlign: "center",
+                textAlign: "left",
                 verticalAlign: "middle",
                 padding: "0.3rem",
                 fontSize: "0.8rem",
                 backgroundColor: "var(--surface-50)",
               }}
               style={{
-                width: "20%",
+                width: "15%",
                 minWidth: "80px",
                 textAlign: "left",
                 padding: "0.3rem",
@@ -245,10 +267,11 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
           loading,
           indexBodyTemplate,
           urlBodyTemplate,
+          nameBodyTemplate,
           // lastExtractBodyTemplate removed
           statusBodyTemplate,
           actionBodyTemplate,
-        ]
+        ],
       )}
     </div>
   );

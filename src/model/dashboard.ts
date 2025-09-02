@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { ReactElement } from "react";
 
 /**
  * Interface for URL row data in the OriginUrlsTable
@@ -7,6 +7,7 @@ export interface UrlRow {
   id: string;
   origin_url: string;
   status?: string;
+  name?: string;
 }
 
 /**
@@ -23,7 +24,12 @@ export interface OriginUrlsTableProps {
 /**
  * Status types for URL rows
  */
-export type UrlStatus = 'Active' | 'Pending' | 'Completed' | 'Error' | 'Unknown';
+export type UrlStatus =
+  | "Active"
+  | "Pending"
+  | "Completed"
+  | "Error"
+  | "Unknown";
 
 /**
  * Interface for API response from URL list endpoint
@@ -48,5 +54,5 @@ export interface TaskNameModalProps {
  * Interface for TaskNameModal form data
  */
 export interface TaskNameFormData {
-  task_name: string;
+  taskName: string;
 }

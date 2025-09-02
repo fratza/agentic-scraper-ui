@@ -37,19 +37,20 @@ interface ScrapeResults {
 export interface UrlItem {
   id: string;
   url: string;
+  name: string;
 }
 
 export interface UrlListResponse {
-  status: 'success' | 'error';
+  status: "success" | "error";
   data: UrlItem[];
 }
 
 export interface MonitorTaskResponse {
-  status: 'success' | 'error';
+  status: "success" | "error";
   message?: string;
   data?: {
     task_id: string;
-    task_name: string;
+    taskName: string;
     next_run_at: string;
   };
 }
@@ -69,7 +70,7 @@ export const apiClient: AxiosInstance = axios.create({
 const PREVIEW_SSE_URL = `${config.api.baseUrl.replace("/api", "")}/api/preview/events`;
 const EXTRACTED_DATA_SSE_URL = `${config.api.baseUrl.replace(
   "/api",
-  ""
+  "",
 )}/api/scraped-data/events`;
 
 // Generate a unique session token for this client
@@ -81,7 +82,7 @@ const SESSION_TOKEN = `${Date.now()}-${Math.random()
 const apiService = {
   // Submit a scraping request
   submitScrapeRequest: async (
-    data: ScrapeRequestData
+    data: ScrapeRequestData,
   ): Promise<ScrapeResponse> => {
     try {
       // Log the data being sent, including resume_link if present
@@ -204,7 +205,7 @@ const apiService = {
   // Create an SSE connection for scraping progress and extracted data
   createScrapingEventSource: (
     jobId: string,
-    runId: string | null
+    runId: string | null,
   ): EventSource => {
     // Using the dedicated extracted-data endpoint
     const params = new URLSearchParams();
@@ -234,7 +235,7 @@ const apiService = {
   // Submit preview data with approve or cancel action and optional payload
   submitPreviewData: async (
     action: "approve" | "cancel",
-    payload: Record<string, any> = {}
+    payload: Record<string, any> = {},
   ): Promise<any> => {
     try {
       // Send action to backend with optional payload
@@ -252,34 +253,37 @@ const apiService = {
 
   // Submit a new monitoring task
   submitMonitorTask: async (taskData: {
-    task_name: string;
+    taskName: string;
     url: string;
-    url_id?: string;
-    run_at?: string; // ISO string for the run date/time
+    urlId?: string;
+    runAt?: string;
     frequency: {
       value: number;
-      unit: 'minutes' | 'hours' | 'days' | 'weeks';
+      unit: "minutes" | "hours" | "days" | "weeks";
     };
   }): Promise<MonitorTaskResponse> => {
     try {
-      const response = await apiClient.post('/supabase/submit-monitor-task', taskData);
+      const response = await apiClient.post(
+        config.api.endpoints.submitMonitorTask,
+        taskData,
+      );
       return response.data;
     } catch (error) {
-      console.error('Error submitting monitoring task:', error);
+      console.error("Error submitting monitoring task:", error);
       throw error;
     }
   },
 
   // Submit a task name for extracted data
   submitTaskName: async (data: {
-    task_name: string;
+    taskName: string;
     id: string;
   }): Promise<TaskNameResponse> => {
     try {
-      const response = await apiClient.post('/api/submit-task-name', data);
+      const response = await apiClient.post("/api/submit-task-name", data);
       return response.data;
     } catch (error) {
-      console.error('Error submitting task name:', error);
+      console.error("Error submitting task name:", error);
       throw error;
     }
   },

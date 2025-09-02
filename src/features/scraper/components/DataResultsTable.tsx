@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Button } from "primereact/button";
 import DataTable from "./DataTable";
-import { mockTemplateData } from "../../../data/mockTableData";
+
 import "./DataResultsTable.css";
 
 // Define the URL list item type
@@ -23,14 +23,13 @@ const DataResultsTable: React.FC<DataResultsTableProps> = ({
   originUrl,
   onBackToMain,
   onDownloadCSV,
-  isXmlContent
+  isXmlContent,
 }) => {
   const [showUrlTable, setShowUrlTable] = useState(false);
   const [urlList, setUrlList] = useState<UrlListItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Use mock URL if no real URL is available
-  const displayUrl = originUrl || "https://example.com/template";
+  const displayUrl = originUrl || "";
 
   // Define fixed headers for XML content
   const xmlHeaders = {
@@ -42,21 +41,11 @@ const DataResultsTable: React.FC<DataResultsTableProps> = ({
 
   const handleOkClick = () => {
     setIsLoading(true);
-    
-    // Use mock data with a small delay to simulate API call
-    setTimeout(() => {
-      setUrlList([
-        { id: '1', origin_url: 'https://example.com/products/1' },
-        { id: '2', origin_url: 'https://example.com/products/2' },
-        { id: '3', origin_url: 'https://example.com/products/3' },
-        { id: '4', origin_url: 'https://example.com/products/4' },
-        { id: '5', origin_url: 'https://example.com/products/5' },
-        { id: '6', origin_url: 'https://example.com/blog/1' },
-        { id: '7', origin_url: 'https://example.com/blog/2' }
-      ]);
-      setShowUrlTable(true);
-      setIsLoading(false);
-    }, 500);
+
+    // TODO: Implement real API call to fetch URL list
+    setUrlList([]);
+    setShowUrlTable(true);
+    setIsLoading(false);
   };
 
   return (
@@ -77,7 +66,10 @@ const DataResultsTable: React.FC<DataResultsTableProps> = ({
             </div>
           )}
         </div>
-        <div className="action-buttons" style={{ display: 'flex', gap: '1rem' }}>
+        <div
+          className="action-buttons"
+          style={{ display: "flex", gap: "1rem" }}
+        >
           {!showUrlTable && (
             <Button
               icon="pi pi-check"
@@ -105,9 +97,12 @@ const DataResultsTable: React.FC<DataResultsTableProps> = ({
               <span>Origin URLs:</span>
             </div>
           </div>
-          <div style={{ width: '100%', overflowX: 'auto' }}>
+          <div style={{ width: "100%", overflowX: "auto" }}>
             {urlList.length > 0 ? (
-              <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <table
+                className="data-table"
+                style={{ width: "100%", borderCollapse: "collapse" }}
+              >
                 <thead>
                   <tr className="table-header">
                     <th className="table-header-cell">ID</th>
@@ -119,7 +114,11 @@ const DataResultsTable: React.FC<DataResultsTableProps> = ({
                     <tr key={item.id} className="table-row">
                       <td className="table-cell">{item.id}</td>
                       <td className="table-cell">
-                        <a href={item.origin_url} target="_blank" rel="noopener noreferrer">
+                        <a
+                          href={item.origin_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
                           {item.origin_url}
                         </a>
                       </td>

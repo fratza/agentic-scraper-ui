@@ -14,11 +14,11 @@ export interface NewTaskModalProps {
 }
 
 export interface NewTaskFormData {
-  task_name: string;
+  taskName: string;
   url: string;
-  url_id?: string;
+  urlId?: string;
   frequency: {
     value: number;
-    unit: 'minutes' | 'hours' | 'days' | 'weeks';
+    unit: "minutes" | "hours" | "days" | "weeks";
   };
 }
