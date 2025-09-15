@@ -55,6 +55,20 @@ export interface MonitorTaskResponse {
   };
 }
 
+export interface ScheduledTaskItem {
+  task_name: string;
+  frequency: string;
+  run_at: string;
+  last_run_at: string | null;
+  status: string;
+  origin_url: string;
+}
+
+export interface ScheduledTasksResponse {
+  status: "success" | "error";
+  data: ScheduledTaskItem[];
+}
+
 // TaskNameResponse is now imported from model/api.ts
 
 // Initialize axios instance with centralized config
@@ -284,6 +298,19 @@ const apiService = {
       return response.data;
     } catch (error) {
       console.error("Error submitting task name:", error);
+      throw error;
+    }
+  },
+
+  // Get scheduled tasks
+  async getScheduledTasks(): Promise<ScheduledTasksResponse> {
+    try {
+      const response = await apiClient.get(
+        config.api.endpoints.getScheduledTasks,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching scheduled tasks:", error);
       throw error;
     }
   },

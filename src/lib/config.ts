@@ -11,6 +11,7 @@ interface ApiConfig {
     results: string;
     urlList: string;
     submitMonitorTask: string;
+    getScheduledTasks: string;
   };
   timeout: number;
 }
@@ -40,6 +41,7 @@ export const config: AppConfig = {
       results: "/api/scrape/results",
       urlList: "/api/supabase/url-list",
       submitMonitorTask: "/api/supabase/submit-monitor-task",
+      getScheduledTasks: "/api/supabase/get-scheduled-tasks",
     },
     timeout: 30000, // 30 seconds
   },

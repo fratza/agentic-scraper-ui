@@ -81,6 +81,7 @@ const Dashboard: React.FC = () => {
   const [tasks, setTasks] = useState<ScrapingTask[]>([]);
   const [showNewTaskDialog, setShowNewTaskDialog] = useState(false);
   const [isLoadingUrls, setIsLoadingUrls] = useState(false);
+  const [isLoadingTasks, setIsLoadingTasks] = useState(false);
   const [newTask, setNewTask] = useState<Partial<ScrapingTask>>({
     name: "",
     url: "",
@@ -103,6 +104,36 @@ const Dashboard: React.FC = () => {
   >([]);
   // Ref to track if we're already fetching URLs to prevent duplicate calls
   const isFetchingUrls = React.useRef(false);
+
+  // Function to fetch scheduled tasks from the API
+  const fetchScheduledTasks = async () => {
+    try {
+      setIsLoadingTasks(true);
+      const response = await apiService.getScheduledTasks();
+      if (response.status === "success" && Array.isArray(response.data)) {
+        // Transform the API response to match the ScrapingTask interface
+        const transformedTasks: ScrapingTask[] = response.data.map(
+          (task, index) => ({
+            id: `task-${index}`, // Generate ID since API doesn't provide one
+            name: task.task_name,
+            url: task.origin_url,
+            intervalValue: 1, // Default value, could be parsed from frequency if needed
+            intervalType: "hours" as const, // Default value, could be parsed from frequency if needed
+            lastRun: task.last_run_at ? new Date(task.last_run_at) : null,
+            nextRun: new Date(task.run_at),
+            status: task.status as TaskStatus,
+            description: task.frequency, // Use frequency as description
+          }),
+        );
+        setTasks(transformedTasks);
+      }
+    } catch (error) {
+      console.error("Error fetching scheduled tasks:", error);
+      setError("Failed to load scheduled tasks");
+    } finally {
+      setIsLoadingTasks(false);
+    }
+  };
 
   // Function to fetch URLs from the API
   const fetchUrls = async (showLoadingState = true) => {
@@ -205,6 +236,10 @@ const Dashboard: React.FC = () => {
 
   const handleTabClick = (tabId: string) => {
     setActiveTab(tabId);
+    // Fetch scheduled tasks when switching to monitoring tab
+    if (tabId === "monitoring") {
+      fetchScheduledTasks();
+    }
   };
 
   // Fetch URL list when "Okay, Looks good" button is clicked
@@ -549,7 +584,25 @@ const Dashboard: React.FC = () => {
                       </div>
 
                       <div className="task-table-container">
-                        <TaskTable tasks={tasks} onRunTask={handleRunTask} />
+                        {isLoadingTasks ? (
+                          <div
+                            className="loading-container"
+                            style={{ textAlign: "center", padding: "2rem" }}
+                          >
+                            <div
+                              className="loading-spinner"
+                              style={{ marginBottom: "1rem" }}
+                            >
+                              <i
+                                className="pi pi-spin pi-spinner"
+                                style={{ fontSize: "2rem" }}
+                              ></i>
+                            </div>
+                            <p>Loading scheduled tasks...</p>
+                          </div>
+                        ) : (
+                          <TaskTable tasks={tasks} onRunTask={handleRunTask} />
+                        )}
                       </div>
                     </div>
 
