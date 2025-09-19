@@ -71,7 +71,8 @@ export interface ScheduledTasksResponse {
 
 export interface ExtractedDataResponse {
   status: "success" | "error";
-  data: any[];
+  data: any[] | { [key: string]: any };
+  message?: string;
 }
 
 // TaskNameResponse is now imported from model/api.ts

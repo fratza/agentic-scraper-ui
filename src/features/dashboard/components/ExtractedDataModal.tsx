@@ -4,6 +4,7 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import Modal from "../../../components/Modal";
 import apiService from "../../../services/api";
+import "../../../styles/SharedTable.css";
 import "./ExtractedDataModal.css";
 
 interface ExtractedDataModalProps {
@@ -25,28 +26,47 @@ const ExtractedDataModal: React.FC<ExtractedDataModalProps> = ({
 
   // Fetch extracted data when modal opens
   useEffect(() => {
+    const fetchExtractedData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await apiService.getExtractedData(urlId);
+        if (response.status === "success") {
+          // Convert object format to array format
+          let dataArray = [];
+          if (response.data && typeof response.data === "object") {
+            if (Array.isArray(response.data)) {
+              dataArray = response.data;
+            } else {
+              // Convert object with numbered keys to array
+              dataArray = Object.values(response.data);
+            }
+          }
+
+          // Remove uuid field from each item
+          const filteredData = dataArray.map((item) => {
+            if (item && typeof item === "object") {
+              const { uuid, ...rest } = item;
+              return rest;
+            }
+            return item;
+          });
+
+          setData(filteredData);
+        } else {
+          setError("Failed to fetch extracted data");
+        }
+      } catch (err) {
+        setError("Failed to fetch extracted data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (isOpen && urlId) {
       fetchExtractedData();
     }
-  }, [isOpen, urlId]); // fetchExtractedData is defined inside the component, so it's safe to omit
-
-  const fetchExtractedData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await apiService.getExtractedData(urlId);
-      if (response.status === "success") {
-        setData(response.data);
-      } else {
-        setError("Failed to fetch extracted data");
-      }
-    } catch (err) {
-      console.error("Error fetching extracted data:", err);
-      setError("Failed to fetch extracted data");
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [isOpen, urlId]);
 
   // Generate columns dynamically based on data
   const getColumns = () => {
@@ -65,14 +85,20 @@ const ExtractedDataModal: React.FC<ExtractedDataModalProps> = ({
         field={key}
         header={key.charAt(0).toUpperCase() + key.slice(1)}
         headerStyle={{
-          textAlign: "center",
+          textAlign: "left",
           verticalAlign: "middle",
-          backgroundColor: "#f8f9fa",
-          border: "1px solid #dee2e6",
-          padding: "12px 8px",
-          fontWeight: "600",
-          fontSize: "0.9rem",
-          color: "#495057",
+          padding: "0.3rem",
+          fontSize: "0.8rem",
+          backgroundColor: "var(--surface-50)",
+        }}
+        style={{
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          padding: "0.3rem",
+          fontSize: "0.8rem",
+          textAlign: "left",
+          maxWidth: "250px",
         }}
         body={(rowData) => {
           const value = rowData[key];
@@ -102,19 +128,8 @@ const ExtractedDataModal: React.FC<ExtractedDataModalProps> = ({
 
           return displayValue;
         }}
-        style={{
-          border: "1px solid #dee2e6",
-          padding: "10px 8px",
-          textAlign: "left",
-          verticalAlign: "middle",
-          maxWidth: "250px",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
         bodyStyle={{
-          border: "1px solid #dee2e6",
-          padding: "10px 8px",
+          padding: "0.3rem",
           textAlign: "left",
           verticalAlign: "middle",
         }}
@@ -221,7 +236,7 @@ const ExtractedDataModal: React.FC<ExtractedDataModalProps> = ({
                 value={data}
                 scrollable
                 scrollHeight="400px"
-                className="p-datatable-sm enhanced-data-table"
+                className="data-table compact-table"
                 responsiveLayout="scroll"
                 emptyMessage="No data available"
                 rows={10}
@@ -231,13 +246,7 @@ const ExtractedDataModal: React.FC<ExtractedDataModalProps> = ({
                 rowsPerPageOptions={[5, 10, 25, 50]}
                 stripedRows
                 style={{
-                  fontSize: "0.85rem",
-                  border: "none",
-                }}
-                tableStyle={{
-                  border: "none",
-                  borderCollapse: "separate",
-                  borderSpacing: "0",
+                  fontSize: "0.8rem",
                 }}
               >
                 {getColumns()}

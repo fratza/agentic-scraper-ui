@@ -163,11 +163,9 @@ const Dashboard: React.FC = () => {
           return {
             id: item.id || `url-${index}`,
             origin_url: item.url,
-            name: item.name,
-            // Add random status for demonstration
-            status: ["Active", "Pending", "Completed", "Error"][
-              Math.floor(Math.random() * 4)
-            ],
+            name: item.name || `URL ${index + 1}`,
+            // Use a more realistic status based on whether we have an ID
+            status: item.id ? "Active" : "Pending",
           };
         });
 
@@ -521,15 +519,19 @@ const Dashboard: React.FC = () => {
                         {(showApiData || !loading) &&
                           !error &&
                           apiData.length > 0 && (
-                            <OriginUrlsTable
-                              data={apiData}
-                              onViewResult={(url) => {
-                                // TODO: Implement view result functionality
-                                console.log("Viewing result for:", url);
-                              }}
-                              title="Origin URLs"
-                              loading={loading}
-                            />
+                            <>
+                              <OriginUrlsTable
+                                data={apiData}
+                                onViewResult={(url) => {
+                                  console.log(
+                                    "View result triggered for:",
+                                    url,
+                                  );
+                                }}
+                                title="Origin URLs"
+                                loading={loading}
+                              />
+                            </>
                           )}
 
                         {!loading && !error && apiData.length === 0 && (
