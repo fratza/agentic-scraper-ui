@@ -69,6 +69,11 @@ export interface ScheduledTasksResponse {
   data: ScheduledTaskItem[];
 }
 
+export interface ExtractedDataResponse {
+  status: "success" | "error";
+  data: any[];
+}
+
 // TaskNameResponse is now imported from model/api.ts
 
 // Initialize axios instance with centralized config
@@ -311,6 +316,19 @@ const apiService = {
       return response.data;
     } catch (error) {
       console.error("Error fetching scheduled tasks:", error);
+      throw error;
+    }
+  },
+
+  // Get extracted data by ID
+  async getExtractedData(id: string): Promise<ExtractedDataResponse> {
+    try {
+      const response = await apiClient.get(
+        `${config.api.endpoints.getExtractedData}/${id}`,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching extracted data:", error);
       throw error;
     }
   },

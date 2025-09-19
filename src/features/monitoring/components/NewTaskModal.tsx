@@ -6,6 +6,7 @@ import { Dropdown } from "primereact/dropdown";
 import { classNames } from "primereact/utils";
 import { NewTaskModalProps, NewTaskFormData } from "./types";
 import apiService from "../../../services/api";
+import { useFormLoading } from "../../../context/LoadingContext";
 import "./NewTaskModal.css";
 
 export const NewTaskModal: React.FC<NewTaskModalProps> = ({
@@ -28,9 +29,14 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   });
 
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
     try {
       // Get current date and time for runAt field
       const currentDateTime = new Date().toISOString();
@@ -56,6 +62,8 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
     } catch (error) {
       console.error("Failed to create task:", error);
       // You might want to show an error message to the user here
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -240,12 +248,16 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
               type="button"
             />
             <Button
-              label="Create Task"
+              label={isSubmitting ? "Creating Task..." : "Create Task"}
               className="modal-submit-button"
               type="submit"
               disabled={
-                !formData.taskName || !formData.url || !formData.frequency.value
+                !formData.taskName ||
+                !formData.url ||
+                !formData.frequency.value ||
+                isSubmitting
               }
+              loading={isSubmitting}
             />
           </div>
         </form>

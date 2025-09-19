@@ -3,6 +3,7 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
 import { TaskNameModalProps, TaskNameFormData } from "../../../model/dashboard";
+import ButtonLoader from "../../../components/common/ButtonLoader";
 import "./TaskNameModal.css";
 
 export const TaskNameModal: React.FC<TaskNameModalProps> = ({
@@ -10,6 +11,7 @@ export const TaskNameModal: React.FC<TaskNameModalProps> = ({
   onClose,
   onSubmit,
   id,
+  isSubmitting = false,
 }) => {
   const [formData, setFormData] = useState<TaskNameFormData>({
     taskName: "",
@@ -23,7 +25,7 @@ export const TaskNameModal: React.FC<TaskNameModalProps> = ({
 
     if (formData.taskName.trim()) {
       onSubmit(formData.taskName, id);
-      onClose();
+      // Don't close modal here - let parent handle it after API call
     }
   };
 
@@ -74,11 +76,14 @@ export const TaskNameModal: React.FC<TaskNameModalProps> = ({
               className="task-name-modal-cancel-button p-button-text"
               onClick={onClose}
               type="button"
+              disabled={isSubmitting}
             />
             <Button
-              label="Submit"
+              label={isSubmitting ? "Submitting..." : "Submit"}
               className="task-name-modal-submit-button"
               type="submit"
+              disabled={isSubmitting}
+              loading={isSubmitting}
             />
           </div>
         </form>

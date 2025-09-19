@@ -10,6 +10,7 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { exportToCSV } from "../../../utils/exportUtils";
 import { OriginUrlsTableProps, UrlRow } from "../../../model/dashboard";
+import ExtractedDataModal from "../components/ExtractedDataModal";
 import "../../../styles/SharedTable.css";
 
 // Add custom CSS for table headers
@@ -41,6 +42,11 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
   // Determine which loading state to use
   const loading =
     externalLoading !== undefined ? externalLoading : internalLoading;
+
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedUrlId, setSelectedUrlId] = useState<string>("");
+  const [selectedUrlName, setSelectedUrlName] = useState<string>("");
 
   // Use initialData directly without API call
   useEffect(() => {
@@ -113,18 +119,25 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
     [],
   );
 
+  // Handle view result click
+  const handleViewResult = useCallback((rowData: UrlRow) => {
+    setSelectedUrlId(rowData.id);
+    setSelectedUrlName(rowData.name || "");
+    setModalOpen(true);
+  }, []);
+
   // Column for actions - memoized for better performance
   const actionBodyTemplate = useCallback(
     (rowData: UrlRow) => (
       <Button
         label="View Result"
         className="p-button-sm p-button-text"
-        onClick={() => onViewResult(rowData.origin_url)}
-        disabled={!rowData.origin_url}
-        aria-label={`View results for ${rowData.origin_url}`}
+        onClick={() => handleViewResult(rowData)}
+        disabled={!rowData.id}
+        aria-label={`View results for ${rowData.name || rowData.origin_url}`}
       />
     ),
-    [onViewResult],
+    [handleViewResult],
   );
 
   // Add custom styles for table headers
@@ -148,6 +161,14 @@ const OriginUrlsTable: React.FC<OriginUrlsTableProps> = ({
           <span className="p-message-text">{error}</span>
         </div>
       )}
+
+      {/* Extracted Data Modal */}
+      <ExtractedDataModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        urlId={selectedUrlId}
+        urlName={selectedUrlName}
+      />
 
       {/* Memoize the DataTable for better performance */}
       {useMemo(

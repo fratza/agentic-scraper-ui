@@ -4,6 +4,7 @@ import "./ScraperForm.css";
 import apiService from "../../../services/api";
 import { isValidUrl } from "../../../lib/utils";
 import { ScraperFormProps, FormSubmitData, FormErrors } from "../../../model";
+import LoadingButton from "../../../components/common/LoadingButton";
 
 const ScraperForm: React.FC<ScraperFormProps> = ({ onSubmit }) => {
   const [url, setUrl] = useState<string>("");
@@ -135,9 +136,15 @@ const ScraperForm: React.FC<ScraperFormProps> = ({ onSubmit }) => {
         </div>
 
         <div className="form-actions">
-          <button type="submit" className="btn-submit" disabled={isSubmitting}>
-            <span>{isSubmitting ? "Submitting..." : "Submit"}</span>
-          </button>
+          <LoadingButton
+            type="submit"
+            label="Submit"
+            loadingLabel="Submitting..."
+            loading={isSubmitting}
+            disabled={isSubmitting}
+            className="btn-submit"
+            loaderSize="small"
+          />
         </div>
       </form>
     </div>

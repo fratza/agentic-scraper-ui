@@ -3,6 +3,7 @@ import "./ScraperForm.css";
 import apiService from "../../../services/api";
 import { isValidUrl } from "../../../lib/utils";
 import { XmlParseFormProps, FormSubmitData, FormErrors } from "../../../model";
+import LoadingButton from "../../../components/common/LoadingButton";
 
 const XmlParseForm: React.FC<XmlParseFormProps> = ({
   onSubmit,
@@ -99,9 +100,15 @@ const XmlParseForm: React.FC<XmlParseFormProps> = ({
         </div>
 
         <div className="form-actions">
-          <button type="submit" className="btn-submit" disabled={isSubmitting}>
-            <span>{isSubmitting ? "Submitting..." : "Parse XML"}</span>
-          </button>
+          <LoadingButton
+            type="submit"
+            label="Parse XML"
+            loadingLabel="Submitting..."
+            loading={isSubmitting}
+            disabled={isSubmitting}
+            className="btn-submit"
+            loaderSize="small"
+          />
         </div>
       </form>
     </div>

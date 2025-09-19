@@ -1,0 +1,197 @@
+/* InlineLoader CSS */
+
+.inline-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Spinner styles */
+.inline-spinner {
+  border-radius: 50%;
+  border: 2px solid rgba(59, 130, 246, 0.2);
+  border-top: 2px solid #3b82f6;
+  animation: spin 1s linear infinite;
+}
+
+.inline-spinner--small {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+
+.inline-spinner--medium {
+  width: 24px;
+  height: 24px;
+  border-width: 2px;
+}
+
+.inline-spinner--large {
+  width: 32px;
+  height: 32px;
+  border-width: 3px;
+}
+
+.spinner-circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+/* Dots loader styles */
+.dots-container {
+  display: flex;
+  gap: 4px;
+}
+
+.dot {
+  background-color: #3b82f6;
+  border-radius: 50%;
+  animation: bounce 1.4s ease-in-out infinite both;
+}
+
+.dot--small {
+  width: 4px;
+  height: 4px;
+}
+
+.dot--medium {
+  width: 8px;
+  height: 8px;
+}
+
+.dot--large {
+  width: 12px;
+  height: 12px;
+}
+
+/* Pulse loader styles */
+.pulse-loader {
+  background-color: #3b82f6;
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.pulse-loader--small {
+  width: 16px;
+  height: 16px;
+}
+
+.pulse-loader--medium {
+  width: 24px;
+  height: 24px;
+}
+
+.pulse-loader--large {
+  width: 32px;
+  height: 32px;
+}
+
+/* Message text styles */
+.inline-loader__message {
+  color: #6b7280;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.inline-loader__message--small {
+  font-size: 12px;
+}
+
+.inline-loader__message--medium {
+  font-size: 14px;
+}
+
+.inline-loader__message--large {
+  font-size: 16px;
+}
+
+/* Animations */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* Color variants */
+.inline-loader--success .inline-spinner {
+  border-color: rgba(34, 197, 94, 0.2);
+  border-top-color: #22c55e;
+}
+
+.inline-loader--success .dot {
+  background-color: #22c55e;
+}
+
+.inline-loader--success .pulse-loader {
+  background-color: #22c55e;
+}
+
+.inline-loader--warning .inline-spinner {
+  border-color: rgba(245, 158, 11, 0.2);
+  border-top-color: #f59e0b;
+}
+
+.inline-loader--warning .dot {
+  background-color: #f59e0b;
+}
+
+.inline-loader--warning .pulse-loader {
+  background-color: #f59e0b;
+}
+
+.inline-loader--error .inline-spinner {
+  border-color: rgba(239, 68, 68, 0.2);
+  border-top-color: #ef4444;
+}
+
+.inline-loader--error .dot {
+  background-color: #ef4444;
+}
+
+.inline-loader--error .pulse-loader {
+  background-color: #ef4444;
+}
+
+/* Light background variant */
+.inline-loader--light {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.inline-loader--light .inline-spinner {
+  border-color: rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+}
+
+.inline-loader--light .dot {
+  background-color: white;
+}
+
+.inline-loader--light .pulse-loader {
+  background-color: white;
+}
+
+.inline-loader--light .inline-loader__message {
+  color: rgba(255, 255, 255, 0.9);
+}

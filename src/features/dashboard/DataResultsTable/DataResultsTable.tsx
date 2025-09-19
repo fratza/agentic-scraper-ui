@@ -5,6 +5,7 @@ import DataTable from "../../scraper/components/DataTable";
 import { DataResultsTableProps, XmlHeaders } from "./types";
 import TaskNameModal from "../TaskNameModal/TaskNameModal";
 import apiService from "../../../services/api";
+import InlineLoader from "../../../components/common/InlineLoader";
 import "./DataResultsTable.css";
 
 const DataResultsTable: React.FC<DataResultsTableProps> = ({
@@ -17,6 +18,7 @@ const DataResultsTable: React.FC<DataResultsTableProps> = ({
 }) => {
   // State for task name modal
   const [isTaskNameModalOpen, setIsTaskNameModalOpen] = useState(false);
+  const [isSubmittingTaskName, setIsSubmittingTaskName] = useState(false);
 
   const displayUrl = originUrl || null;
 
@@ -31,6 +33,9 @@ const DataResultsTable: React.FC<DataResultsTableProps> = ({
 
   // Handle submitting the task name
   const handleSubmitTaskName = async (taskName: string, dataId: string) => {
+    if (isSubmittingTaskName) return;
+
+    setIsSubmittingTaskName(true);
     try {
       const response = await apiService.submitTaskName({
         taskName: taskName,
@@ -39,9 +44,12 @@ const DataResultsTable: React.FC<DataResultsTableProps> = ({
 
       console.log("Task name submitted successfully:", response);
       // You could show a success toast notification here
+      setIsTaskNameModalOpen(false);
     } catch (error) {
       console.error("Error submitting task name:", error);
       // You could show an error toast notification here
+    } finally {
+      setIsSubmittingTaskName(false);
     }
   };
 
@@ -115,6 +123,7 @@ const DataResultsTable: React.FC<DataResultsTableProps> = ({
         onClose={() => setIsTaskNameModalOpen(false)}
         onSubmit={handleSubmitTaskName}
         id={id || ""}
+        isSubmitting={isSubmittingTaskName}
       />
     </div>
   );

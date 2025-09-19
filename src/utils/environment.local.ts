@@ -9,5 +9,5 @@ import { EnvironmentConfig } from "./environment.base";
  * Local environment configuration
  */
 export const localEnvironment: EnvironmentConfig = {
-  apiBaseUrl: "http://localhost:3000",
+  apiBaseUrl: "http://localhost:8080",
 };

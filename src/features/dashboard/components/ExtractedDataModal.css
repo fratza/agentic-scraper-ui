@@ -1,0 +1,121 @@
+/* Enhanced DataTable Styles */
+.enhanced-data-table .p-datatable-table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.enhanced-data-table .p-datatable-thead > tr > th {
+  background-color: #f8f9fa !important;
+  border: 1px solid #dee2e6 !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  padding: 12px 8px !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  color: #495057 !important;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.enhanced-data-table .p-datatable-tbody > tr > td {
+  border: 1px solid #dee2e6 !important;
+  padding: 10px 8px !important;
+  vertical-align: middle !important;
+  background-color: #fff;
+}
+
+.enhanced-data-table .p-datatable-tbody > tr:nth-child(even) > td {
+  background-color: #f8f9fa;
+}
+
+.enhanced-data-table .p-datatable-tbody > tr:hover > td {
+  background-color: #e9ecef !important;
+  transition: background-color 0.2s ease;
+}
+
+.enhanced-data-table .p-datatable-scrollable-body {
+  border: none !important;
+}
+
+.enhanced-data-table .p-datatable-scrollable-header {
+  border: none !important;
+}
+
+/* Paginator styling */
+.enhanced-data-table .p-paginator {
+  background: #f8f9fa;
+  border: none;
+  border-top: 1px solid #dee2e6;
+  padding: 8px 16px;
+  justify-content: space-between;
+}
+
+.enhanced-data-table .p-paginator .p-paginator-current {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.enhanced-data-table .p-paginator .p-dropdown {
+  font-size: 0.875rem;
+}
+
+/* Loading and empty state improvements */
+.enhanced-data-table .p-datatable-loading-overlay {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.enhanced-data-table .p-datatable-emptymessage > td {
+  text-align: center;
+  padding: 2rem !important;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Modal content improvements */
+.extracted-data-content {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+}
+
+.extracted-data-content .data-stats {
+  background: #f8f9fa;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  color: #495057;
+  margin-bottom: 1rem;
+  border-left: 4px solid #007bff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .enhanced-data-table .p-datatable-thead > tr > th {
+    padding: 8px 6px !important;
+    font-size: 0.8rem !important;
+  }
+
+  .enhanced-data-table .p-datatable-tbody > tr > td {
+    padding: 8px 6px !important;
+    font-size: 0.8rem !important;
+  }
+}
+
+/* Scrollbar styling for better UX */
+.enhanced-data-table .p-datatable-scrollable-body::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.enhanced-data-table .p-datatable-scrollable-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.enhanced-data-table .p-datatable-scrollable-body::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.enhanced-data-table .p-datatable-scrollable-body::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

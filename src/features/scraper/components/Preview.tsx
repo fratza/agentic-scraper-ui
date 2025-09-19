@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import "./Preview.css";
 import DataTable from "./DataTable";
 import apiService from "../../../services/api";
 import { PreviewProps } from "../../../model";
+import ButtonLoader from "../../../components/common/ButtonLoader";
 
 const Preview: React.FC<PreviewProps> = ({
   previewData,
@@ -18,7 +19,7 @@ const Preview: React.FC<PreviewProps> = ({
 
   const [copied, setCopied] = useState<boolean>(false);
   const [isScraping, setIsScraping] = useState<boolean>(false);
-  const [sessionError, setSessionError] = useState<boolean>(false);
+  const [, setSessionError] = useState<boolean>(false);
   const [actionInProgress, setActionInProgress] = useState<boolean>(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -39,17 +40,6 @@ const Preview: React.FC<PreviewProps> = ({
     }
 
     return data;
-  };
-
-  // Get filtered preview data
-  const getFilteredPreviewData = () => {
-    if (previewData && previewData.sample) {
-      return {
-        ...previewData,
-        sample: filterUnwantedFields(previewData.sample),
-      };
-    }
-    return filterUnwantedFields(previewData);
   };
 
   const handleCopyJson = (): void => {
@@ -154,7 +144,8 @@ const Preview: React.FC<PreviewProps> = ({
                 }
               }}
             >
-              <span>Cancel</span>
+              {actionInProgress && <ButtonLoader loading={true} size="small" />}
+              <span>{actionInProgress ? "Cancelling..." : "Cancel"}</span>
             </button>
             <button
               className="btn-scrape"
@@ -178,17 +169,18 @@ const Preview: React.FC<PreviewProps> = ({
                 } catch (error) {
                   // Handle approval error silently
                   setSessionError(true);
-                  setIsScraping(false);
+                } finally {
                   setActionInProgress(false);
                 }
               }}
             >
+              {actionInProgress && <ButtonLoader loading={true} size="small" />}
               <span>
                 {actionInProgress
                   ? "Processing..."
                   : isScraping
                     ? "Scraping..."
-                    : "Scrape"}
+                    : "Looks good!"}
               </span>
             </button>
           </div>

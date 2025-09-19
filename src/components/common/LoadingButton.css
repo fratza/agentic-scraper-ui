@@ -1,0 +1,161 @@
+/* LoadingButton CSS */
+
+.loading-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease-in-out;
+}
+
+.loading-button--loading {
+  cursor: wait;
+}
+
+.loading-button__loader {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 4px;
+}
+
+.loading-button__content {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Ensure proper spacing when loader is present */
+.loading-button--loading .loading-button__content {
+  margin-left: 2px;
+}
+
+/* Disable pointer events when loading */
+.loading-button--loading {
+  pointer-events: none;
+}
+
+/* Slight opacity change when loading for visual feedback */
+.loading-button--loading .p-button-label {
+  opacity: 0.8;
+}
+
+/* PrimeReact Button integration styles */
+.loading-button .p-button-icon {
+  margin-right: 4px;
+}
+
+.loading-button .p-button-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Size-specific adjustments */
+.p-button-sm .loading-button__loader {
+  margin-right: 2px;
+}
+
+.p-button-lg .loading-button__loader {
+  margin-right: 6px;
+}
+
+/* Color variants for the loader based on button severity */
+.p-button-success .loading-button__loader .spinner {
+  border-top-color: white;
+}
+
+.p-button-info .loading-button__loader .spinner {
+  border-top-color: white;
+}
+
+.p-button-warning .loading-button__loader .spinner {
+  border-top-color: white;
+}
+
+.p-button-danger .loading-button__loader .spinner {
+  border-top-color: white;
+}
+
+.p-button-secondary .loading-button__loader .spinner {
+  border-top-color: #6c757d;
+}
+
+/* Outlined button variants */
+.p-button-outlined .loading-button__loader .spinner {
+  border-top-color: var(--primary-color);
+}
+
+.p-button-outlined.p-button-success .loading-button__loader .spinner {
+  border-top-color: var(--green-500);
+}
+
+.p-button-outlined.p-button-info .loading-button__loader .spinner {
+  border-top-color: var(--blue-500);
+}
+
+.p-button-outlined.p-button-warning .loading-button__loader .spinner {
+  border-top-color: var(--yellow-500);
+}
+
+.p-button-outlined.p-button-danger .loading-button__loader .spinner {
+  border-top-color: var(--red-500);
+}
+
+/* Text button variants */
+.p-button-text .loading-button__loader .spinner {
+  border-top-color: var(--primary-color);
+}
+
+.p-button-text.p-button-success .loading-button__loader .spinner {
+  border-top-color: var(--green-500);
+}
+
+.p-button-text.p-button-info .loading-button__loader .spinner {
+  border-top-color: var(--blue-500);
+}
+
+.p-button-text.p-button-warning .loading-button__loader .spinner {
+  border-top-color: var(--yellow-500);
+}
+
+.p-button-text.p-button-danger .loading-button__loader .spinner {
+  border-top-color: var(--red-500);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .loading-button__loader {
+    margin-right: 2px;
+  }
+
+  .loading-button__content {
+    gap: 2px;
+  }
+}
+
+/* Focus and hover states when not loading */
+.loading-button:not(.loading-button--loading):hover {
+  transform: translateY(-1px);
+}
+
+.loading-button:not(.loading-button--loading):focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Animation for smooth loading state transition */
+.loading-button__loader {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

@@ -154,6 +154,138 @@ app.get("/api/supabase/get-scheduled-tasks", (req, res) => {
   });
 });
 
+// Mock endpoint for extracted data by ID (for development/testing)
+app.get("/api/supabase/get-extracted-data/:id", (req, res) => {
+  const { id } = req.params;
+
+  // This is a mock implementation - replace with actual database queries
+  const mockExtractedData = {
+    "url-0": [
+      {
+        title: "Sample Article 1",
+        description: "This is a sample description for article 1",
+        author: "John Doe",
+        publishDate: "2025-01-15",
+        category: "Technology",
+        url: "https://example.com/article1",
+      },
+      {
+        title: "Sample Article 2",
+        description: "This is a sample description for article 2",
+        author: "Jane Smith",
+        publishDate: "2025-01-14",
+        category: "Business",
+        url: "https://example.com/article2",
+      },
+    ],
+    "url-1": [
+      {
+        productName: "Wireless Headphones",
+        price: "$99.99",
+        rating: "4.5/5",
+        availability: "In Stock",
+        brand: "TechBrand",
+        features: "Noise Cancelling, Bluetooth 5.0",
+      },
+      {
+        productName: "Smart Watch",
+        price: "$199.99",
+        rating: "4.2/5",
+        availability: "Limited Stock",
+        brand: "WearTech",
+        features: "Heart Rate Monitor, GPS, Waterproof",
+      },
+    ],
+    // Add data for the actual ID format used by the URL list
+    "url-001": [
+      {
+        title: "Example Page 1 Content",
+        headline: "Breaking News from Example Page 1",
+        content: "This is the main content extracted from example.com/page1",
+        author: "Example Author",
+        publishDate: "2025-01-15",
+        category: "News",
+        tags: ["example", "news", "web"],
+        readingTime: "5 minutes",
+      },
+      {
+        title: "Related Article",
+        headline: "Secondary content from the page",
+        content: "Additional content found on the same page",
+        author: "Staff Writer",
+        publishDate: "2025-01-15",
+        category: "Related",
+        tags: ["related", "content"],
+        readingTime: "3 minutes",
+      },
+    ],
+    "url-002": [
+      {
+        title: "Example Page 2 Data",
+        headline: "Important Updates from Page 2",
+        content: "Extracted content from example.com/page2",
+        author: "Content Manager",
+        publishDate: "2025-01-14",
+        category: "Updates",
+        tags: ["updates", "page2", "content"],
+        readingTime: "4 minutes",
+        views: 1250,
+        shares: 45,
+      },
+    ],
+    "url-003": [
+      {
+        title: "Hacker News Story 1",
+        headline: "Show HN: New JavaScript Framework",
+        points: 245,
+        author: "developer123",
+        comments: 89,
+        url: "https://news.ycombinator.com/item?id=123456",
+        timestamp: "2025-01-15T10:30:00Z",
+        category: "Show HN",
+      },
+      {
+        title: "Hacker News Story 2",
+        headline: "AI Breakthrough in Natural Language Processing",
+        points: 567,
+        author: "airesearcher",
+        comments: 134,
+        url: "https://news.ycombinator.com/item?id=123457",
+        timestamp: "2025-01-15T09:15:00Z",
+        category: "Tech",
+      },
+      {
+        title: "Hacker News Story 3",
+        headline: "YC Winter 2025 Demo Day Highlights",
+        points: 123,
+        author: "ycombinator",
+        comments: 67,
+        url: "https://news.ycombinator.com/item?id=123458",
+        timestamp: "2025-01-15T08:00:00Z",
+        category: "YC",
+      },
+    ],
+  };
+
+  // Get data for the specific ID, or return realistic sample data
+  const data = mockExtractedData[id] || [
+    {
+      title: `Sample Data for ${id}`,
+      content: "This is sample extracted content",
+      extractedAt: new Date().toISOString(),
+      source: id,
+      status: "processed",
+      dataFields: ["title", "content", "timestamp"],
+      recordCount: 1,
+    },
+  ];
+
+  res.json({
+    status: "success",
+    data: data,
+  });
+});
+
 // Handle all other routes by serving the React app
 app.get("*", (req, res, next) => {
   // Don't handle API routes here - they should be handled by your API server

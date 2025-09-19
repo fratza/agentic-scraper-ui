@@ -1,6 +1,7 @@
 import React, { useState, useEffect, ChangeEvent, KeyboardEvent } from "react";
 import { XMLPreviewDataProps, XMLRowData } from "../../../model/xmlPreviewData";
 import apiService from "../../../services/api";
+import ButtonLoader from "../../../components/common/ButtonLoader";
 import "../../../styles/SharedTable.css";
 import "./XMLPreviewData.css";
 
@@ -191,11 +192,16 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
 
   // Handle cancel button click
   const handleCancel = async () => {
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
     try {
       await apiService.submitPreviewData("cancel");
       onClose();
     } catch (error) {
       console.error("Error canceling XML parsing:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -379,8 +385,13 @@ const XMLPreviewData: React.FC<XMLPreviewDataProps> = ({
             </div>
 
             <div className="xml-buttons-container">
-              <button className="btn-cancel-xml" onClick={handleCancel}>
-                Cancel
+              <button
+                className="btn-cancel-xml"
+                onClick={handleCancel}
+                disabled={isSubmitting}
+              >
+                {isSubmitting && <ButtonLoader loading={true} size="small" />}
+                <span>{isSubmitting ? "Cancelling..." : "Cancel"}</span>
               </button>
               <button
                 className="btn-submit-xml"

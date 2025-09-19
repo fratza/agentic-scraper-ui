@@ -48,6 +48,7 @@ export interface TaskNameModalProps {
   onClose: () => void;
   onSubmit: (taskName: string, id: string) => void;
   id: string;
+  isSubmitting?: boolean;
 }
 
 /**
